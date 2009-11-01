@@ -29,6 +29,16 @@ class Vertex : public Sink<TIn>, public Source<TOut> {
 	}
 };
 
+template<typename T>
+class IdentityVertex : public Vertex<T, T>
+{
+  public:
+	void process (T * data, nframes_t frames)
+	{
+		output(data, frames);
+	}
+};
+
 } // namespace
 
 #endif // AUDIOGRAPHER_VERTEX_H

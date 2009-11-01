@@ -14,7 +14,6 @@ class Sink  {
 	Sink () {}
 	virtual ~Sink () {}
 	
-	// processes data and return number of frames written
 	virtual void process (T * data, nframes_t frames) = 0;
 };
 

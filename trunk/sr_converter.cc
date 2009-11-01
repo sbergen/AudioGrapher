@@ -10,8 +10,9 @@ namespace AudioGrapher
 using boost::format;
 using boost::str;
 
-SampleRateConverter::SampleRateConverter (uint32_t channels, nframes_t in_rate, nframes_t out_rate, int quality)
-  : channels (channels)
+SampleRateConverter::SampleRateConverter (uint32_t channels)
+  : active (false)
+  , channels (channels)
   , max_frames_in(0)
   , leftover_data (0)
   , leftover_frames (0)
@@ -20,17 +21,21 @@ SampleRateConverter::SampleRateConverter (uint32_t channels, nframes_t in_rate, 
   , data_out_size (0)
   , src_state (0)
 {
+}
+
+void
+SampleRateConverter::init (nframes_t in_rate, nframes_t out_rate, int quality)
+{
+	reset();
+	
 	if (in_rate == out_rate) {
-		active = false;
 		return;
 	}
 
 	active = true;
-	
 	int err;
 	if ((src_state = src_new (quality, channels, &err)) == 0) {
-		// TODO exception in ctor!
-		throw Exception (str (format ("SampleRateConverter Cannot initialize sample rate conversion: %1%") % src_strerror (err)));
+		throw Exception (str (format ("SampleRateConverter Cannot initialize sample rate converter: %1%") % src_strerror (err)));
 	}
 
 	src_data.src_ratio = out_rate / (double) in_rate;
@@ -38,15 +43,7 @@ SampleRateConverter::SampleRateConverter (uint32_t channels, nframes_t in_rate, 
 
 SampleRateConverter::~SampleRateConverter ()
 {
-	if (src_state) {
-		src_delete (src_state);
-	}
-
-	delete [] data_out;
-
-	if (leftover_data) {
-		free (leftover_data);
-	}
+	reset();
 }
 
 void
@@ -68,6 +65,8 @@ SampleRateConverter::allocate_buffers (nframes_t max_frames)
 		max_frames_in = max_frames;
 		data_out_size = max_frames_out;
 	}
+	
+	return max_frames_out;
 }
 
 void
@@ -88,7 +87,6 @@ SampleRateConverter::process (float * in, nframes_t frames)
 
 	do {
 		src_data.output_frames = data_out_size / channels;
-		// TODO src_data.end_of_input = end_of_input;
 		src_data.data_out = data_out;
 
 		if (leftover_frames > 0) {
@@ -137,6 +135,26 @@ SampleRateConverter::process (float * in, nframes_t frames)
 		output (data_out, src_data.output_frames_gen);
 
 	} while (leftover_frames > frames);
+}
+
+void SampleRateConverter::reset ()
+{
+	active = false;
+	max_frames_in = 0;
+	src_data.end_of_input = false;
+	
+	if (src_state) {
+		src_delete (src_state);
+	}
+	
+	leftover_frames = 0;
+	max_leftover_frames = 0;
+	if (leftover_data) {
+		free (leftover_data);
+	}
+	
+	data_out_size = 0;
+	delete [] data_out;
 }
 
 } // namespace
