@@ -44,32 +44,6 @@ class Source
 
 };
 
-template<typename T>
-class StandaloneSource : public Source<T>
-{
-  public:
-	StandaloneSource() {}
-	virtual ~StandaloneSource() {}
-	
-	void process (nframes_t frames)
-	{
-		T * data = 0;
-		nframes_t const frames_read = read_data (data, frames);
-		assert(data);
-		
-		for (typename Source<T>::SinkList::iterator i = Source<T>::outputs.begin(); i != Source<T>::outputs.end(); ++i) {
-			(*i)->process (data, frames_read);
-		}
-	}
-	
-  protected:
-
-	/// Try to read nframes and set data to point to it, return the actual amount of frames read
-	virtual nframes_t read_data (T* & data, nframes_t nframes) = 0;
-
-};
-
-
 } // namespace
 
 #endif //AUDIOGRAPHER_SOURCE_H
