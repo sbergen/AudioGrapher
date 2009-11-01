@@ -12,13 +12,23 @@ namespace AudioGrapher
 class SampleRateConverter : public Vertex<float, float>
 {
   public:
-	SampleRateConverter (uint32_t channels, nframes_t in_rate, nframes_t out_rate, int quality);
+	SampleRateConverter (uint32_t channels);
 	~SampleRateConverter ();
 
-	void allocate_buffers (nframes_t max_frames);
+	// not RT safe
+	void init (nframes_t in_rate, nframes_t out_rate, int quality);
+	
+	// returns max amount of frames that will be output
+	nframes_t allocate_buffers (nframes_t max_frames);
+	
+	// should be RT safe (check libsamplerate to be sure)
 	void process (float * data, nframes_t frames);
+	void set_end_of_input () { src_data.end_of_input = true; }
 
   private:
+
+	void reset ();
+
 	bool           active;
 	uint32_t       channels;
 	nframes_t      max_frames_in;

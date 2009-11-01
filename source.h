@@ -28,6 +28,11 @@ class Source
 		outputs.push_back(output);
 	}
 	
+	void clear_outputs ()
+	{
+		outputs.clear();
+	}
+	
 	void remove_output (SinkPtr output)
 	{
 		outputs.remove(output);
@@ -53,7 +58,7 @@ class StandaloneSource : public Source<T>
 		assert(data);
 		
 		for (typename Source<T>::SinkList::iterator i = Source<T>::outputs.begin(); i != Source<T>::outputs.end(); ++i) {
-			i->process (data, frames_read);
+			(*i)->process (data, frames_read);
 		}
 	}
 	
