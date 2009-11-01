@@ -1,7 +1,7 @@
 #ifndef AUDIOGRAPHER_TYPES_H
 #define AUDIOGRAPHER_TYPES_H
 
-#include "stdint.h"
+#include <stdint.h>
 
 typedef uint32_t nframes_t;
 
