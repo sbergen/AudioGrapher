@@ -26,14 +26,14 @@ class Chunker : public Vertex<T, T>
 	void process (T * data, nframes_t frames)
 	{
 		if (position + frames < chunk_size) {
-			memccpy (&buffer[position], data, frames);
+			memcpy (&buffer[position], data, frames);
 			position += frames;
 		} else {
 			nframes_t const frames_to_copy = chunk_size - position;
-			memccpy (&buffer[position], data, frames_to_copy);
+			memcpy (&buffer[position], data, frames_to_copy);
 			Vertex<T, T>::output (buffer, chunk_size);
 			
-			memccpy (buffer, &data[frames_to_copy], frames - frames_to_copy);
+			memcpy (buffer, &data[frames_to_copy], frames - frames_to_copy);
 			position =  frames - frames_to_copy;
 		}
 	}
