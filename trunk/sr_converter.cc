@@ -46,7 +46,7 @@ SampleRateConverter::~SampleRateConverter ()
 	reset();
 }
 
-void
+nframes_t
 SampleRateConverter::allocate_buffers (nframes_t max_frames)
 {
 	nframes_t max_frames_out = (nframes_t) ceil (max_frames * src_data.src_ratio * channels);

@@ -4,12 +4,13 @@
 #include <samplerate.h>
 
 #include "types.h"
-#include "vertex.h"
+#include "listed_source.h"
+#include "sink.h"
 
 namespace AudioGrapher
 {
 
-class SampleRateConverter : public Vertex<float, float>
+class SampleRateConverter : public ListedSource<float>, public Sink<float>
 {
   public:
 	SampleRateConverter (uint32_t channels);

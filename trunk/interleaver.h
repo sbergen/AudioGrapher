@@ -2,7 +2,8 @@
 #define AUDIOGRAPHER_INTERLEAVER_H
 
 #include "types.h"
-#include "vertex.h"
+#include "source.h"
+#include "sink.h"
 #include "exception.h"
 
 #include <vector>

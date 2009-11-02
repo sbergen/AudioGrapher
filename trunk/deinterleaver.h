@@ -2,7 +2,9 @@
 #define AUDIOGRAPHER_DEINTERLEAVER_H
 
 #include "types.h"
-#include "vertex.h"
+#include "source.h"
+#include "sink.h"
+#include "identity_vertex.h"
 #include "exception.h"
 
 #include <vector>
