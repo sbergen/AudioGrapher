@@ -18,9 +18,10 @@ int main()
 	Interleaver<float> il;
 	ListedSource<float> ls;
 	SampleFormatConverter<int> sfc (2);
-	SndfileWriter<int> sndfw (2, 44100, 0, "foo");
+	SndfileWriter<int> sndfw (2, 44100, SF_FORMAT_WAV | SF_FORMAT_PCM_32, "foo");
 	SampleRateConverter src (2);
 	
+	Glib::thread_init();
 	Glib::ThreadPool pool;
 	Threader<float> th (pool);
 	
