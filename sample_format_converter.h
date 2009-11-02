@@ -1,14 +1,15 @@
 #ifndef AUDIOGRAPHER_SAMPLE_FORMAT_CONVERTER_H
 #define AUDIOGRAPHER_SAMPLE_FORMAT_CONVERTER_H
 
-#include "vertex.h"
+#include "listed_source.h"
+#include "sink.h"
 #include "gdither/gdither_types.h"
 
 namespace AudioGrapher
 {
 
 template <typename TOut>
-class SampleFormatConverter : public Vertex<float, TOut>
+class SampleFormatConverter : public Sink<float>, public ListedSource<TOut>
 {
   public:
 	enum DitherType

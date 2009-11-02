@@ -1,14 +1,15 @@
 #ifndef AUDIOGRAPHER_CHUNKER_H
 #define AUDIOGRAPHER_CHUNKER_H
 
-#include "vertex.h"
+#include "listed_source.h"
+#include "sink.h"
 #include <cstring>
 
 namespace AudioGrapher
 {
 
 template<typename T>
-class Chunker : public Vertex<T, T>
+class Chunker : public ListedSource<T>, public Sink<T>
 {
   public:
 	Chunker (nframes_t chunk_size)
@@ -31,7 +32,7 @@ class Chunker : public Vertex<T, T>
 		} else {
 			nframes_t const frames_to_copy = chunk_size - position;
 			memcpy (&buffer[position], data, frames_to_copy);
-			Vertex<T, T>::output (buffer, chunk_size);
+			output (buffer, chunk_size);
 			
 			memcpy (buffer, &data[frames_to_copy], frames - frames_to_copy);
 			position =  frames - frames_to_copy;
