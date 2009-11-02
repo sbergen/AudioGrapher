@@ -5,6 +5,7 @@
 #include <sigc++/slot.h>
 #include <glib.h>
 #include <vector>
+#include <algorithm>
 
 #include "source.h"
 #include "sink.h"
@@ -25,14 +26,14 @@ class Threader : public Source<T>, public Sink<T>
 	
 	void add_output (typename Source<T>::SinkPtr output) { outputs.push_back (output); }
 	void clear_outputs () { outputs.clear (); }
-	void remove_output (typename Source<T>::SinkPtr output) { outputs.remove (output); }
+	void remove_output (typename Source<T>::SinkPtr output) { std::remove(outputs.begin(), outputs.end(), output); }
 	
 	void process (T * data, nframes_t frames)
 	{
-		unsigned int outs = outputs.count();
+		unsigned int outs = outputs.size();
 		g_atomic_int_add (&readers, outs);
 		for (unsigned int i = 0; i < outs; ++i) {
-			thread_pool.push (sigc::bind (sigc::mem_fun (this, &Threader::process), data, frames, i));
+			thread_pool.push (sigc::bind (sigc::mem_fun (this, &Threader::process_channel), data, frames, i));
 		}
 		
 		wait_mutex.lock();
@@ -41,16 +42,17 @@ class Threader : public Source<T>, public Sink<T>
 	
   private:
 
-	void process(T * data, nframes_t frames, unsigned int channel)
+	void process_channel(T * data, nframes_t frames, unsigned int channel)
 	{
-		outputs[channel].process (data, frames);
+		outputs[channel]->process (data, frames);
 		
 		if (g_atomic_int_dec_and_test (&readers)) {
 			wait_cond.signal();
 		}
 	}
 
-	std::vector<typename Source<T>::SinkPtr> outputs;
+	typedef std::vector<typename Source<T>::SinkPtr> OutputVec;
+	OutputVec outputs;
 
 	Glib::ThreadPool & thread_pool;	
 	Glib::Mutex wait_mutex;

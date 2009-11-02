@@ -33,6 +33,7 @@ class SndfileWriterBase
 template <typename T>
 class SndfileWriter : public SndfileWriterBase, public Sink<T>
 {
+  public:
 	SndfileWriter (int channels, nframes_t samplerate, int format, std::string const & path);
 	void process (T * data, nframes_t frames);
 	virtual ~SndfileWriter () {}

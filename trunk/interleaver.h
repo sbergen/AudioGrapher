@@ -2,7 +2,7 @@
 #define AUDIOGRAPHER_INTERLEAVER_H
 
 #include "types.h"
-#include "source.h"
+#include "listed_source.h"
 #include "sink.h"
 #include "exception.h"
 
@@ -13,32 +13,12 @@ namespace AudioGrapher
 {
 
 template<typename T>
-class Interleaver : public Source<T>
+class Interleaver : public ListedSource<T>
 {
   public: 
 	
-	void init (unsigned int num_channels, nframes_t max_frames_per_channel)
-	{
-		reset();
-		channels = num_channels;
-		max_frames = max_frames_per_channel;
-		
-		buffer = new float[channels * max_frames];
-		memset (buffer, 0, channels * max_frames);
-		
-		for (unsigned int i = 0; i < channels; ++i) {
-			inputs.push_back (InputPtr (new Input (this, i)));
-		}
-	}
-	
-	typename Source<T>::SinkPtr input (unsigned int channel)
-	{
-		if (channel >= channels) {
-			throw Exception ("Interleaver channel out of range");
-		}
-		
-		return boost::static_pointer_cast<Source<T>::SinkPtr> (inputs[channel]);
-	}
+	void init (unsigned int num_channels, nframes_t max_frames_per_channel);
+	typename Source<T>::SinkPtr input (unsigned int channel);
 	
   private: 
  
@@ -63,38 +43,8 @@ class Interleaver : public Source<T>
 		unsigned int channel;
 	};
 	  
-	void reset ()
-	{
-		inputs.clear();
-		delete [] buffer;
-		buffer = 0;
-		channels = 0;
-		max_frames = 0;
-	}
-	
-	void write_channel (T * data, nframes_t frames, unsigned int channel)
-	{
-		if (frames > max_frames) {
-			throw Exception ("Interleaver: too many frames given to an input");
-		}
-		
-		for (unsigned int i = 0; i < frames; ++i) {
-			buffer[channel + (channels * i)] = data[i];
-		}
-		
-		nframes_t max_frames = 0;
-		for (unsigned int i = 0; i < channels; ++i) {
-			nframes_t const frames = inputs[i]->frames();
-			if (!frames) { return; }
-			max_frames = std::max (max_frames, frames);
-		}
-		
-		for (typename Source<T>::SinkList::iterator i = Source<T>::outputs.begin(); i != Source<T>::outputs.end(); ++i) {
-			(*i)->process (buffer, max_frames);
-		}
-		
-		memset (buffer, 0, channels * max_frames);
-	}
+	void reset ();
+	void write_channel (T * data, nframes_t frames, unsigned int channel);
 	
 	typedef boost::shared_ptr<Input> InputPtr;
 	std::vector<InputPtr> inputs;
@@ -103,6 +53,8 @@ class Interleaver : public Source<T>
 	nframes_t max_frames;
 	T * buffer;
 };
+
+#include "interleaver-inl.h"
 
 } // namespace
 
