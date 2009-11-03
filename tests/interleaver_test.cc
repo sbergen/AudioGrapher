@@ -16,11 +16,14 @@ class InterleaverTest : public CppUnit::TestFixture
   public:
 	void setUp()
 	{
+		channels = 3;
 		frames = 1024;
 		random_data = Utils::init_random_data (frames, 1.0);
 
 		interleaver.reset (new Interleaver<float>());
 		sink.reset (new VectorSink<float>());
+		
+		interleaver->init (channels, frames);
 	}
 
 	void tearDown()
@@ -36,13 +39,11 @@ class InterleaverTest : public CppUnit::TestFixture
 
 	void testInvalidInputIndex()
 	{
-		interleaver->init (3, frames);
 		CPPUNIT_ASSERT_THROW (interleaver->input (3)->process (random_data, frames), Exception);
 	}
 
 	void testInvalidInputSize()
 	{
-		interleaver->init (3, frames);
 		CPPUNIT_ASSERT_THROW (interleaver->input (0)->process (random_data, frames + 1), Exception);
 		
 		interleaver->input (0)->process (random_data, frames);
@@ -56,9 +57,6 @@ class InterleaverTest : public CppUnit::TestFixture
 
 	void testOutputSize()
 	{
-		unsigned int const channels = 3;
-		interleaver->init (channels, frames);
-
 		interleaver->add_output (sink);
 
 		interleaver->input (0)->process (random_data, frames);
@@ -82,9 +80,6 @@ class InterleaverTest : public CppUnit::TestFixture
 
 	void testZeroInput()
 	{
-		unsigned int const channels = 3;
-		interleaver->init (channels, frames);
-
 		interleaver->add_output (sink);
 
 		// input zero frames to all inputs
@@ -112,6 +107,7 @@ class InterleaverTest : public CppUnit::TestFixture
 
 	boost::shared_ptr<VectorSink<float> > sink;
 
+	nframes_t channels;
 	float * random_data;
 	nframes_t frames;
 };
