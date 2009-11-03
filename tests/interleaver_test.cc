@@ -17,7 +17,7 @@ class InterleaverTest : public CppUnit::TestFixture
 	void setUp()
 	{
 		frames = 1024;
-		random_data = new float[frames];
+		random_data = Utils::init_random_data (frames, 1.0);
 
 		interleaver.reset (new Interleaver<float>());
 		sink.reset (new VectorSink<float>());
@@ -56,7 +56,8 @@ class InterleaverTest : public CppUnit::TestFixture
 
 	void testOutputSize()
 	{
-		interleaver->init (3, frames);
+		unsigned int const channels = 3;
+		interleaver->init (channels, frames);
 
 		interleaver->add_output (sink);
 
@@ -64,7 +65,7 @@ class InterleaverTest : public CppUnit::TestFixture
 		interleaver->input (1)->process (random_data, frames);
 		interleaver->input (2)->process (random_data, frames);
 
-		nframes_t expected_frames = frames * 3;
+		nframes_t expected_frames = frames * channels;
 		nframes_t generated_frames = sink->get_data().size();
 		CPPUNIT_ASSERT_EQUAL (expected_frames, generated_frames);
 
@@ -74,7 +75,7 @@ class InterleaverTest : public CppUnit::TestFixture
 		interleaver->input (1)->process (random_data, less_frames);
 		interleaver->input (2)->process (random_data, less_frames);
 
-		expected_frames = less_frames * 3;
+		expected_frames = less_frames * channels;
 		generated_frames = sink->get_data().size();
 		CPPUNIT_ASSERT_EQUAL (expected_frames, generated_frames);
 	}
