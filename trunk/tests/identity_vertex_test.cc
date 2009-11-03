@@ -13,7 +13,7 @@ class IdentityVertexTest : public CppUnit::TestFixture
 	void setUp()
 	{
 		frames = 1024;
-		random_data = new float[frames];
+		random_data = Utils::init_random_data(frames);
 
 		vertex.reset (new IdentityVertex<float>());
 		sink_a.reset (new VectorSink<float>());
@@ -30,9 +30,18 @@ class IdentityVertexTest : public CppUnit::TestFixture
 
 	void testProcess()
 	{
+		nframes_t frames_output = 0;
+		
 		vertex->process (random_data, frames);
-		CPPUNIT_ASSERT (array_equals (random_data, &sink_a->get_data()[0], frames));
-		CPPUNIT_ASSERT (array_equals (random_data, &sink_b->get_data()[0], frames));
+		
+		frames_output = sink_a->get_data().size();
+		CPPUNIT_ASSERT_EQUAL (frames, frames_output);
+		
+		frames_output = sink_b->get_data().size();
+		CPPUNIT_ASSERT_EQUAL (frames, frames_output);
+		
+		CPPUNIT_ASSERT (Utils::array_equals (random_data, &sink_a->get_data()[0], frames));
+		CPPUNIT_ASSERT (Utils::array_equals (random_data, &sink_b->get_data()[0], frames));
 	}
 
   private:
