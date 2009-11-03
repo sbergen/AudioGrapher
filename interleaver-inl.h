@@ -7,7 +7,6 @@ Interleaver<T>::init (unsigned int num_channels, nframes_t max_frames_per_channe
 	max_frames = max_frames_per_channel;
 	
 	buffer = new float[channels * max_frames];
-	memset (buffer, 0, channels * max_frames);
 	
 	for (unsigned int i = 0; i < channels; ++i) {
 		inputs.push_back (InputPtr (new Input (*this, i)));
