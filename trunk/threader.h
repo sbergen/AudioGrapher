@@ -26,6 +26,7 @@ class Threader : public Source<T>, public Sink<T>
 	  : thread_pool (thread_pool)
 	  , readers (0)
 	  , wait_timeout (wait_timeout_milliseconds)
+	  , exception (0)
 	{ }
 	
 	virtual ~Threader () {}
@@ -41,12 +42,22 @@ class Threader : public Source<T>, public Sink<T>
 	{
 		wait_mutex.lock();
 		
+		delete exception;
+		exception = 0;
+		
 		unsigned int outs = outputs.size();
 		g_atomic_int_add (&readers, outs);
 		for (unsigned int i = 0; i < outs; ++i) {
 			thread_pool.push (sigc::bind (sigc::mem_fun (this, &Threader::process_channel), data, frames, i));
 		}
 		
+		wait();
+	}
+	
+  private:
+
+	void wait()
+	{
 		Glib::TimeVal wait_time;
 		wait_time.assign_current_time();
 		wait_time.add_milliseconds(wait_timeout);
@@ -55,13 +66,22 @@ class Threader : public Source<T>, public Sink<T>
 		bool timed_out = (g_atomic_int_get (&readers) != 0);
 		wait_mutex.unlock();
 		if (timed_out) { throw Exception ("Threader: wait timed out"); }
+		
+		if (exception) {
+			throw *exception;
+		}
 	}
 	
-  private:
-
 	void process_channel(T * data, nframes_t frames, unsigned int channel)
 	{
-		outputs[channel]->process (data, frames);
+		try {
+			outputs[channel]->process (data, frames);
+		} catch (Exception & e) {
+			// Only first exception will be passed on
+			exception_mutex.lock();
+			if(!exception) { exception = e.clone(); }
+			exception_mutex.unlock();
+		}
 		
 		if (g_atomic_int_dec_and_test (&readers)) {
 			wait_cond.signal();
@@ -75,6 +95,9 @@ class Threader : public Source<T>, public Sink<T>
 	Glib::Cond  wait_cond;
 	gint        readers;
 	long        wait_timeout;
+	
+	Glib::Mutex exception_mutex;
+	Exception * exception;
 	
 	T * data;
 

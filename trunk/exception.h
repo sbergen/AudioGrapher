@@ -7,14 +7,20 @@
 namespace AudioGrapher
 {
 
-class Exception : public std::exception
+template<typename T>
+class ExceptionBase : public std::exception
 {
   public:
-	Exception (std::string const & reason)
+	ExceptionBase (std::string const & reason)
 		: reason (reason)
 	{}
 
-	~Exception () throw() { }
+	virtual ~ExceptionBase () throw() { }
+
+	T * clone() const
+	{
+		return new T (dynamic_cast<T const &>(*this));
+	}
 
 	const char* what() const throw()
 	{
@@ -25,6 +31,12 @@ class Exception : public std::exception
 
 	std::string const reason;
 
+};
+
+class Exception : public ExceptionBase<Exception>
+{
+  public:
+	Exception (std::string const & reason) : ExceptionBase<Exception> (reason) {}
 };
 
 } // namespace AudioGrapher
