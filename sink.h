@@ -11,7 +11,6 @@ namespace AudioGrapher
 template <typename T>
 class Sink  {
   public:
-	Sink () {}
 	virtual ~Sink () {}
 	
 	virtual void process (T * data, nframes_t frames) = 0;
