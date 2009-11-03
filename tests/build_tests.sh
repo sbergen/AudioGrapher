@@ -5,4 +5,5 @@ g++ -g -Wall -Wextra \
 identity_vertex_test.cc \
 interleaver_test.cc \
 deinterleaver_test.cc \
+interleaver_deinterleaver_test.cc \
 test_runner.cc

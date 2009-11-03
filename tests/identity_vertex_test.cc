@@ -40,8 +40,8 @@ class IdentityVertexTest : public CppUnit::TestFixture
 		frames_output = sink_b->get_data().size();
 		CPPUNIT_ASSERT_EQUAL (frames, frames_output);
 		
-		CPPUNIT_ASSERT (Utils::array_equals (random_data, &sink_a->get_data()[0], frames));
-		CPPUNIT_ASSERT (Utils::array_equals (random_data, &sink_b->get_data()[0], frames));
+		CPPUNIT_ASSERT (Utils::array_equals (random_data, sink_a->get_array(), frames));
+		CPPUNIT_ASSERT (Utils::array_equals (random_data, sink_b->get_array(), frames));
 	}
 
   private:
