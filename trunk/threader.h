@@ -38,6 +38,7 @@ class Threader : public Source<T>, public Sink<T>
 		
 		wait_mutex.lock();
 		wait_cond.wait(wait_mutex);
+		wait_mutex.unlock();
 	}
 	
   private:
