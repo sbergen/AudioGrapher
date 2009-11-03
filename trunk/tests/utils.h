@@ -53,6 +53,7 @@ class VectorSink : public AudioGrapher::Sink<T>
 	}
 
 	std::vector<T> const & get_data() const { return data; }
+	T const * get_array() const { return &data[0]; }
 
   private:
 	std::vector<T> data;
