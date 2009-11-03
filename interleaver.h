@@ -26,12 +26,12 @@ class Interleaver : public ListedSource<T>
 	{
 	  public:
 		Input (Interleaver & parent, unsigned int channel)
-		  : parent (parent), channel (channel) {}
+		  : frames_written (0), parent (parent), channel (channel) {}
 		
 		void process (T * data, nframes_t frames)
 		{
-			parent.write_channel (data, frames, channel);
 			frames_written = frames;
+			parent.write_channel (data, frames, channel);
 		}
 		
 		nframes_t frames() { return frames_written; }
@@ -45,7 +45,9 @@ class Interleaver : public ListedSource<T>
 	  
 	void reset ();
 	void write_channel (T * data, nframes_t frames, unsigned int channel);
-	
+	nframes_t ready_to_output();
+	void output();	
+
 	typedef boost::shared_ptr<Input> InputPtr;
 	std::vector<InputPtr> inputs;
 	
