@@ -1,6 +1,5 @@
 #include "utils.h"
 #include "../interleaver.h"
-#include "../identity_vertex.h"
 
 using namespace AudioGrapher;
 
@@ -11,6 +10,7 @@ class InterleaverTest : public CppUnit::TestFixture
   CPPUNIT_TEST (testInvalidInputIndex);
   CPPUNIT_TEST (testInvalidInputSize);
   CPPUNIT_TEST (testOutputSize);
+  CPPUNIT_TEST (testZeroInput);
   CPPUNIT_TEST_SUITE_END ();
 
   public:
@@ -31,7 +31,7 @@ class InterleaverTest : public CppUnit::TestFixture
 	void testUninitialized()
 	{
 		interleaver.reset (new Interleaver<float>());
-		CPPUNIT_ASSERT_THROW (interleaver->input(0)->process (random_data, frames), Exception);		
+		CPPUNIT_ASSERT_THROW (interleaver->input(0)->process (random_data, frames), Exception);
 	}
 
 	void testInvalidInputIndex()
@@ -77,6 +77,32 @@ class InterleaverTest : public CppUnit::TestFixture
 
 		expected_frames = less_frames * channels;
 		generated_frames = sink->get_data().size();
+		CPPUNIT_ASSERT_EQUAL (expected_frames, generated_frames);
+	}
+
+	void testZeroInput()
+	{
+		unsigned int const channels = 3;
+		interleaver->init (channels, frames);
+
+		interleaver->add_output (sink);
+
+		// input zero frames to all inputs
+		
+		interleaver->input (0)->process (random_data, 0);
+		interleaver->input (1)->process (random_data, 0);
+		interleaver->input (2)->process (random_data, 0);
+		
+		// NOTE zero input is allowed to be a NOP
+		
+		// ...now test regular input
+		
+		interleaver->input (0)->process (random_data, frames);
+		interleaver->input (1)->process (random_data, frames);
+		interleaver->input (2)->process (random_data, frames);
+
+		nframes_t expected_frames = frames * channels;
+		nframes_t generated_frames = sink->get_data().size();
 		CPPUNIT_ASSERT_EQUAL (expected_frames, generated_frames);
 	}
 

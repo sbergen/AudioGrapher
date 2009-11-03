@@ -13,6 +13,10 @@ class Sink  {
   public:
 	virtual ~Sink () {}
 	
+	/** Process given data
+	 *  \param data pointer to an array of data to process
+	 *  \param frames number of frames in data. process() is allowed to be a NOP when frames == 0
+	 */
 	virtual void process (T * data, nframes_t frames) = 0;
 };
 
