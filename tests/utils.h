@@ -9,6 +9,7 @@
 // includes used in this file
 
 #include "../sink.h"
+#include "../exception.h"
 
 #include <vector>
 #include <cstring>
@@ -58,6 +59,16 @@ class VectorSink : public AudioGrapher::Sink<T>
   private:
 	std::vector<T> data;
 
+};
+
+template<typename T>
+class ThrowingSink : public AudioGrapher::Sink<T>
+{
+  public:
+	void process (T *, nframes_t)
+	{
+		throw AudioGrapher::Exception("ThrowingSink threw!");
+	}
 };
 
 #endif // AUDIOGRAPHER_TESTS_UTILS_H
