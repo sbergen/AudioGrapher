@@ -17,6 +17,9 @@ class Interleaver : public ListedSource<T>
 {
   public: 
 	
+	Interleaver() : buffer (0) {}
+	~Interleaver() { reset(); }
+	
 	void init (unsigned int num_channels, nframes_t max_frames_per_channel);
 	typename Source<T>::SinkPtr input (unsigned int channel);
 	

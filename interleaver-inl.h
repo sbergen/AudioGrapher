@@ -6,7 +6,7 @@ Interleaver<T>::init (unsigned int num_channels, nframes_t max_frames_per_channe
 	channels = num_channels;
 	max_frames = max_frames_per_channel;
 	
-	buffer = new float[channels * max_frames];
+	buffer = new T[channels * max_frames];
 	
 	for (unsigned int i = 0; i < channels; ++i) {
 		inputs.push_back (InputPtr (new Input (*this, i)));
@@ -17,6 +17,8 @@ template<typename T>
 typename Source<T>::SinkPtr
 Interleaver<T>::input (unsigned int channel)
 {
+	if (!buffer) { throw Exception (this, "input() called when not initialzed"); }
+	
 	if (channel >= channels) {
 		throw Exception (*this, "Channel out of range");
 	}
