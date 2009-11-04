@@ -7,7 +7,6 @@
 namespace AudioGrapher
 {
 
-template<typename T>
 class ExceptionBase : public std::exception
 {
   public:
@@ -17,26 +16,25 @@ class ExceptionBase : public std::exception
 
 	virtual ~ExceptionBase () throw() { }
 
-	T * clone() const
-	{
-		return new T (dynamic_cast<T const &>(*this));
-	}
+	/// Return a pointer to deriving class. This must be overriden by deriving classes!
+	virtual ExceptionBase * clone() const throw() { return new ExceptionBase (reason); }
 
 	const char* what() const throw()
 	{
 		return reason.c_str();
 	}
 
-  private:
+  protected:
 
 	std::string const reason;
 
 };
 
-class Exception : public ExceptionBase<Exception>
+class Exception : public ExceptionBase
 {
   public:
-	Exception (std::string const & reason) : ExceptionBase<Exception> (reason) {}
+	Exception (std::string const & reason) : ExceptionBase ("LibAudioGraph: " + reason) {}
+	ExceptionBase * clone() const throw() { return new Exception (reason); }
 };
 
 } // namespace AudioGrapher
