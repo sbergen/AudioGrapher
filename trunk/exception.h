@@ -32,8 +32,12 @@ class Exception : public std::exception
 	{
 #ifdef __GNUC__
 		int status;
-		char const * res = abi::__cxa_demangle (typeid(obj).name(), 0, 0, &status);
-		if (status == 0) { return res; }
+		char * res = abi::__cxa_demangle (typeid(obj).name(), 0, 0, &status);
+		if (status == 0) {
+			std::string s(res);
+			free (res);
+			return s;
+		}
 #endif
 		return typeid(obj).name();
 	}

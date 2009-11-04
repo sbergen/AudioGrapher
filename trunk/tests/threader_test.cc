@@ -38,6 +38,8 @@ class ThreaderTest : public CppUnit::TestFixture
 	{
 		delete [] random_data;
 		delete [] zero_data;
+		
+		thread_pool->shutdown();
 		delete thread_pool;
 	}
 
