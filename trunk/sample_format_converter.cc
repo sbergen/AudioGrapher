@@ -85,7 +85,7 @@ SampleFormatConverter<TOut>::process (float * data, nframes_t frames)
 
 	size_t data_size = channels * frames;
 	if (data_size  > data_out_size) {
-		throw Exception ("SampleFormatConverter: too many frames given to process()");
+		throw Exception (*this, "SampleFormatConverter: too many frames given to process()");
 	}
 
 	/* Do conversion */

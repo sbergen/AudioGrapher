@@ -35,7 +35,7 @@ SampleRateConverter::init (nframes_t in_rate, nframes_t out_rate, int quality)
 	active = true;
 	int err;
 	if ((src_state = src_new (quality, channels, &err)) == 0) {
-		throw Exception (str (format ("SampleRateConverter Cannot initialize sample rate converter: %1%") % src_strerror (err)));
+		throw Exception (*this, str (format ("Cannot initialize sample rate converter: %1%") % src_strerror (err)));
 	}
 
 	src_data.src_ratio = out_rate / (double) in_rate;
@@ -59,7 +59,7 @@ SampleRateConverter::allocate_buffers (nframes_t max_frames)
 		max_leftover_frames = 4 * max_frames;
 		leftover_data = (float *) realloc (leftover_data, max_leftover_frames * channels * sizeof (float));
 		if (!leftover_data) {
-			throw Exception ("SampleRateConverter: A memory allocation error occured");
+			throw Exception (*this, "A memory allocation error occured");
 		}
 
 		max_frames_in = max_frames;
@@ -78,7 +78,7 @@ SampleRateConverter::process (float * in, nframes_t frames)
 	}
 
 	if (frames > max_frames_in) {
-		throw Exception ("SampleRateConverter::process called with too many frames");
+		throw Exception (*this, "process() called with too many frames");
 	}
 
 	int err;
@@ -119,14 +119,14 @@ SampleRateConverter::process (float * in, nframes_t frames)
 		first_time = false;
 
 		if ((err = src_process (src_state, &src_data)) != 0) {
-			throw Exception (str (format ("SampleRateConverter: An error occured during sample rate conversion: %1%") % src_strerror (err)));
+			throw Exception (*this, str (format ("An error occured during sample rate conversion: %1%") % src_strerror (err)));
 		}
 
 		leftover_frames = src_data.input_frames - src_data.input_frames_used;
 
 		if (leftover_frames > 0) {
 			if (leftover_frames > max_leftover_frames) {
-				throw Exception("SampleRateConverter: leftover frames overflowed");
+				throw Exception(*this, "leftover frames overflowed");
 			}
 			memmove (leftover_data, (char *) (src_data.data_in + (src_data.input_frames_used * channels)),
 					leftover_frames * channels * sizeof(float));

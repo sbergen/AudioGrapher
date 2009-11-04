@@ -25,11 +25,11 @@ SndfileWriterBase::SndfileWriterBase (int channels, nframes_t samplerate, int fo
 	sf_info.format = format;
 
 	if (!sf_format_check (&sf_info)) {
-		throw Exception ("Invalid format given for SndfileWriter!");
+		throw Exception (*this, "Invalid format in constructor");
 	}
 
 	if (path.length() == 0) {
-		throw Exception ("No output file specified for SndFileWriter");
+		throw Exception (*this, "No output file specified");
 	}
 
 	/* TODO add checks that the directory path exists, and also
@@ -40,12 +40,12 @@ SndfileWriterBase::SndfileWriterBase (int channels, nframes_t samplerate, int fo
 	if (path.compare ("temp")) {
 		if ((sndfile = sf_open (path.c_str(), SFM_WRITE, &sf_info)) == 0) {
 			sf_error_str (0, errbuf, sizeof (errbuf) - 1);
-			throw Exception (str (boost::format ("Cannot open output file \"%1%\" for SndFileWriter (%2%)") % path % errbuf));
+			throw Exception (*this, str (boost::format ("Cannot open output file \"%1%\" (%2%)") % path % errbuf));
 		}
 	} else {
 		FILE * file;
 		if (!(file = tmpfile ())) {
-			throw Exception ("Cannot open tempfile");
+			throw Exception (*this, "Cannot open tempfile");
 		}
 		sndfile = sf_open_fd (fileno(file), SFM_RDWR, &sf_info, true);
 	}
@@ -95,7 +95,7 @@ SndfileWriter<T>::process (T * data, nframes_t frames)
 	nframes_t written = (*process_func) (sndfile, data, frames);
 	if (written != frames) {
 		sf_error_str (sndfile, errbuf, sizeof (errbuf) - 1);
-		throw Exception (str ( format("Could not write data to output file (%1%)") % errbuf));
+		throw Exception (*this, str ( format("Could not write data to output file (%1%)") % errbuf));
 	}
 
 	if (end_of_input) {

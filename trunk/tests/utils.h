@@ -67,7 +67,7 @@ class ThrowingSink : public AudioGrapher::Sink<T>
   public:
 	void process (T *, nframes_t)
 	{
-		throw AudioGrapher::Exception("ThrowingSink threw!");
+		throw AudioGrapher::Exception(*this, "ThrowingSink threw!");
 	}
 };
 

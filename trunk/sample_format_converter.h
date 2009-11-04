@@ -8,6 +8,8 @@
 namespace AudioGrapher
 {
 
+
+
 template <typename TOut>
 class SampleFormatConverter : public Sink<float>, public ListedSource<TOut>
 {

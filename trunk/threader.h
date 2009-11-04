@@ -3,6 +3,8 @@
 
 #include <glibmm/threadpool.h>
 #include <sigc++/slot.h>
+#include <boost/format.hpp>
+
 #include <glib.h>
 #include <vector>
 #include <algorithm>
@@ -13,6 +15,17 @@
 
 namespace AudioGrapher
 {
+
+class ThreaderException : public Exception
+{
+  public:
+	template<typename T>
+	ThreaderException (T const & thrower, std::exception const & e)
+		: Exception (thrower,
+			boost::str ( boost::format
+			("\n\t- Dynamic type: %1%\n\t- what(): %2%") % name (e) % e.what() ))
+	{ }
+};
 
 template <typename T>
 class Threader : public Source<T>, public Sink<T>
@@ -26,7 +39,6 @@ class Threader : public Source<T>, public Sink<T>
 	  : thread_pool (thread_pool)
 	  , readers (0)
 	  , wait_timeout (wait_timeout_milliseconds)
-	  , exception (0)
 	{ }
 	
 	virtual ~Threader () {}
@@ -42,8 +54,7 @@ class Threader : public Source<T>, public Sink<T>
 	{
 		wait_mutex.lock();
 		
-		delete exception;
-		exception = 0;
+		exception.reset();
 		
 		unsigned int outs = outputs.size();
 		g_atomic_int_add (&readers, outs);
@@ -65,7 +76,7 @@ class Threader : public Source<T>, public Sink<T>
 		wait_cond.timed_wait(wait_mutex, wait_time);
 		bool timed_out = (g_atomic_int_get (&readers) != 0);
 		wait_mutex.unlock();
-		if (timed_out) { throw Exception ("Threader: wait timed out"); }
+		if (timed_out) { throw Exception (*this, "wait timed out"); }
 		
 		if (exception) {
 			throw *exception;
@@ -76,10 +87,10 @@ class Threader : public Source<T>, public Sink<T>
 	{
 		try {
 			outputs[channel]->process (data, frames);
-		} catch (ExceptionBase & e) {
+		} catch (std::exception const & e) {
 			// Only first exception will be passed on
 			exception_mutex.lock();
-			if(!exception) { exception = e.clone(); }
+			if(!exception) { exception.reset (new ThreaderException (*this, e)); }
 			exception_mutex.unlock();
 		}
 		
@@ -97,7 +108,7 @@ class Threader : public Source<T>, public Sink<T>
 	long        wait_timeout;
 	
 	Glib::Mutex exception_mutex;
-	ExceptionBase * exception;
+	boost::shared_ptr<ThreaderException> exception;
 	
 	T * data;
 

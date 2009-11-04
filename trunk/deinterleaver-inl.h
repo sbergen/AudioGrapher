@@ -24,7 +24,7 @@ typename DeInterleaver<T>::SourcePtr
 DeInterleaver<T>::output (unsigned int channel)
 {
 	if (channel >= channels) {
-		throw Exception ("DeInterleaver channel out of range");
+		throw Exception (*this, "channel out of range");
 	}
 	
 	return boost::static_pointer_cast<Source<T> > (outputs[channel]);
@@ -39,11 +39,11 @@ DeInterleaver<T>::process (T * data, nframes_t frames)
 	nframes_t const  frames_per_channel = frames / channels;
 	
 	if (frames % channels != 0) {
-		throw Exception ("DeInterleaver: wrong amount of frames given to process()");
+		throw Exception (*this, "wrong amount of frames given to process()");
 	}
 	
 	if (frames_per_channel > max_frames) {
-		throw Exception ("DeInterleaver: too many frames given to process()");
+		throw Exception (*this, "too many frames given to process()");
 	}
 	
 	unsigned int channel = 0;

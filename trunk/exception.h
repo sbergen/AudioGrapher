@@ -3,38 +3,44 @@
 
 #include <exception>
 #include <string>
+#include <cxxabi.h>
+
+#include <boost/format.hpp>
 
 namespace AudioGrapher
 {
 
-class ExceptionBase : public std::exception
+class Exception : public std::exception
 {
   public:
-	ExceptionBase (std::string const & reason)
-		: reason (reason)
+	template<typename T>
+	Exception (T const & thrower, std::string const & reason)
+	  : reason (boost::str (boost::format (
+			"Exception thrown by %1%: %2%") % name (thrower) % reason))
 	{}
 
-	virtual ~ExceptionBase () throw() { }
-
-	/// Return a pointer to deriving class. This must be overriden by deriving classes!
-	virtual ExceptionBase * clone() const throw() { return new ExceptionBase (reason); }
+	virtual ~Exception () throw() { }
 
 	const char* what() const throw()
 	{
 		return reason.c_str();
 	}
-
+	
   protected:
+	template<typename T>
+	std::string name (T const & obj)
+	{
+#ifdef __GNUC__
+		int status;
+		char const * res = abi::__cxa_demangle (typeid(obj).name(), 0, 0, &status);
+		if (status == 0) { return res; }
+#endif
+		return typeid(obj).name();
+	}
 
+  private:
 	std::string const reason;
 
-};
-
-class Exception : public ExceptionBase
-{
-  public:
-	Exception (std::string const & reason) : ExceptionBase ("LibAudioGraph: " + reason) {}
-	ExceptionBase * clone() const throw() { return new Exception (reason); }
 };
 
 } // namespace AudioGrapher
