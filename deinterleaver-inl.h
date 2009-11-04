@@ -12,7 +12,7 @@ DeInterleaver<T>::init (unsigned int num_channels, nframes_t max_frames_per_chan
 	reset();
 	channels = num_channels;
 	max_frames = max_frames_per_channel;
-	buffer = new float[max_frames];
+	buffer = new T[max_frames];
 	
 	for (unsigned int i = 0; i < channels; ++i) {
 		outputs.push_back (OutputPtr (new IdentityVertex<T>));
