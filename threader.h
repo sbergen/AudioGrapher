@@ -76,7 +76,7 @@ class Threader : public Source<T>, public Sink<T>
 	{
 		try {
 			outputs[channel]->process (data, frames);
-		} catch (Exception & e) {
+		} catch (ExceptionBase & e) {
 			// Only first exception will be passed on
 			exception_mutex.lock();
 			if(!exception) { exception = e.clone(); }
@@ -97,7 +97,7 @@ class Threader : public Source<T>, public Sink<T>
 	long        wait_timeout;
 	
 	Glib::Mutex exception_mutex;
-	Exception * exception;
+	ExceptionBase * exception;
 	
 	T * data;
 
