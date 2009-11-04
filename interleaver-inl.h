@@ -18,7 +18,7 @@ typename Source<T>::SinkPtr
 Interleaver<T>::input (unsigned int channel)
 {
 	if (channel >= channels) {
-		throw Exception ("Interleaver channel out of range");
+		throw Exception (*this, "Channel out of range");
 	}
 	
 	return boost::static_pointer_cast<Sink<T> > (inputs[channel]);
@@ -40,7 +40,7 @@ void
 Interleaver<T>::write_channel (T * data, nframes_t frames, unsigned int channel)
 {
 	if (frames > max_frames) {
-		throw Exception ("Interleaver: too many frames given to an input");
+		throw Exception (*this, "Too many frames given to an input");
 	}
 	
 	for (unsigned int i = 0; i < frames; ++i) {
@@ -68,7 +68,7 @@ Interleaver<T>::ready_to_output ()
 		if (!frames) { return 0; }
 		if (frames != ready_frames) {
 			init (channels, max_frames);
-			throw Exception ("Interleaver frames count out of sync");
+			throw Exception (*this, "Frames count out of sync");
 		}
 	}
 	return ready_frames * channels;
