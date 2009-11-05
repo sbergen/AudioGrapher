@@ -17,7 +17,7 @@ class SampleRateConverter : public ListedSource<float>, public Sink<float>
 	~SampleRateConverter ();
 
 	// not RT safe
-	void init (nframes_t in_rate, nframes_t out_rate, int quality);
+	void init (nframes_t in_rate, nframes_t out_rate, int quality = 0);
 	
 	// returns max amount of frames that will be output
 	nframes_t allocate_buffers (nframes_t max_frames);

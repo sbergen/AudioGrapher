@@ -83,7 +83,6 @@ SampleRateConverter::process (float * in, nframes_t frames)
 
 	int err;
 	bool first_time = true;
-	nframes_t frames_out_total = 0;
 
 	do {
 		src_data.output_frames = data_out_size / channels;
