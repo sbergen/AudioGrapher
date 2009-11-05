@@ -3,7 +3,7 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include "types.h"
+#include "process_context.h"
 
 namespace AudioGrapher
 {
@@ -13,11 +13,24 @@ class Sink  {
   public:
 	virtual ~Sink () {}
 	
+	/** Process given data.
+	  * The data can not be modified, so in-place processing is not allowed.
+	  * At least this function must be implemented by deriving classes
+	  */
+	virtual void process (ProcessContext<T> const & context) = 0;
+	
 	/** Process given data
-	 *  \param data pointer to an array of data to process
-	 *  \param frames number of frames in data. process() is allowed to be a NOP when frames == 0
-	 */
-	virtual void process (T * data, nframes_t frames) = 0;
+	  * Data may be modified, so in place processing is allowed.
+	  * The default implementation calls the non-modifying version,
+	  * so this function does not need to be overriden by deriving classes.
+	  * However, if the sink can do in-place processing, overriding this is highly recommended!
+	  */
+	virtual void process (ProcessContext<T> & context) { process (const_cast<ProcessContext<T> const> (context)); }
+	
+	// TODO: This is to be replaced by the versions above!
+	virtual void process (T * data, nframes_t frames);
+	  
+	
 };
 
 } // namespace
