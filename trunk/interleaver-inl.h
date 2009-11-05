@@ -1,4 +1,11 @@
 template<typename T>
+Interleaver<T>::Interleaver()
+  : channels (0)
+  , max_frames (0)
+  , buffer (0)
+{}
+
+template<typename T>
 void
 Interleaver<T>::init (unsigned int num_channels, nframes_t max_frames_per_channel)
 {
@@ -17,13 +24,21 @@ template<typename T>
 typename Source<T>::SinkPtr
 Interleaver<T>::input (unsigned int channel)
 {
-	if (!buffer) { throw Exception (this, "input() called when not initialzed"); }
-	
 	if (channel >= channels) {
 		throw Exception (*this, "Channel out of range");
 	}
 	
 	return boost::static_pointer_cast<Sink<T> > (inputs[channel]);
+}
+
+template<typename T>
+void
+Interleaver<T>::reset_channels ()
+{
+	for (unsigned int i = 0; i < channels; ++i) {
+		inputs[i]->reset();
+	}
+
 }
 
 template<typename T>
@@ -42,6 +57,7 @@ void
 Interleaver<T>::write_channel (T * data, nframes_t frames, unsigned int channel)
 {
 	if (frames > max_frames) {
+		reset_channels();
 		throw Exception (*this, "Too many frames given to an input");
 	}
 	
@@ -52,9 +68,7 @@ Interleaver<T>::write_channel (T * data, nframes_t frames, unsigned int channel)
 	nframes_t const ready_frames = ready_to_output();
 	if (ready_frames) {
 		ListedSource<T>::output (buffer, ready_frames);
-		for (unsigned int i = 0; i < channels; ++i) {
-			inputs[i]->reset();
-		}
+		reset_channels ();
 	}
 }
 

@@ -17,7 +17,7 @@ class Interleaver : public ListedSource<T>
 {
   public: 
 	
-	Interleaver() : buffer (0) {}
+	Interleaver();
 	~Interleaver() { reset(); }
 	
 	void init (unsigned int num_channels, nframes_t max_frames_per_channel);
@@ -33,6 +33,7 @@ class Interleaver : public ListedSource<T>
 		
 		void process (T * data, nframes_t frames)
 		{
+			if (frames_written) { throw Exception (*this, "Input channels out of sync"); }
 			frames_written = frames;
 			parent.write_channel (data, frames, channel);
 		}
@@ -47,6 +48,7 @@ class Interleaver : public ListedSource<T>
 	};
 	  
 	void reset ();
+	void reset_channels ();
 	void write_channel (T * data, nframes_t frames, unsigned int channel);
 	nframes_t ready_to_output();
 	void output();	

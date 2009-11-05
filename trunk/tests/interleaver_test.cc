@@ -11,6 +11,7 @@ class InterleaverTest : public CppUnit::TestFixture
   CPPUNIT_TEST (testInvalidInputSize);
   CPPUNIT_TEST (testOutputSize);
   CPPUNIT_TEST (testZeroInput);
+  CPPUNIT_TEST (testChannelSync);
   CPPUNIT_TEST_SUITE_END ();
 
   public:
@@ -99,6 +100,13 @@ class InterleaverTest : public CppUnit::TestFixture
 		nframes_t expected_frames = frames * channels;
 		nframes_t generated_frames = sink->get_data().size();
 		CPPUNIT_ASSERT_EQUAL (expected_frames, generated_frames);
+	}
+
+	void testChannelSync()
+	{
+		interleaver->add_output (sink);
+		interleaver->input (0)->process (random_data, frames);		
+		CPPUNIT_ASSERT_THROW (interleaver->input (0)->process (random_data, frames), Exception);		
 	}
 
 
