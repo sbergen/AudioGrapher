@@ -15,7 +15,7 @@ class ThreaderTest : public CppUnit::TestFixture
   public:
 	void setUp()
 	{
-		frames = 1024;
+		frames = 128;
 		random_data = Utils::init_random_data (frames, 1.0);
 		
 		zero_data = new float[frames];

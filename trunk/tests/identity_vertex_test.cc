@@ -14,7 +14,7 @@ class IdentityVertexTest : public CppUnit::TestFixture
   public:
 	void setUp()
 	{
-		frames = 1024;
+		frames = 128;
 		random_data = Utils::init_random_data(frames);
 		
 		zero_data = new float[frames];
