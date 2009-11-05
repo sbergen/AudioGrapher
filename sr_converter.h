@@ -24,7 +24,7 @@ class SampleRateConverter : public ListedSource<float>, public Sink<float>
 	
 	// should be RT safe (check libsamplerate to be sure)
 	void process (float * data, nframes_t frames);
-	void set_end_of_input () { src_data.end_of_input = true; }
+	void set_end_of_input ();
 
   private:
 

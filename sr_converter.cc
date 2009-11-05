@@ -5,6 +5,15 @@
 #include <cstring>
 #include <boost/format.hpp>
 
+#define ENABLE_DEBUG 0
+
+#if ENABLE_DEBUG
+	#include <iostream>
+	#define DEBUG(str) std::cout << str << std::endl;
+#else
+	#define DEBUG(str)
+#endif
+
 namespace AudioGrapher
 {
 using boost::format;
@@ -38,7 +47,7 @@ SampleRateConverter::init (nframes_t in_rate, nframes_t out_rate, int quality)
 		throw Exception (*this, str (format ("Cannot initialize sample rate converter: %1%") % src_strerror (err)));
 	}
 
-	src_data.src_ratio = out_rate / (double) in_rate;
+	src_data.src_ratio = (double) out_rate / (double) in_rate;
 }
 
 SampleRateConverter::~SampleRateConverter ()
@@ -133,8 +142,20 @@ SampleRateConverter::process (float * in, nframes_t frames)
 
 		output (data_out, src_data.output_frames_gen);
 
+		DEBUG ("src_data.output_frames_gen: " << src_data.output_frames_gen << ", leftover_frames: " << leftover_frames);
+
 	} while (leftover_frames > frames);
 }
+
+void SampleRateConverter::set_end_of_input ()
+{
+	src_data.end_of_input = true;
+	
+	float dummy;
+	process (&dummy, 0);
+	process (&dummy, 0);
+}
+
 
 void SampleRateConverter::reset ()
 {
