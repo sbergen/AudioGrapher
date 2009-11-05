@@ -18,7 +18,7 @@ class InterleaverTest : public CppUnit::TestFixture
 	void setUp()
 	{
 		channels = 3;
-		frames = 1024;
+		frames = 128;
 		random_data = Utils::init_random_data (frames, 1.0);
 
 		interleaver.reset (new Interleaver<float>());
