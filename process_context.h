@@ -28,7 +28,7 @@ class ProcessContext  {
 	
 	enum Flags {
 		EndOfInput
-	}
+	};
 	
 	bool has_flag (Flag flag) const { return _flags.find (flag) != _flags.end(); }
 	bool set_flag (Flag flag) const { return _flags.insert (flag).second; }

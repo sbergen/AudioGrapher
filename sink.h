@@ -17,7 +17,7 @@ class Sink  {
 	  * The data can not be modified, so in-place processing is not allowed.
 	  * At least this function must be implemented by deriving classes
 	  */
-	virtual void process (ProcessContext<T> const & context) = 0;
+	virtual void process (ProcessContext<T> const & /*context*/) {} // TODO make this pure vurtual
 	
 	/** Process given data
 	  * Data may be modified, so in place processing is allowed.
@@ -25,12 +25,10 @@ class Sink  {
 	  * so this function does not need to be overriden by deriving classes.
 	  * However, if the sink can do in-place processing, overriding this is highly recommended!
 	  */
-	virtual void process (ProcessContext<T> & context) { process (const_cast<ProcessContext<T> const> (context)); }
+	virtual void process (ProcessContext<T> & context) { process (const_cast<ProcessContext<T> const &> (context)); }
 	
 	// TODO: This is to be replaced by the versions above!
-	virtual void process (T * data, nframes_t frames);
-	  
-	
+	virtual void process (T * data, nframes_t frames) = 0;	
 };
 
 } // namespace
