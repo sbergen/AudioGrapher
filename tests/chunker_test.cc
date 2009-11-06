@@ -1,5 +1,5 @@
 #include "utils.h"
-#include "../chunker.h"
+#include "audiographer/chunker.h"
 
 #include <cassert>
 
@@ -105,7 +105,6 @@ class ChunkerTest : public CppUnit::TestFixture
 	boost::shared_ptr<VectorSink<float> > sink;
 
 	float * random_data;
-	float * zero_data;
 	nframes_t frames;
 };
 

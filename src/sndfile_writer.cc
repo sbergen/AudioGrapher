@@ -1,5 +1,5 @@
-#include "sndfile_writer.h"
-#include "exception.h"
+#include "audiographer/sndfile_writer.h"
+#include "audiographer/exception.h"
 
 #include <string.h>
 

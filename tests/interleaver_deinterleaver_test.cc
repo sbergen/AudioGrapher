@@ -1,6 +1,6 @@
 #include "utils.h"
-#include "../interleaver.h"
-#include "../deinterleaver.h"
+#include "audiographer/interleaver.h"
+#include "audiographer/deinterleaver.h"
 
 using namespace AudioGrapher;
 

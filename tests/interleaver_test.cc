@@ -1,5 +1,5 @@
 #include "utils.h"
-#include "../interleaver.h"
+#include "audiographer/interleaver.h"
 
 using namespace AudioGrapher;
 
