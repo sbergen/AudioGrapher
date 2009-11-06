@@ -1,5 +1,5 @@
 #include "utils.h"
-#include "../threader.h"
+#include "audiographer/threader.h"
 
 using namespace AudioGrapher;
 

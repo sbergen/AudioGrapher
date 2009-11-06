@@ -29,11 +29,6 @@ class ListedSource : public Source<T>
 		}
 	}
 	
-	void output (ProcessContext<T> & c)
-	{
-		output (const_cast<ProcessContext<T> const &> (c));
-	}
-	
 	void output (T * data, nframes_t frames)
 	{
 		for (typename SinkList::iterator i = outputs.begin(); i != outputs.end(); ++i) {

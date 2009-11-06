@@ -1,5 +1,5 @@
-#include "sr_converter.h"
-#include "exception.h"
+#include "audiographer/sr_converter.h"
+#include "audiographer/exception.h"
 
 #include <cmath>
 #include <cstring>

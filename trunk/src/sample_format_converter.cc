@@ -1,4 +1,4 @@
-#include "sample_format_converter.h"
+#include "audiographer/sample_format_converter.h"
 
 /* see gdither.cc for why we have to do this */
 
@@ -19,7 +19,7 @@
 #include <cstring>
 
 #include "gdither/gdither.h"
-#include "exception.h"
+#include "audiographer/exception.h"
 
 namespace AudioGrapher
 {
@@ -153,11 +153,11 @@ template<>
 void
 SampleFormatConverter<float>::process (ProcessContext<float> const & c_in)
 {
+	// Make copy of data and pass it to non-const version
 	nframes_t frames = c_in.frames();
 	check_frame_count (frames);
-	
-	// Make copy of data and pass it to non-const version
 	memcpy (data_out, c_in.data(), frames * sizeof(float));
+	
 	ProcessContext<float> c (data_out, frames);
 	process (c);
 }

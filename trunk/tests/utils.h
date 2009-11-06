@@ -8,8 +8,8 @@
 
 // includes used in this file
 
-#include "../sink.h"
-#include "../exception.h"
+#include "audiographer/sink.h"
+#include "audiographer/exception.h"
 
 #include <vector>
 #include <cstring>
@@ -51,6 +51,12 @@ class VectorSink : public AudioGrapher::Sink<T>
 	{
 		data.resize (frames);
 		memcpy (&data[0], in, frames * sizeof(T));
+	}
+	
+	virtual void process (AudioGrapher::ProcessContext<T> const & c)
+	{
+		data.resize (c.frames());
+		memcpy (&data[0], c.data(), c.frames() * sizeof(T));
 	}
 
 	std::vector<T> const & get_data() const { return data; }
