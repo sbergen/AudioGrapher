@@ -22,6 +22,18 @@ class ListedSource : public Source<T>
 	typedef std::list<typename Source<T>::SinkPtr> SinkList;
 	
 	/// Helper for derived classes
+	void output (ProcessContext<T> const & c)
+	{
+		for (typename SinkList::iterator i = outputs.begin(); i != outputs.end(); ++i) {
+			(*i)->process (c);
+		}
+	}
+	
+	void output (ProcessContext<T> & c)
+	{
+		output (const_cast<ProcessContext<T> const &> (c));
+	}
+	
 	void output (T * data, nframes_t frames)
 	{
 		for (typename SinkList::iterator i = outputs.begin(); i != outputs.end(); ++i) {

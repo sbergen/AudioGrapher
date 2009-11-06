@@ -22,18 +22,25 @@ class SampleFormatConverter : public Sink<float>, public ListedSource<TOut>
 		D_Shaped = GDitherShaped
 	};
 	
-	
 	SampleFormatConverter (uint32_t channels, DitherType type = D_None, int data_width = 0);
 	~SampleFormatConverter ();
-
 	
+	/** Set whether or not clipping to [-1.0, 1.0] should occur when TOut = float */
 	void set_clip_floats (bool yn) { clip_floats = yn; }
+	
+	/** Allocate buffers for processing a maximum of @a max_frames at a time.
+	  * @note If the non-const version of process() is used with floats,
+	  *       there is no need to call this function.
+	  */
 	void alloc_buffers (nframes_t max_frames);
 
 	// Should be RT safe, check gdither
-	void process (float * data, nframes_t frames);
+	void process (ProcessContext<float> const & c_in);
+	void process (ProcessContext<float> & c_in);
 
   private:
+	void check_frame_count(nframes_t frames);
+
 	uint32_t     channels;
 	int          data_width;
 	GDither      dither;
