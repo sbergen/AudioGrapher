@@ -16,6 +16,7 @@
 #include <inttypes.h>
 #include <float.h>
 #include <climits>
+#include <cstring>
 
 #include "gdither/gdither.h"
 #include "exception.h"
@@ -67,26 +68,22 @@ template <typename TOut>
 void
 SampleFormatConverter<TOut>::alloc_buffers (nframes_t max_frames)
 {
-	size_t data_size = channels * max_frames;
-	if (data_size  > data_out_size) {
+	if (max_frames  > data_out_size) {
 
 		delete[] data_out;
 
-		data_out = new TOut[data_size];
-		data_out_size = data_size;
+		data_out = new TOut[max_frames];
+		data_out_size = max_frames;
 	}
 }
 
 template <typename TOut>
 void
-SampleFormatConverter<TOut>::process (float * data, nframes_t frames)
+SampleFormatConverter<TOut>::process (ProcessContext<float> const & c_in)
 {
-	/* Make sure we have enough memory allocated */
-
-	size_t data_size = channels * frames;
-	if (data_size  > data_out_size) {
-		throw Exception (*this, "SampleFormatConverter: too many frames given to process()");
-	}
+	float const * data = c_in.data();
+	nframes_t frames = c_in.frames();
+	check_frame_count (frames);
 
 	/* Do conversion */
 
@@ -97,7 +94,6 @@ SampleFormatConverter<TOut>::process (float * data, nframes_t frames)
 	} else {
 		for (uint32_t chn = 0; chn < channels; ++chn) {
 
-			TOut * ob = data_out;
 			const double int_max = (float) INT_MAX;
 			const double int_min = (float) INT_MIN;
 
@@ -106,14 +102,14 @@ SampleFormatConverter<TOut>::process (float * data, nframes_t frames)
 				i = chn + (x * channels);
 
 				if (data[i] > 1.0f) {
-					ob[i] = static_cast<TOut> (INT_MAX);
+					data_out[i] = static_cast<TOut> (INT_MAX);
 				} else if (data[i] < -1.0f) {
-					ob[i] = static_cast<TOut> (INT_MIN);
+					data_out[i] = static_cast<TOut> (INT_MIN);
 				} else {
 					if (data[i] >= 0.0f) {
-						ob[i] = lrintf (int_max * data[i]);
+						data_out[i] = lrintf (int_max * data[i]);
 					} else {
-						ob[i] = - lrintf (int_min * data[i]);
+						data_out[i] = - lrintf (int_min * data[i]);
 					}
 				}
 			}
@@ -122,13 +118,24 @@ SampleFormatConverter<TOut>::process (float * data, nframes_t frames)
 
 	/* Write forward */
 
-	output (data_out, frames);
+	ProcessContext<TOut> c_out(data_out, frames);
+	output (c_out);
+}
+
+template<typename TOut>
+void
+SampleFormatConverter<TOut>::process (ProcessContext<float> & c_in)
+{
+	process (const_cast<ProcessContext<float> const &> (c_in));
 }
 
 template<>
 void
-SampleFormatConverter<float>::process (float * data, nframes_t frames)
+SampleFormatConverter<float>::process (ProcessContext<float> & c_in)
 {
+	nframes_t frames = c_in.frames();
+	float * data = c_in.data();
+	
 	if (clip_floats) {
 		for (nframes_t x = 0; x < frames * channels; ++x) {
 			if (data[x] > 1.0f) {
@@ -139,7 +146,29 @@ SampleFormatConverter<float>::process (float * data, nframes_t frames)
 		}
 	}
 
-	output (data, frames);
+	output (c_in);
+}
+
+template<>
+void
+SampleFormatConverter<float>::process (ProcessContext<float> const & c_in)
+{
+	nframes_t frames = c_in.frames();
+	check_frame_count (frames);
+	
+	// Make copy of data and pass it to non-const version
+	memcpy (data_out, c_in.data(), frames * sizeof(float));
+	ProcessContext<float> c (data_out, frames);
+	process (c);
+}
+
+template<typename TOut>
+void
+SampleFormatConverter<TOut>::check_frame_count(nframes_t frames)
+{
+	if (frames  > data_out_size) {
+		throw Exception (*this, "Too many frames given to process()");
+	}
 }
 
 template class SampleFormatConverter<short>;

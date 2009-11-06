@@ -3,7 +3,10 @@ g++ -g -Wall -Wextra \
 `pkg-config --libs --cflags cppunit gthread-2.0 glibmm-2.4 samplerate` \
 -ldl \
 \
+../gdither/gdither.cc \
+\
 ../sr_converter.cc \
+../sample_format_converter.cc \
 \
 identity_vertex_test.cc \
 interleaver_test.cc \
