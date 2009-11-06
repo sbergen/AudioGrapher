@@ -55,6 +55,7 @@ class VectorSink : public AudioGrapher::Sink<T>
 
 	std::vector<T> const & get_data() const { return data; }
 	T const * get_array() const { return &data[0]; }
+	void reset() { data.clear(); }
 
   protected:
 	std::vector<T> data;
@@ -76,7 +77,7 @@ class AppendingVectorSink : public VectorSink<T>
 	void reset ()
 	{
 		total_frames = 0;
-		VectorSink<T>::data.clear();
+		VectorSink<T>::reset();
 	}
 
   private:

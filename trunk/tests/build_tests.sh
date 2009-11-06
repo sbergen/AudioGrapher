@@ -11,4 +11,5 @@ deinterleaver_test.cc \
 interleaver_deinterleaver_test.cc \
 threader_test.cc \
 sr_converter_test.cc \
+chunker_test.cc \
 test_runner.cc
