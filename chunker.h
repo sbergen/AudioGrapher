@@ -24,18 +24,18 @@ class Chunker : public ListedSource<T>, public Sink<T>
 		delete [] buffer;
 	}
 	
-	void process (T * data, nframes_t frames)
+	void process (ProcessContext<T> const & context)
 	{
-		if (position + frames < chunk_size) {
-			memcpy (&buffer[position], data, frames * sizeof(T));
-			position += frames;
+		if (position + context.frames() < chunk_size) {
+			memcpy (&buffer[position], (float const *)context.data(), context.frames() * sizeof(T));
+			position += context.frames();
 		} else {
 			nframes_t const frames_to_copy = chunk_size - position;
-			memcpy (&buffer[position], data, frames_to_copy * sizeof(T));
-			output (buffer, chunk_size);
+			memcpy (&buffer[position], context.data(), frames_to_copy * sizeof(T));
+			ListedSource<T>::output (buffer, chunk_size);
 			
-			memcpy (buffer, &data[frames_to_copy], (frames - frames_to_copy) * sizeof(T));
-			position =  frames - frames_to_copy;
+			memcpy (buffer, &context.data()[frames_to_copy], (context.frames() - frames_to_copy) * sizeof(T));
+			position =  context.frames() - frames_to_copy;
 		}
 	}
 	

@@ -28,7 +28,7 @@ class Sink  {
 	virtual void process (ProcessContext<T> & context) { process (const_cast<ProcessContext<T> const &> (context)); }
 	
 	// TODO: This is to be replaced by the versions above!
-	virtual void process (T * data, nframes_t frames) = 0;	
+	virtual void process (T * /*data*/, nframes_t /*frames*/) {}
 };
 
 } // namespace
