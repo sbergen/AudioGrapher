@@ -113,6 +113,11 @@ class ThrowingSink : public AudioGrapher::Sink<T>
 	{
 		throw AudioGrapher::Exception(*this, "ThrowingSink threw!");
 	}
+	
+	void process (AudioGrapher::ProcessContext<T> const &)
+	{
+		throw AudioGrapher::Exception(*this, "ThrowingSink threw!");
+	}
 };
 
 #endif // AUDIOGRAPHER_TESTS_UTILS_H

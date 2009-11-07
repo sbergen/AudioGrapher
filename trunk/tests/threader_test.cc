@@ -52,7 +52,8 @@ class ThreaderTest : public CppUnit::TestFixture
 		threader->add_output (sink_e);
 		threader->add_output (sink_f);
 		
-		threader->process (random_data, frames);
+		ProcessContext<float> c (random_data, frames);
+		threader->process (c);
 		
 		CPPUNIT_ASSERT (Utils::array_equals(random_data, sink_a->get_array(), frames));
 		CPPUNIT_ASSERT (Utils::array_equals(random_data, sink_b->get_array(), frames));
@@ -71,14 +72,16 @@ class ThreaderTest : public CppUnit::TestFixture
 		threader->add_output (sink_e);
 		threader->add_output (sink_f);
 		
-		threader->process (random_data, frames);
+		ProcessContext<float> c (random_data, frames);
+		threader->process (c);
 		
 		// Remove a, b and f
 		threader->remove_output (sink_a);
 		threader->remove_output (sink_b);
 		threader->remove_output (sink_f);
 		
-		threader->process (zero_data, frames);
+		ProcessContext<float> zc (zero_data, frames);
+		threader->process (zc);
 		
 		CPPUNIT_ASSERT (Utils::array_equals(random_data, sink_a->get_array(), frames));
 		CPPUNIT_ASSERT (Utils::array_equals(random_data, sink_b->get_array(), frames));
@@ -97,10 +100,12 @@ class ThreaderTest : public CppUnit::TestFixture
 		threader->add_output (sink_e);
 		threader->add_output (sink_f);
 		
-		threader->process (random_data, frames);
+		ProcessContext<float> c (random_data, frames);
+		threader->process (c);
 		
 		threader->clear_outputs();
-		threader->process (zero_data, frames);
+		ProcessContext<float> zc (zero_data, frames);
+		threader->process (zc);
 		
 		CPPUNIT_ASSERT (Utils::array_equals(random_data, sink_a->get_array(), frames));
 		CPPUNIT_ASSERT (Utils::array_equals(random_data, sink_b->get_array(), frames));
@@ -119,7 +124,8 @@ class ThreaderTest : public CppUnit::TestFixture
 		threader->add_output (sink_e);
 		threader->add_output (throwing_sink);
 		
-		CPPUNIT_ASSERT_THROW (threader->process (random_data, frames), Exception);
+		ProcessContext<float> c (random_data, frames);
+		CPPUNIT_ASSERT_THROW (threader->process (c), Exception);
 		
 		CPPUNIT_ASSERT (Utils::array_equals(random_data, sink_a->get_array(), frames));
 		CPPUNIT_ASSERT (Utils::array_equals(random_data, sink_b->get_array(), frames));
