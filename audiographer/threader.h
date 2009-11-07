@@ -50,7 +50,8 @@ class Threader : public Source<T>, public Sink<T>
 		outputs.erase (new_end, outputs.end());
 	}
 	
-	void process (T * data, nframes_t frames)
+	/* The context has to be const, because this is working concurrently */
+	void process (ProcessContext<T> const & c)
 	{
 		wait_mutex.lock();
 		
@@ -59,7 +60,7 @@ class Threader : public Source<T>, public Sink<T>
 		unsigned int outs = outputs.size();
 		g_atomic_int_add (&readers, outs);
 		for (unsigned int i = 0; i < outs; ++i) {
-			thread_pool.push (sigc::bind (sigc::mem_fun (this, &Threader::process_channel), data, frames, i));
+			thread_pool.push (sigc::bind (sigc::mem_fun (this, &Threader::process_channel), c, i));
 		}
 		
 		wait();
@@ -83,10 +84,10 @@ class Threader : public Source<T>, public Sink<T>
 		}
 	}
 	
-	void process_channel(T * data, nframes_t frames, unsigned int channel)
+	void process_channel(ProcessContext<T> const & c, unsigned int channel)
 	{
 		try {
-			outputs[channel]->process (data, frames);
+			outputs[channel]->process (c);
 		} catch (std::exception const & e) {
 			// Only first exception will be passed on
 			exception_mutex.lock();
@@ -109,8 +110,6 @@ class Threader : public Source<T>, public Sink<T>
 	
 	Glib::Mutex exception_mutex;
 	boost::shared_ptr<ThreaderException> exception;
-	
-	T * data;
 
 };
 
