@@ -54,20 +54,21 @@ Interleaver<T>::reset ()
 
 template<typename T>
 void
-Interleaver<T>::write_channel (T * data, nframes_t frames, unsigned int channel)
+Interleaver<T>::write_channel (ProcessContext<T> const & c, unsigned int channel)
 {
-	if (frames > max_frames) {
+	if (c.frames() > max_frames) {
 		reset_channels();
 		throw Exception (*this, "Too many frames given to an input");
 	}
 	
-	for (unsigned int i = 0; i < frames; ++i) {
-		buffer[channel + (channels * i)] = data[i];
+	for (unsigned int i = 0; i < c.frames(); ++i) {
+		buffer[channel + (channels * i)] = c.data()[i];
 	}
 	
 	nframes_t const ready_frames = ready_to_output();
 	if (ready_frames) {
-		ListedSource<T>::output (buffer, ready_frames);
+		ProcessContext<T> c_out (buffer, ready_frames, channels);
+		ListedSource<T>::output (c_out);
 		reset_channels ();
 	}
 }

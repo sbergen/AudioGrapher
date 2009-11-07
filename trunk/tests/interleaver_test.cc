@@ -35,44 +35,51 @@ class InterleaverTest : public CppUnit::TestFixture
 	void testUninitialized()
 	{
 		interleaver.reset (new Interleaver<float>());
-		CPPUNIT_ASSERT_THROW (interleaver->input(0)->process (random_data, frames), Exception);
+		ProcessContext<float> c (random_data, frames);
+		CPPUNIT_ASSERT_THROW (interleaver->input(0)->process (c), Exception);
 	}
 
 	void testInvalidInputIndex()
 	{
-		CPPUNIT_ASSERT_THROW (interleaver->input (3)->process (random_data, frames), Exception);
+		ProcessContext<float> c (random_data, frames);
+		CPPUNIT_ASSERT_THROW (interleaver->input (3)->process (c), Exception);
 	}
 
 	void testInvalidInputSize()
 	{
-		CPPUNIT_ASSERT_THROW (interleaver->input (0)->process (random_data, frames + 1), Exception);
+		ProcessContext<float> c (random_data, frames + 1);
+		CPPUNIT_ASSERT_THROW (interleaver->input (0)->process (c), Exception);
 		
-		interleaver->input (0)->process (random_data, frames);
-		interleaver->input (1)->process (random_data, frames);
-		CPPUNIT_ASSERT_THROW (interleaver->input (2)->process (random_data, frames - 1), Exception);
+		c.frames() = frames;
+		interleaver->input (0)->process (c);
+		interleaver->input (1)->process (c);
+		c.frames() = frames -1;
+		CPPUNIT_ASSERT_THROW (interleaver->input (2)->process (c), Exception);
 
-		interleaver->input (0)->process (random_data, frames - 1);
-		interleaver->input (1)->process (random_data, frames - 1);
-		CPPUNIT_ASSERT_THROW (interleaver->input (2)->process (random_data, frames), Exception);
+		interleaver->input (0)->process (c);
+		interleaver->input (1)->process (c);
+		c.frames() = frames;
+		CPPUNIT_ASSERT_THROW (interleaver->input (2)->process (c), Exception);
 	}
 
 	void testOutputSize()
 	{
 		interleaver->add_output (sink);
 
-		interleaver->input (0)->process (random_data, frames);
-		interleaver->input (1)->process (random_data, frames);
-		interleaver->input (2)->process (random_data, frames);
+		ProcessContext<float> c (random_data, frames);
+		interleaver->input (0)->process (c);
+		interleaver->input (1)->process (c);
+		interleaver->input (2)->process (c);
 
 		nframes_t expected_frames = frames * channels;
 		nframes_t generated_frames = sink->get_data().size();
 		CPPUNIT_ASSERT_EQUAL (expected_frames, generated_frames);
 
 		nframes_t less_frames = frames / 2;
-
-		interleaver->input (0)->process (random_data, less_frames);
-		interleaver->input (1)->process (random_data, less_frames);
-		interleaver->input (2)->process (random_data, less_frames);
+		c.frames() = less_frames;
+		interleaver->input (0)->process (c);
+		interleaver->input (1)->process (c);
+		interleaver->input (2)->process (c);
 
 		expected_frames = less_frames * channels;
 		generated_frames = sink->get_data().size();
@@ -84,18 +91,18 @@ class InterleaverTest : public CppUnit::TestFixture
 		interleaver->add_output (sink);
 
 		// input zero frames to all inputs
-		
-		interleaver->input (0)->process (random_data, 0);
-		interleaver->input (1)->process (random_data, 0);
-		interleaver->input (2)->process (random_data, 0);
+		ProcessContext<float> c (random_data, 0);
+		interleaver->input (0)->process (c);
+		interleaver->input (1)->process (c);
+		interleaver->input (2)->process (c);
 		
 		// NOTE zero input is allowed to be a NOP
 		
 		// ...now test regular input
-		
-		interleaver->input (0)->process (random_data, frames);
-		interleaver->input (1)->process (random_data, frames);
-		interleaver->input (2)->process (random_data, frames);
+		c.frames() = frames;
+		interleaver->input (0)->process (c);
+		interleaver->input (1)->process (c);
+		interleaver->input (2)->process (c);
 
 		nframes_t expected_frames = frames * channels;
 		nframes_t generated_frames = sink->get_data().size();
@@ -105,8 +112,9 @@ class InterleaverTest : public CppUnit::TestFixture
 	void testChannelSync()
 	{
 		interleaver->add_output (sink);
-		interleaver->input (0)->process (random_data, frames);		
-		CPPUNIT_ASSERT_THROW (interleaver->input (0)->process (random_data, frames), Exception);		
+		ProcessContext<float> c (random_data, frames);
+		interleaver->input (0)->process (c);
+		CPPUNIT_ASSERT_THROW (interleaver->input (0)->process (c), Exception);		
 	}
 
 

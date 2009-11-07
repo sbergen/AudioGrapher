@@ -32,11 +32,18 @@ DeInterleaver<T>::output (unsigned int channel)
 
 template<typename T>
 void
-DeInterleaver<T>::process (T * data, nframes_t frames)
+DeInterleaver<T>::process (ProcessContext<T> const & c)
 {
+	nframes_t frames = c.frames();
+	T const * data = c.data();
+	
 	if (frames == 0) { return; }
 	
 	nframes_t const  frames_per_channel = frames / channels;
+	
+	if (c.channels() != channels) {
+		throw Exception (*this, "wrong amount of channels given to process()");
+	}
 	
 	if (frames % channels != 0) {
 		throw Exception (*this, "wrong amount of frames given to process()");
@@ -53,7 +60,9 @@ DeInterleaver<T>::process (T * data, nframes_t frames)
 		for (unsigned int i = 0; i < frames_per_channel; ++i) {
 			buffer[i] = data[channel + (channels * i)];
 		}
-		(*it)->process (buffer, frames_per_channel);
+		
+		ProcessContext<T> c_out (buffer, frames_per_channel);
+		(*it)->process (c_out);
 	}
 }
 

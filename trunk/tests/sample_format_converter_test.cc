@@ -196,7 +196,7 @@ class SampleFormatConverterTest : public CppUnit::TestFixture
 		converter->process (pc);
 		frames_output = sink->get_data().size();
 		CPPUNIT_ASSERT_EQUAL (pc.frames(), frames_output);
-		CPPUNIT_ASSERT (Utils::array_filled(sink->get_array(), frames));
+		CPPUNIT_ASSERT (Utils::array_filled(sink->get_array(), pc.frames()));
 	}
 
   private:

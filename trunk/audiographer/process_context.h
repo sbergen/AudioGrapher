@@ -17,6 +17,7 @@ class ProcessContext  {
 public:
 
 	typedef uint8_t Flag;
+	typedef uint8_t ChannelCount;
 
 	enum Flags {
 		EndOfInput
@@ -24,14 +25,19 @@ public:
 	
 public:
 	
-	ProcessContext(T * data = 0, nframes_t frames = 0) : _data (data), _frames (frames) {}
+	ProcessContext(T * data = 0, nframes_t frames = 0, ChannelCount channels = 1)
+		: _data (data), _frames (frames), _channels (channels) {}
 	
 	/* Data */
 	
-	inline T const *          data()    const { return _data; }
-	inline T *                data()          { return _data; }
-	inline nframes_t const &  frames()  const { return _frames; }
-	inline nframes_t &        frames()        { return _frames; }
+	inline T const *            data()     const { return _data; }
+	inline T *                  data()           { return _data; }
+	
+	inline nframes_t const &    frames()   const { return _frames; }
+	inline nframes_t &          frames()         { return _frames; }
+	
+	inline ChannelCount const & channels() const { return _channels; }
+	inline ChannelCount &       channels()       { return _channels; }
 
 	/* Flags */
 	
@@ -42,6 +48,7 @@ public:
 private:
 	T *                    _data;
 	nframes_t              _frames;
+	ChannelCount           _channels;
 	mutable std::set<Flag> _flags;
 };
 
