@@ -51,6 +51,7 @@ def build(bld):
 		src/sr_converter.cc
 		src/sample_format_converter.cc
 		src/sndfile_writer.cc
+		src/routines.cc
 	'''
 	audiographer.name           = 'libaudiographer'
 	audiographer.target         = 'audiographer'
@@ -75,6 +76,7 @@ def build(bld):
 			tests/sample_format_converter_test.cc
 			tests/test_runner.cc
 			tests/sndfile_writer_test.cc
+			tests/peak_reader_test.cc
 		'''
 		obj.uselib_local = 'libaudiographer'
 		obj.uselib       = 'CPPUNIT GLIBMM'
