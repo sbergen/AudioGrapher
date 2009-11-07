@@ -91,6 +91,10 @@ template <typename T>
 void
 SndfileWriter<T>::process (ProcessContext<T> const & c)
 {
+	if (c.channels() != sf_info.channels) {
+		throw Exception (*this, "Wrong number of channels given to process()");
+	}
+	
 	char errbuf[256];
 	nframes_t written = (*process_func) (sndfile, c.data(), c.frames());
 	if (written != c.frames()) {

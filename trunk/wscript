@@ -74,9 +74,10 @@ def build(bld):
 			tests/chunker_test.cc
 			tests/sample_format_converter_test.cc
 			tests/test_runner.cc
+			tests/sndfile_writer_test.cc
 		'''
 		obj.uselib_local = 'libaudiographer'
-		obj.uselib       = 'CPPUNIT'
+		obj.uselib       = 'CPPUNIT GLIBMM'
 		obj.target       = 'run-tests'
 		obj.install_path = ''
 

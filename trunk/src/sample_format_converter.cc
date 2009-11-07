@@ -154,18 +154,13 @@ template<>
 void
 SampleFormatConverter<float>::process (ProcessContext<float> const & c_in)
 {
-	if (!clip_floats) {
-		// Nothing will be modified, so const cast is ok
-		process (const_cast<ProcessContext<float> &> (c_in));
-	} else {
-		// Make copy of data and pass it to non-const version
-		nframes_t frames = c_in.frames();
-		check_frame_count (frames);
-		memcpy (data_out, c_in.data(), frames * sizeof(float));
-		
-		ProcessContext<float> c (data_out, frames);
-		process (c);
-	}
+	// Make copy of data and pass it to non-const version
+	nframes_t frames = c_in.frames();
+	check_frame_count (frames);
+	memcpy (data_out, c_in.data(), frames * sizeof(float));
+	
+	ProcessContext<float> c (data_out, frames);
+	process (c);
 }
 
 template<typename TOut>
