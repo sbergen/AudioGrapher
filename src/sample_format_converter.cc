@@ -1,73 +1,72 @@
 #include "audiographer/sample_format_converter.h"
 
-/* see gdither.cc for why we have to do this */
-
-#define	_ISOC9X_SOURCE	1
-#define _ISOC99_SOURCE	1
-#include <cmath>
-#undef  _ISOC99_SOURCE
-#undef  _ISOC9X_SOURCE
-#undef  __USE_SVID
-#define __USE_SVID 1
-#include <cstdlib>
-#undef  __USE_SVID
-
-#include <unistd.h>
-#include <inttypes.h>
-#include <float.h>
-#include <climits>
-#include <cstring>
-
 #include "gdither/gdither.h"
 #include "audiographer/exception.h"
+
+#include <cstring>
 
 namespace AudioGrapher
 {
 
 template <typename TOut>
-SampleFormatConverter<TOut>::SampleFormatConverter (uint32_t channels, DitherType type, int data_width) :
+SampleFormatConverter<TOut>::SampleFormatConverter (uint32_t channels) :
   channels (channels),
-  data_width (data_width),
   dither (0),
   data_out_size (0),
   data_out (0),
   clip_floats (false)
 {
-	if (data_width != 24) {
-		data_width = sizeof (TOut) * 8;
-	}
-
-	GDitherSize dither_size = GDitherFloat;
-
-	switch (data_width) {
-	case 8:
-		dither_size = GDither8bit;
-		break;
-
-	case 16:
-		dither_size = GDither16bit;
-		break;
-	case 24:
-		dither_size = GDither32bit;
-	}
-
-	dither = gdither_new ((GDitherType) type, channels, dither_size, data_width);
 }
 
-template <typename TOut>
-SampleFormatConverter<TOut>::~SampleFormatConverter ()
+template <>
+void
+SampleFormatConverter<float>::init (nframes_t max_frames, DitherType type, int data_width)
 {
-	if (dither) {
-		gdither_free (dither);
-	}
+	if (data_width != 32) { throw Exception (*this, "Unsupported data width"); }
+	init_common (max_frames);
+	dither = gdither_new (GDitherNone, channels, GDitherFloat, data_width);
+}
 
-	delete[] data_out;
+template <>
+void
+SampleFormatConverter<int32_t>::init (nframes_t max_frames, DitherType type, int data_width)
+{
+	if(data_width < 24) { throw Exception (*this, "Use SampleFormatConverter<int16_t> for data widths < 24"); }
+	
+	init_common (max_frames);
+	
+	if (data_width == 24) {
+		dither = gdither_new ((GDitherType) type, channels, GDither32bit, data_width);
+	} else if (data_width == 32) {
+		dither = gdither_new (GDitherNone, channels, GDitherFloat, data_width);
+	} else {
+		throw Exception (*this, "Unsupported data width");
+	}
+}
+
+template <>
+void
+SampleFormatConverter<int16_t>::init (nframes_t max_frames, DitherType type, int data_width)
+{
+	if (data_width != 16) { throw Exception (*this, "Unsupported data width"); }
+	init_common (max_frames);
+	dither = gdither_new ((GDitherType) type, channels, GDither16bit, data_width);
+}
+
+template <>
+void
+SampleFormatConverter<uint8_t>::init (nframes_t max_frames, DitherType type, int data_width)
+{
+	if (data_width != 8) { throw Exception (*this, "Unsupported data width"); }
+	init_common (max_frames);
+	dither = gdither_new ((GDitherType) type, channels, GDither8bit, data_width);
 }
 
 template <typename TOut>
 void
-SampleFormatConverter<TOut>::alloc_buffers (nframes_t max_frames)
+SampleFormatConverter<TOut>::init_common (nframes_t max_frames )
 {
+	reset();
 	if (max_frames  > data_out_size) {
 
 		delete[] data_out;
@@ -78,42 +77,41 @@ SampleFormatConverter<TOut>::alloc_buffers (nframes_t max_frames)
 }
 
 template <typename TOut>
+SampleFormatConverter<TOut>::~SampleFormatConverter ()
+{
+	reset();
+}
+
+template <typename TOut>
+void
+SampleFormatConverter<TOut>::reset()
+{
+	if (dither) {
+		gdither_free (dither);
+		dither = 0;
+	}
+	
+	delete[] data_out;
+	data_out_size = 0;
+	data_out = 0;
+	
+	clip_floats = false;
+}
+
+/* Basic const version of process() */
+template <typename TOut>
 void
 SampleFormatConverter<TOut>::process (ProcessContext<float> const & c_in)
 {
 	float const * data = c_in.data();
 	nframes_t frames = c_in.frames();
+	
 	check_frame_count (frames);
 
 	/* Do conversion */
 
-	if (data_width < 32) {
-		for (uint32_t chn = 0; chn < channels; ++chn) {
-			gdither_runf (dither, chn, frames, data, data_out);
-		}
-	} else {
-		for (uint32_t chn = 0; chn < channels; ++chn) {
-
-			const double int_max = (float) INT_MAX;
-			const double int_min = (float) INT_MIN;
-
-			nframes_t i;
-			for (nframes_t x = 0; x < frames; ++x) {
-				i = chn + (x * channels);
-
-				if (data[i] > 1.0f) {
-					data_out[i] = static_cast<TOut> (INT_MAX);
-				} else if (data[i] < -1.0f) {
-					data_out[i] = static_cast<TOut> (INT_MIN);
-				} else {
-					if (data[i] >= 0.0f) {
-						data_out[i] = lrintf (int_max * data[i]);
-					} else {
-						data_out[i] = - lrintf (int_min * data[i]);
-					}
-				}
-			}
-		}
+	for (uint32_t chn = 0; chn < channels; ++chn) {
+		gdither_runf (dither, chn, frames / channels, data, data_out);
 	}
 
 	/* Write forward */
@@ -122,6 +120,7 @@ SampleFormatConverter<TOut>::process (ProcessContext<float> const & c_in)
 	output (c_out);
 }
 
+/* Basic non-const version of process(), calls the const one */
 template<typename TOut>
 void
 SampleFormatConverter<TOut>::process (ProcessContext<float> & c_in)
@@ -129,6 +128,7 @@ SampleFormatConverter<TOut>::process (ProcessContext<float> & c_in)
 	process (const_cast<ProcessContext<float> const &> (c_in));
 }
 
+/* template specialization for float, in-place processing (non-const) */
 template<>
 void
 SampleFormatConverter<float>::process (ProcessContext<float> & c_in)
@@ -149,30 +149,41 @@ SampleFormatConverter<float>::process (ProcessContext<float> & c_in)
 	output (c_in);
 }
 
+/* template specialized const version, copies the data, and calls the non-const version */
 template<>
 void
 SampleFormatConverter<float>::process (ProcessContext<float> const & c_in)
 {
-	// Make copy of data and pass it to non-const version
-	nframes_t frames = c_in.frames();
-	check_frame_count (frames);
-	memcpy (data_out, c_in.data(), frames * sizeof(float));
-	
-	ProcessContext<float> c (data_out, frames);
-	process (c);
+	if (!clip_floats) {
+		// Nothing will be modified, so const cast is ok
+		process (const_cast<ProcessContext<float> &> (c_in));
+	} else {
+		// Make copy of data and pass it to non-const version
+		nframes_t frames = c_in.frames();
+		check_frame_count (frames);
+		memcpy (data_out, c_in.data(), frames * sizeof(float));
+		
+		ProcessContext<float> c (data_out, frames);
+		process (c);
+	}
 }
 
 template<typename TOut>
 void
 SampleFormatConverter<TOut>::check_frame_count(nframes_t frames)
 {
+	if (frames % channels != 0) {
+		throw Exception (*this, "Number of frames given to process() was not a multiple of channels");
+	}
+	
 	if (frames  > data_out_size) {
 		throw Exception (*this, "Too many frames given to process()");
 	}
 }
 
-template class SampleFormatConverter<short>;
-template class SampleFormatConverter<int>;
+template class SampleFormatConverter<uint8_t>;
+template class SampleFormatConverter<int16_t>;
+template class SampleFormatConverter<int32_t>;
 template class SampleFormatConverter<float>;
 
 } // namespace

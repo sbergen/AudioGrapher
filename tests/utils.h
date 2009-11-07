@@ -29,6 +29,18 @@ struct Utils
 		return true;
 	}
 
+	template<typename T>
+	static bool array_filled (T const * array, nframes_t frames)
+	{
+		for (nframes_t i = 0; i < frames; ++i) {
+			if (array[i] == static_cast<T> (0.0)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/// Generate random data, all samples guaranteed not to be 0.0, 1.0 or -1.0
 	static float * init_random_data (nframes_t frames, float range = 1.0)
 	{
 		unsigned int const granularity = 4096;
@@ -36,8 +48,10 @@ struct Utils
 		srand (std::time (NULL));
 		
 		for (nframes_t i = 0; i < frames; ++i) {
-			int biased_int = (rand() % granularity) - (granularity / 2);
-			data[i] = (range * biased_int) / granularity;
+			do {
+				int biased_int = (rand() % granularity) - (granularity / 2);
+				data[i] = (range * biased_int) / granularity;
+			} while (data[i] == 0.0 || data[i] == 1.0 || data[i] == -1.0);
 		}
 		return data;
 	}
