@@ -58,7 +58,7 @@ SampleRateConverter::~SampleRateConverter ()
 nframes_t
 SampleRateConverter::allocate_buffers (nframes_t max_frames)
 {
-	nframes_t max_frames_out = (nframes_t) ceil (max_frames * src_data.src_ratio * channels);
+	nframes_t max_frames_out = (nframes_t) ceil (max_frames * src_data.src_ratio);
 	if (data_out_size < max_frames_out) {
 
 		delete[] data_out;
@@ -66,7 +66,7 @@ SampleRateConverter::allocate_buffers (nframes_t max_frames)
 		src_data.data_out = data_out;
 
 		max_leftover_frames = 4 * max_frames;
-		leftover_data = (float *) realloc (leftover_data, max_leftover_frames * channels * sizeof (float));
+		leftover_data = (float *) realloc (leftover_data, max_leftover_frames * sizeof (float));
 		if (!leftover_data) {
 			throw Exception (*this, "A memory allocation error occured");
 		}
@@ -89,6 +89,10 @@ SampleRateConverter::process (float * in, nframes_t frames)
 	if (frames > max_frames_in) {
 		throw Exception (*this, "process() called with too many frames");
 	}
+	
+	if (frames % channels != 0) {
+		throw Exception (*this, "number of frames given to process() is not a multiple of channels");
+	}
 
 	int err;
 	bool first_time = true;
@@ -107,7 +111,7 @@ SampleRateConverter::process (float * in, nframes_t frames)
 
 				/* first time, append new data from data_in into the leftover_data buffer */
 
-				memcpy (leftover_data + (leftover_frames * channels), in, frames * channels * sizeof(float));
+				memcpy (&leftover_data [leftover_frames * channels], in, frames * sizeof(float));
 				src_data.input_frames = frames + leftover_frames;
 			} else {
 
@@ -136,11 +140,11 @@ SampleRateConverter::process (float * in, nframes_t frames)
 			if (leftover_frames > max_leftover_frames) {
 				throw Exception(*this, "leftover frames overflowed");
 			}
-			memmove (leftover_data, (char *) (src_data.data_in + (src_data.input_frames_used * channels)),
-					leftover_frames * channels * sizeof(float));
+			memmove (leftover_data, (char *) &src_data.data_in[src_data.input_frames_used * channels],
+			         leftover_frames * channels * sizeof(float));
 		}
 
-		output (data_out, src_data.output_frames_gen);
+		output (data_out, src_data.output_frames_gen * channels);
 
 		DEBUG ("src_data.output_frames_gen: " << src_data.output_frames_gen << ", leftover_frames: " << leftover_frames);
 
