@@ -35,7 +35,7 @@ class SndfileWriter : public SndfileWriterBase, public Sink<T>
 {
   public:
 	SndfileWriter (int channels, nframes_t samplerate, int format, std::string const & path);
-	void process (T * data, nframes_t frames);
+	void process (ProcessContext<T> const & c);
 	virtual ~SndfileWriter () {}
 
   protected:

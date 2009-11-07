@@ -28,13 +28,6 @@ class ListedSource : public Source<T>
 			(*i)->process (c);
 		}
 	}
-	
-	void output (T * data, nframes_t frames)
-	{
-		for (typename SinkList::iterator i = outputs.begin(); i != outputs.end(); ++i) {
-			(*i)->process (data, frames);
-		}
-	}
  
 	SinkList outputs;
 };

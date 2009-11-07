@@ -11,7 +11,6 @@ template<typename T>
 class IdentityVertex : public ListedSource<T>, Sink<T>
 {
   public:
-	void process (T * data, nframes_t frames) { ListedSource<T>::output(data, frames); }
 	void process (ProcessContext<T> const & c) { ListedSource<T>::output(c); }
 };
 

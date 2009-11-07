@@ -147,7 +147,8 @@ SampleRateConverter::process (ProcessContext<float> const & c)
 			         leftover_frames * channels * sizeof(float));
 		}
 
-		output (data_out, src_data.output_frames_gen * channels);
+		ProcessContext<float> c_out (data_out, src_data.output_frames_gen * channels);
+		output (c_out);
 
 		DEBUG ("src_data.output_frames_gen: " << src_data.output_frames_gen << ", leftover_frames: " << leftover_frames);
 
