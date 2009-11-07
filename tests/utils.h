@@ -93,6 +93,14 @@ class AppendingVectorSink : public VectorSink<T>
 		memcpy (&data[total_frames], in, frames * sizeof(T));
 		total_frames += frames;
 	}
+	
+	void process (AudioGrapher::ProcessContext<T> const & c)
+	{
+		std::vector<T> & data (VectorSink<T>::data);
+		data.resize (total_frames + c.frames());
+		memcpy (&data[total_frames], c.data(), c.frames() * sizeof(T));
+		total_frames += c.frames();
+	}
 
 	void reset ()
 	{

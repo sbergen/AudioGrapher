@@ -23,7 +23,7 @@ class SampleRateConverter : public ListedSource<float>, public Sink<float>
 	nframes_t allocate_buffers (nframes_t max_frames);
 	
 	// should be RT safe (check libsamplerate to be sure)
-	void process (float * data, nframes_t frames);
+	void process (ProcessContext<float> const & c);
 	void set_end_of_input ();
 
   private:
