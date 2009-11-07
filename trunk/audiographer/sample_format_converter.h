@@ -8,6 +8,9 @@
 namespace AudioGrapher
 {
 
+/** Sample format converter that does dithering.
+  * This class can only convert floats to either \a float, \a int32_t, \a int16_t, or \a uint8_t 
+  */
 template <typename TOut>
 class SampleFormatConverter : public Sink<float>, public ListedSource<TOut>
 {
@@ -23,17 +26,18 @@ class SampleFormatConverter : public Sink<float>, public ListedSource<TOut>
 	
 	/** Constructor
 	  * \param channels number of channels in stream
-	  * \param type dither type from \a DitherType
-	  * \param data_width data with in bits. Only necessary for odd data widths. Only 24 is supported.
 	  */
-	SampleFormatConverter (uint32_t channels, DitherType type = D_None, int data_width = 0);
+	SampleFormatConverter (uint32_t channels);
 	~SampleFormatConverter ();
 	
-	/** Allocate buffers for processing a maximum of \a max_frames at a time.
+	/** Initialize and allocate buffers for processing.
+	  * \param max_frames maximum number of frames that is allowed to be used in calls to \a process()
+	  * \param type dither type from \a DitherType
+	  * \param data_width data with in bits
 	  * \note If the non-const version of process() is used with floats,
 	  *       there is no need to call this function.
 	  */
-	void alloc_buffers (nframes_t max_frames);
+	void init (nframes_t max_frames, DitherType type, int data_width);
 
 	/// Set whether or not clipping to [-1.0, 1.0] should occur when TOut = float. Clipping is off by default
 	void set_clip_floats (bool yn) { clip_floats = yn; }
@@ -45,6 +49,8 @@ class SampleFormatConverter : public Sink<float>, public ListedSource<TOut>
 	void process (ProcessContext<float> & c_in);
 
   private:
+	void reset();
+	void init_common(nframes_t max_frames); // not-template-specialized part of init
 	void check_frame_count(nframes_t frames);
 
 	uint32_t     channels;
