@@ -79,12 +79,15 @@ SampleRateConverter::allocate_buffers (nframes_t max_frames)
 }
 
 void
-SampleRateConverter::process (float * in, nframes_t frames)
+SampleRateConverter::process (ProcessContext<float> const & c)
 {
 	if (!active) {
-		output (in, frames);
+		output (c);
 		return;
 	}
+
+	nframes_t frames = c.frames();
+	float * in = const_cast<float *> (c.data()); // TODO check if this is safe!
 
 	if (frames > max_frames_in) {
 		throw Exception (*this, "process() called with too many frames");
@@ -155,9 +158,10 @@ void SampleRateConverter::set_end_of_input ()
 {
 	src_data.end_of_input = true;
 	
-	float dummy;
-	process (&dummy, 0);
-	process (&dummy, 0);
+	float f;
+	ProcessContext<float> const dummy (&f);
+	process (dummy);
+	process (dummy);
 }
 
 
