@@ -20,7 +20,7 @@ class SampleFormatConverterTest : public CppUnit::TestFixture
 	void setUp()
 	{
 		frames = 128;
-		random_data = Utils::init_random_data(frames, 2.0);
+		random_data = Utils::init_random_data(frames, 1.0);
 	}
 
 	void tearDown()
@@ -93,11 +93,15 @@ class SampleFormatConverterTest : public CppUnit::TestFixture
 		converter->add_output (sink);
 		
 		converter->set_clip_floats (false);
-		ProcessContext<float> pc(random_data, frames);
+		ProcessContext<float> const pc(random_data, frames);
 		converter->process (pc);
 		frames_output = sink->get_data().size();
 		CPPUNIT_ASSERT_EQUAL (frames, frames_output);
 		CPPUNIT_ASSERT (Utils::array_equals(sink->get_array(), random_data, frames));
+		
+		// Make sure a few samples are < -1.0 and > 1.0
+		random_data[10] = -1.5;
+		random_data[20] = 1.5;
 		
 		converter->set_clip_floats (true);
 		converter->process (pc);
@@ -106,8 +110,9 @@ class SampleFormatConverterTest : public CppUnit::TestFixture
 		CPPUNIT_ASSERT (Utils::array_filled(sink->get_array(), frames));
 		
 		for (nframes_t i = 0; i < frames; ++i) {
-			CPPUNIT_ASSERT(sink->get_data()[i] < 1.0);
-			CPPUNIT_ASSERT(sink->get_data()[i] > -1.0);
+			// fp comparison needs a bit of tolerance, 1.01 << 1.5
+			CPPUNIT_ASSERT(sink->get_data()[i] < 1.01);
+			CPPUNIT_ASSERT(sink->get_data()[i] > -1.01);
 		}
 	}
 

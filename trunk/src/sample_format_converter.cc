@@ -137,7 +137,7 @@ SampleFormatConverter<float>::process (ProcessContext<float> & c_in)
 	float * data = c_in.data();
 	
 	if (clip_floats) {
-		for (nframes_t x = 0; x < frames * channels; ++x) {
+		for (nframes_t x = 0; x < frames; ++x) {
 			if (data[x] > 1.0f) {
 				data[x] = 1.0f;
 			} else if (data[x] < -1.0f) {
