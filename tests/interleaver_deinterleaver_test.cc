@@ -49,12 +49,14 @@ class InterleaverDeInterleaverTest : public CppUnit::TestFixture
 		interleaver->add_output (sink_a);
 		
 		// Process and assert
-		deinterleaver->process (random_data_a, total_frames);
+		ProcessContext<float> c (random_data_a, total_frames, channels);
+		deinterleaver->process (c);
 		CPPUNIT_ASSERT (Utils::array_equals (random_data_a, sink_a->get_array(), total_frames));
 		
 		// And a second round...
 		nframes_t less_frames = (frames_per_channel / 10) * channels;
-		deinterleaver->process (random_data_a, less_frames);
+		c.frames() = less_frames;
+		deinterleaver->process (c);
 		CPPUNIT_ASSERT (Utils::array_equals (random_data_a, sink_a->get_array(), less_frames));
 	}
 	
@@ -69,10 +71,14 @@ class InterleaverDeInterleaverTest : public CppUnit::TestFixture
 		deinterleaver->output (1)->add_output (sink_b);
 		deinterleaver->output (2)->add_output (sink_c);
 		
+		ProcessContext<float> c_a (random_data_a, frames_per_channel);
+		ProcessContext<float> c_b (random_data_b, frames_per_channel);
+		ProcessContext<float> c_c (random_data_c, frames_per_channel);
+		
 		// Process and assert
-		interleaver->input (0)->process (random_data_a, frames_per_channel);
-		interleaver->input (1)->process (random_data_b, frames_per_channel);
-		interleaver->input (2)->process (random_data_c, frames_per_channel);
+		interleaver->input (0)->process (c_a);
+		interleaver->input (1)->process (c_b);
+		interleaver->input (2)->process (c_c);
 		
 		CPPUNIT_ASSERT (Utils::array_equals (random_data_a, sink_a->get_array(), frames_per_channel));
 		CPPUNIT_ASSERT (Utils::array_equals (random_data_b, sink_b->get_array(), frames_per_channel));
@@ -80,9 +86,12 @@ class InterleaverDeInterleaverTest : public CppUnit::TestFixture
 		
 		// And a second round...
 		nframes_t less_frames = frames_per_channel / 5;
-		interleaver->input (0)->process (random_data_a, less_frames);
-		interleaver->input (1)->process (random_data_b, less_frames);
-		interleaver->input (2)->process (random_data_c, less_frames);
+		c_a.frames() = less_frames;
+		c_b.frames() = less_frames;
+		c_c.frames() = less_frames;
+		interleaver->input (0)->process (c_a);
+		interleaver->input (1)->process (c_b);
+		interleaver->input (2)->process (c_c);
 		
 		CPPUNIT_ASSERT (Utils::array_equals (random_data_a, sink_a->get_array(), less_frames));
 		CPPUNIT_ASSERT (Utils::array_equals (random_data_b, sink_b->get_array(), less_frames));

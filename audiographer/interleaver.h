@@ -31,11 +31,12 @@ class Interleaver : public ListedSource<T>
 		Input (Interleaver & parent, unsigned int channel)
 		  : frames_written (0), parent (parent), channel (channel) {}
 		
-		void process (T * data, nframes_t frames)
+		void process (ProcessContext<T> const & c)
 		{
+			if (c.channels() > 1) { throw Exception (*this, "Data input has more than on channel"); }
 			if (frames_written) { throw Exception (*this, "Input channels out of sync"); }
-			frames_written = frames;
-			parent.write_channel (data, frames, channel);
+			frames_written = c.frames();
+			parent.write_channel (c, channel);
 		}
 		
 		nframes_t frames() { return frames_written; }
@@ -49,7 +50,7 @@ class Interleaver : public ListedSource<T>
 	  
 	void reset ();
 	void reset_channels ();
-	void write_channel (T * data, nframes_t frames, unsigned int channel);
+	void write_channel (ProcessContext<T> const & c, unsigned int channel);
 	nframes_t ready_to_output();
 	void output();	
 

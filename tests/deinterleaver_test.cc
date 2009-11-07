@@ -48,14 +48,19 @@ class DeInterleaverTest : public CppUnit::TestFixture
 	{
 		deinterleaver->init (channels, frames_per_channel);
 		
+		ProcessContext<float> c (random_data, 0);
+		
 		// Too many, frames % channels == 0
-		CPPUNIT_ASSERT_THROW (deinterleaver->process (random_data, total_frames + channels), Exception);
+		c.frames() = total_frames + channels;
+		CPPUNIT_ASSERT_THROW (deinterleaver->process (c), Exception);
 		
 		// Too many, frames % channels != 0
-		CPPUNIT_ASSERT_THROW (deinterleaver->process (random_data, total_frames + 1), Exception);
+		c.frames() =  total_frames + 1;
+		CPPUNIT_ASSERT_THROW (deinterleaver->process (c), Exception);
 		
 		// Too few, frames % channels != 0
-		CPPUNIT_ASSERT_THROW (deinterleaver->process (random_data, total_frames - 1), Exception);
+		c.frames() =  total_frames - 1;
+		CPPUNIT_ASSERT_THROW (deinterleaver->process (c), Exception);
 	}
 
 	void assert_outputs (nframes_t expected_frames)
@@ -81,14 +86,14 @@ class DeInterleaverTest : public CppUnit::TestFixture
 		deinterleaver->output (2)->add_output (sink_c);
 		
 		// Test maximum frame input
-		
-		deinterleaver->process (random_data, total_frames);
+		ProcessContext<float> c (random_data, total_frames, channels);
+		deinterleaver->process (c);
 		assert_outputs (frames_per_channel);
 		
 		// Now with less frames
-		
 		nframes_t const less_frames = frames_per_channel / 4;
-		deinterleaver->process (random_data, less_frames * channels);
+		c.frames() = less_frames * channels;
+		deinterleaver->process (c);
 		assert_outputs (less_frames);
 	}
 	
@@ -101,12 +106,12 @@ class DeInterleaverTest : public CppUnit::TestFixture
 		deinterleaver->output (2)->add_output (sink_c);
 		
 		// Input zero frames
-		
-		deinterleaver->process (random_data, 0);
+		ProcessContext<float> c (random_data, 0, channels);
+		deinterleaver->process (c);
 		
 		// ...and now test regular input
-		
-		deinterleaver->process (random_data, total_frames);
+		c.frames() = total_frames;
+		deinterleaver->process (c);
 		assert_outputs (frames_per_channel);
 	}
 
