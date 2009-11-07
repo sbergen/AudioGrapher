@@ -32,7 +32,8 @@ class Chunker : public ListedSource<T>, public Sink<T>
 		} else {
 			nframes_t const frames_to_copy = chunk_size - position;
 			memcpy (&buffer[position], context.data(), frames_to_copy * sizeof(T));
-			ListedSource<T>::output (buffer, chunk_size);
+			ProcessContext<T> c_out (buffer, chunk_size);
+			ListedSource<T>::output (c_out);
 			
 			memcpy (buffer, &context.data()[frames_to_copy], (context.frames() - frames_to_copy) * sizeof(T));
 			position =  context.frames() - frames_to_copy;

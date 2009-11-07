@@ -89,11 +89,11 @@ SndfileWriter<short>::init ()
 
 template <typename T>
 void
-SndfileWriter<T>::process (T * data, nframes_t frames)
+SndfileWriter<T>::process (ProcessContext<T> const & c)
 {
 	char errbuf[256];
-	nframes_t written = (*process_func) (sndfile, data, frames);
-	if (written != frames) {
+	nframes_t written = (*process_func) (sndfile, c.data(), c.frames());
+	if (written != c.frames()) {
 		sf_error_str (sndfile, errbuf, sizeof (errbuf) - 1);
 		throw Exception (*this, str ( format("Could not write data to output file (%1%)") % errbuf));
 	}

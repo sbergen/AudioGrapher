@@ -61,12 +61,6 @@ template<typename T>
 class VectorSink : public AudioGrapher::Sink<T>
 {
   public:
-	virtual void process (T * in, nframes_t frames)
-	{
-		data.resize (frames);
-		memcpy (&data[0], in, frames * sizeof(T));
-	}
-	
 	virtual void process (AudioGrapher::ProcessContext<T> const & c)
 	{
 		data.resize (c.frames());
@@ -86,14 +80,6 @@ template<typename T>
 class AppendingVectorSink : public VectorSink<T>
 {
   public:
-	void process (T * in, nframes_t frames)
-	{
-		std::vector<T> & data (VectorSink<T>::data);
-		data.resize (total_frames + frames);
-		memcpy (&data[total_frames], in, frames * sizeof(T));
-		total_frames += frames;
-	}
-	
 	void process (AudioGrapher::ProcessContext<T> const & c)
 	{
 		std::vector<T> & data (VectorSink<T>::data);
@@ -117,11 +103,6 @@ template<typename T>
 class ThrowingSink : public AudioGrapher::Sink<T>
 {
   public:
-	void process (T *, nframes_t)
-	{
-		throw AudioGrapher::Exception(*this, "ThrowingSink threw!");
-	}
-	
 	void process (AudioGrapher::ProcessContext<T> const &)
 	{
 		throw AudioGrapher::Exception(*this, "ThrowingSink threw!");
