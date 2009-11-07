@@ -12,6 +12,7 @@ class IdentityVertex : public ListedSource<T>, Sink<T>
 {
   public:
 	void process (ProcessContext<T> const & c) { ListedSource<T>::output(c); }
+	void process (ProcessContext<T> & c) { ListedSource<T>::output(c); }
 };
 
 

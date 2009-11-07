@@ -28,7 +28,14 @@ class ListedSource : public Source<T>
 			(*i)->process (c);
 		}
 	}
- 
+
+	void output (ProcessContext<T> & c)
+	{
+		for (typename SinkList::iterator i = outputs.begin(); i != outputs.end(); ++i) {
+			(*i)->process (c);
+		}
+	}
+
 	SinkList outputs;
 };
 

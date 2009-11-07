@@ -22,10 +22,14 @@ class Sink  {
 	/** Process given data
 	  * Data may be modified, so in place processing is allowed.
 	  * The default implementation calls the non-modifying version,
-	  * so this function does not need to be overriden by deriving classes.
-	  * However, if the sink can do in-place processing, overriding this is highly recommended!
+	  * so this function does not need to be overriden.
+	  * However, if the sink can do in-place processing,
+	  * overriding this is highly recommended.
 	  */
-	inline virtual void process (ProcessContext<T> & context) { this->process (const_cast<ProcessContext<T> const &> (context)); }
+	inline virtual void process (ProcessContext<T> & context)
+	{
+		this->process (const_cast<ProcessContext<T> const &> (context));
+	}
 };
 
 } // namespace
