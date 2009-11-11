@@ -17,7 +17,6 @@ class ProcessContext  {
 public:
 
 	typedef uint8_t Flag;
-	typedef uint8_t ChannelCount;
 
 	enum Flags {
 		EndOfInput
@@ -52,10 +51,29 @@ public:
 	inline bool remove_flag (Flag flag) const { return _flags.erase (flag); }
 	
 private:
-	T *                    _data;
+	T * const              _data;
 	nframes_t              _frames;
 	ChannelCount           _channels;
 	mutable std::set<Flag> _flags;
+};
+
+/// A wrapper for a const ProcesContext which can be created from const data
+template <typename T>
+class ConstProcessContext
+{
+  public:
+	ConstProcessContext (T const * data = 0, nframes_t frames = 0, ChannelCount channels = 1)
+	  : context (const_cast<T *>(data), frames, channels) {}
+
+	
+	inline operator ProcessContext<T> const & () { return context; }
+	inline ProcessContext<T> const & operator() () { return context; }
+	inline ProcessContext<T> const * operator& () { return &context; }
+	inline ProcessContext<T> const * operator-> () { return &context; }
+	
+
+  private:
+	  ProcessContext<T> context;
 };
 
 } // namespace
