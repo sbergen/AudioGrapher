@@ -77,6 +77,7 @@ def build(bld):
 			tests/test_runner.cc
 			tests/sndfile_writer_test.cc
 			tests/peak_reader_test.cc
+			tests/normalizer_test.cc
 		'''
 		obj.uselib_local = 'libaudiographer'
 		obj.uselib       = 'CPPUNIT GLIBMM'

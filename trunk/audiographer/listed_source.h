@@ -31,8 +31,11 @@ class ListedSource : public Source<T>
 
 	void output (ProcessContext<T> & c)
 	{
-		for (typename SinkList::iterator i = outputs.begin(); i != outputs.end(); ++i) {
-			(*i)->process (c);
+		if (!outputs.empty() && ++outputs.begin() == outputs.end()) { // outputs.size() == 1, optimized
+			// only one output, so we can keep this non-const
+			(*outputs.begin())->process (c);
+		} else {
+			output (const_cast<ProcessContext<T> const &> (c));
 		}
 	}
 
