@@ -31,13 +31,15 @@ class ListedSource : public Source<T>
 
 	void output (ProcessContext<T> & c)
 	{
-		if (!outputs.empty() && ++outputs.begin() == outputs.end()) { // outputs.size() == 1, optimized
+		if (output_size_is_one()) {
 			// only one output, so we can keep this non-const
 			(*outputs.begin())->process (c);
 		} else {
 			output (const_cast<ProcessContext<T> const &> (c));
 		}
 	}
+
+	inline bool output_size_is_one () { return (!outputs.empty() && ++outputs.begin() == outputs.end()); }
 
 	SinkList outputs;
 };
