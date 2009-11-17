@@ -14,7 +14,7 @@ class NormalizerTest : public CppUnit::TestFixture
   public:
 	void setUp()
 	{
-		frames = 128;
+		frames = 1024;
 	}
 
 	void tearDown()
@@ -45,8 +45,7 @@ class NormalizerTest : public CppUnit::TestFixture
 		peak_reader->process (normalized);
 		
 		peak = peak_reader->get_peak();
-		float expected = 1.0;
-		CPPUNIT_ASSERT_EQUAL (expected, peak);
+		CPPUNIT_ASSERT (-FLT_EPSILON <= (peak - 1.0) && (peak - 1.0) <= 0.0);
 	}
 
   private:
