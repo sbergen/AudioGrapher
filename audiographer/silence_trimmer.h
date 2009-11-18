@@ -4,35 +4,24 @@
 #include "listed_source.h"
 #include "sink.h"
 #include "exception.h"
+#include "utils.h"
 
 #include <cstring>
 
-namespace AudioGrapher
-{
+using namespace AudioGrapher;
 
 template<typename T>
 class SilenceTrimmer : public ListedSource<T>, Sink<T>
 {
   public:
 
-	SilenceTrimmer() : in_beginning (true), silence_frames (0), silence_buffer (0), silence_buffer_size (0) {}
+	SilenceTrimmer() : in_beginning (true), silence_frames (0) {}
 	~SilenceTrimmer() { reset(); }
 
 	void reset()
 	{
-		delete [] silence_buffer;
-		silence_buffer = 0;
-		silence_buffer_size = 0;
 		in_beginning = true;
 		silence_frames = 0;
-	}
-
-	void init (nframes_t buffer_size)
-	{
-		delete [] silence_buffer;
-		silence_buffer = new T[buffer_size];
-		silence_buffer_size = buffer_size;
-		memset (silence_buffer, 0, buffer_size * sizeof (T));
 	}
 
 	void process (ProcessContext<T> const & c)
@@ -68,11 +57,12 @@ class SilenceTrimmer : public ListedSource<T>, Sink<T>
 
 	void flush_intermediate_silence()
 	{
-		if (silence_buffer_size == 0) { throw Exception (*this, "No buffer reserved for silence"); }
+		nframes_t silence_buffer_size = Utils::get_zero_buffer_size<T>();
+		if (silence_buffer_size == 0) { throw Exception (*this, "Utils::init_zeros has not been called!"); }
 		while (silence_frames > 0) {
 			nframes_t frames = std::min (silence_buffer_size, silence_frames);
 			silence_frames -= frames;
-			ConstProcessContext<T> c_out (silence_buffer, frames);
+			ConstProcessContext<T> c_out (Utils::get_zeros<T>(frames), frames);
 			ListedSource<T>::output (c_out);
 		}
 	}
@@ -80,12 +70,6 @@ class SilenceTrimmer : public ListedSource<T>, Sink<T>
 
 	bool      in_beginning;
 	nframes_t silence_frames;
-
-	T *       silence_buffer;
-	nframes_t silence_buffer_size;
 };
-
-
-} // namespace
 
 #endif // AUDIOGRAPHER_SILENCE_TRIMMER_H

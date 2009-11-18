@@ -15,7 +15,7 @@ class SampleRateConverterTest : public CppUnit::TestFixture
 	void setUp()
 	{
 		frames = 128;
-		random_data = Utils::init_random_data(frames);
+		random_data = TestUtils::init_random_data(frames);
 		sink.reset (new AppendingVectorSink<float>());
 		converter.reset (new SampleRateConverter (1));
 	}
@@ -43,7 +43,7 @@ class SampleRateConverterTest : public CppUnit::TestFixture
 		frames_output = sink->get_data().size();
 		CPPUNIT_ASSERT_EQUAL (frames, frames_output);
 		
-		CPPUNIT_ASSERT (Utils::array_equals (random_data, sink->get_array(), frames));
+		CPPUNIT_ASSERT (TestUtils::array_equals (random_data, sink->get_array(), frames));
 	}
 
 	void testUpsampleLength()

@@ -25,7 +25,7 @@ class NormalizerTest : public CppUnit::TestFixture
 	void testConstAmplify()
 	{
 		float target = 0.0;
-		random_data = Utils::init_random_data(frames, 0.5);
+		random_data = TestUtils::init_random_data(frames, 0.5);
 		
 		normalizer.reset (new Normalizer(target));
 		peak_reader.reset (new PeakReader());

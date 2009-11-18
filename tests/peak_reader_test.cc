@@ -13,7 +13,7 @@ class PeakReaderTest : public CppUnit::TestFixture
 	void setUp()
 	{
 		frames = 128;
-		random_data = Utils::init_random_data(frames);
+		random_data = TestUtils::init_random_data(frames);
 	}
 
 	void tearDown()

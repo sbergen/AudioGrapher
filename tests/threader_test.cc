@@ -16,7 +16,7 @@ class ThreaderTest : public CppUnit::TestFixture
 	void setUp()
 	{
 		frames = 128;
-		random_data = Utils::init_random_data (frames, 1.0);
+		random_data = TestUtils::init_random_data (frames, 1.0);
 		
 		zero_data = new float[frames];
 		memset (zero_data, 0, frames * sizeof(float));
@@ -55,12 +55,12 @@ class ThreaderTest : public CppUnit::TestFixture
 		ProcessContext<float> c (random_data, frames);
 		threader->process (c);
 		
-		CPPUNIT_ASSERT (Utils::array_equals(random_data, sink_a->get_array(), frames));
-		CPPUNIT_ASSERT (Utils::array_equals(random_data, sink_b->get_array(), frames));
-		CPPUNIT_ASSERT (Utils::array_equals(random_data, sink_c->get_array(), frames));
-		CPPUNIT_ASSERT (Utils::array_equals(random_data, sink_d->get_array(), frames));
-		CPPUNIT_ASSERT (Utils::array_equals(random_data, sink_e->get_array(), frames));
-		CPPUNIT_ASSERT (Utils::array_equals(random_data, sink_f->get_array(), frames));
+		CPPUNIT_ASSERT (TestUtils::array_equals(random_data, sink_a->get_array(), frames));
+		CPPUNIT_ASSERT (TestUtils::array_equals(random_data, sink_b->get_array(), frames));
+		CPPUNIT_ASSERT (TestUtils::array_equals(random_data, sink_c->get_array(), frames));
+		CPPUNIT_ASSERT (TestUtils::array_equals(random_data, sink_d->get_array(), frames));
+		CPPUNIT_ASSERT (TestUtils::array_equals(random_data, sink_e->get_array(), frames));
+		CPPUNIT_ASSERT (TestUtils::array_equals(random_data, sink_f->get_array(), frames));
 	}
 	
 	void testRemoveOutput()
@@ -83,12 +83,12 @@ class ThreaderTest : public CppUnit::TestFixture
 		ProcessContext<float> zc (zero_data, frames);
 		threader->process (zc);
 		
-		CPPUNIT_ASSERT (Utils::array_equals(random_data, sink_a->get_array(), frames));
-		CPPUNIT_ASSERT (Utils::array_equals(random_data, sink_b->get_array(), frames));
-		CPPUNIT_ASSERT (Utils::array_equals(zero_data, sink_c->get_array(), frames));
-		CPPUNIT_ASSERT (Utils::array_equals(zero_data, sink_d->get_array(), frames));
-		CPPUNIT_ASSERT (Utils::array_equals(zero_data, sink_e->get_array(), frames));
-		CPPUNIT_ASSERT (Utils::array_equals(random_data, sink_f->get_array(), frames));
+		CPPUNIT_ASSERT (TestUtils::array_equals(random_data, sink_a->get_array(), frames));
+		CPPUNIT_ASSERT (TestUtils::array_equals(random_data, sink_b->get_array(), frames));
+		CPPUNIT_ASSERT (TestUtils::array_equals(zero_data, sink_c->get_array(), frames));
+		CPPUNIT_ASSERT (TestUtils::array_equals(zero_data, sink_d->get_array(), frames));
+		CPPUNIT_ASSERT (TestUtils::array_equals(zero_data, sink_e->get_array(), frames));
+		CPPUNIT_ASSERT (TestUtils::array_equals(random_data, sink_f->get_array(), frames));
 	}
 	
 	void testClearOutputs()
@@ -107,12 +107,12 @@ class ThreaderTest : public CppUnit::TestFixture
 		ProcessContext<float> zc (zero_data, frames);
 		threader->process (zc);
 		
-		CPPUNIT_ASSERT (Utils::array_equals(random_data, sink_a->get_array(), frames));
-		CPPUNIT_ASSERT (Utils::array_equals(random_data, sink_b->get_array(), frames));
-		CPPUNIT_ASSERT (Utils::array_equals(random_data, sink_c->get_array(), frames));
-		CPPUNIT_ASSERT (Utils::array_equals(random_data, sink_d->get_array(), frames));
-		CPPUNIT_ASSERT (Utils::array_equals(random_data, sink_e->get_array(), frames));
-		CPPUNIT_ASSERT (Utils::array_equals(random_data, sink_f->get_array(), frames));
+		CPPUNIT_ASSERT (TestUtils::array_equals(random_data, sink_a->get_array(), frames));
+		CPPUNIT_ASSERT (TestUtils::array_equals(random_data, sink_b->get_array(), frames));
+		CPPUNIT_ASSERT (TestUtils::array_equals(random_data, sink_c->get_array(), frames));
+		CPPUNIT_ASSERT (TestUtils::array_equals(random_data, sink_d->get_array(), frames));
+		CPPUNIT_ASSERT (TestUtils::array_equals(random_data, sink_e->get_array(), frames));
+		CPPUNIT_ASSERT (TestUtils::array_equals(random_data, sink_f->get_array(), frames));
 	}
 	
 	void testExceptions()
@@ -127,10 +127,10 @@ class ThreaderTest : public CppUnit::TestFixture
 		ProcessContext<float> c (random_data, frames);
 		CPPUNIT_ASSERT_THROW (threader->process (c), Exception);
 		
-		CPPUNIT_ASSERT (Utils::array_equals(random_data, sink_a->get_array(), frames));
-		CPPUNIT_ASSERT (Utils::array_equals(random_data, sink_b->get_array(), frames));
-		CPPUNIT_ASSERT (Utils::array_equals(random_data, sink_c->get_array(), frames));
-		CPPUNIT_ASSERT (Utils::array_equals(random_data, sink_e->get_array(), frames));
+		CPPUNIT_ASSERT (TestUtils::array_equals(random_data, sink_a->get_array(), frames));
+		CPPUNIT_ASSERT (TestUtils::array_equals(random_data, sink_b->get_array(), frames));
+		CPPUNIT_ASSERT (TestUtils::array_equals(random_data, sink_c->get_array(), frames));
+		CPPUNIT_ASSERT (TestUtils::array_equals(random_data, sink_e->get_array(), frames));
 	}
 
   private:

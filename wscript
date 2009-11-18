@@ -52,6 +52,7 @@ def build(bld):
 		src/sample_format_converter.cc
 		src/sndfile_writer.cc
 		src/routines.cc
+		src/utils.cc
 	'''
 	audiographer.name           = 'libaudiographer'
 	audiographer.target         = 'audiographer'
