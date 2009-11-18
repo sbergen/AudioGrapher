@@ -19,7 +19,7 @@ class DeInterleaverTest : public CppUnit::TestFixture
 		channels = 3;
 		frames_per_channel = 128;
 		total_frames = channels * frames_per_channel;
-		random_data = Utils::init_random_data (total_frames, 1.0);
+		random_data = TestUtils::init_random_data (total_frames, 1.0);
 
 		deinterleaver.reset (new DeInterleaver<float>());
 		sink_a.reset (new VectorSink<float>());

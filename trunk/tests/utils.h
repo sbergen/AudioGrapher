@@ -16,7 +16,7 @@
 #include <cstdlib>
 #include <ctime>
 
-struct Utils
+struct TestUtils
 {
 	template<typename T>
 	static bool array_equals (T const * a, T const * b, nframes_t frames)

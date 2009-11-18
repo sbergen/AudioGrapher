@@ -16,11 +16,11 @@ class SilenceTrimmerTest : public CppUnit::TestFixture
 	void setUp()
 	{
 		frames = 128;
-		random_data = Utils::init_random_data(frames);
+		random_data = TestUtils::init_random_data(frames);
 		zero_data = new float[frames];
 		memset(zero_data, 0, frames * sizeof(float));
 		
-		half_random_data = Utils::init_random_data(frames);
+		half_random_data = TestUtils::init_random_data(frames);
 		memset(half_random_data, 0, (frames / 2) * sizeof(float));
 		
 		trimmer.reset (new SilenceTrimmer<float>());
@@ -32,12 +32,14 @@ class SilenceTrimmerTest : public CppUnit::TestFixture
 		delete [] random_data;
 		delete [] zero_data;
 		delete [] half_random_data;
+		
+		AudioGrapher::Utils::free_resources();
 	}
 
 	void testFullBuffers()
 	{
 		trimmer->add_output (sink);
-		trimmer->init(frames / 2);
+		AudioGrapher::Utils::init_zeros<float>(frames / 2);
 		
 		{
 		ProcessContext<float> c (zero_data, frames);
@@ -51,7 +53,7 @@ class SilenceTrimmerTest : public CppUnit::TestFixture
 		trimmer->process (c);
 		nframes_t frames_processed = sink->get_data().size();
 		CPPUNIT_ASSERT_EQUAL (frames, frames_processed);
-		CPPUNIT_ASSERT (Utils::array_equals (sink->get_array(), random_data, frames));
+		CPPUNIT_ASSERT (TestUtils::array_equals (sink->get_array(), random_data, frames));
 		}
 		
 		{
@@ -66,9 +68,9 @@ class SilenceTrimmerTest : public CppUnit::TestFixture
 		trimmer->process (c);
 		nframes_t frames_processed = sink->get_data().size();
 		CPPUNIT_ASSERT_EQUAL (3 * frames, frames_processed);
-		CPPUNIT_ASSERT (Utils::array_equals (sink->get_array(), random_data, frames));
-		CPPUNIT_ASSERT (Utils::array_equals (&sink->get_array()[frames], zero_data, frames));
-		CPPUNIT_ASSERT (Utils::array_equals (&sink->get_array()[2 * frames], random_data, frames));
+		CPPUNIT_ASSERT (TestUtils::array_equals (sink->get_array(), random_data, frames));
+		CPPUNIT_ASSERT (TestUtils::array_equals (&sink->get_array()[frames], zero_data, frames));
+		CPPUNIT_ASSERT (TestUtils::array_equals (&sink->get_array()[2 * frames], random_data, frames));
 		}
 		
 		{
@@ -82,14 +84,14 @@ class SilenceTrimmerTest : public CppUnit::TestFixture
 	void testPartialBuffers()
 	{
 		trimmer->add_output (sink);
-		trimmer->init(frames / 4);
+		AudioGrapher::Utils::init_zeros<float>(frames / 4);
 		
 		{
 		ProcessContext<float> c (half_random_data, frames);
 		trimmer->process (c);
 		nframes_t frames_processed = sink->get_data().size();
 		CPPUNIT_ASSERT_EQUAL (frames / 2, frames_processed);
-		CPPUNIT_ASSERT (Utils::array_equals (sink->get_array(), &half_random_data[frames / 2], frames / 2));
+		CPPUNIT_ASSERT (TestUtils::array_equals (sink->get_array(), &half_random_data[frames / 2], frames / 2));
 		}
 		
 		{
@@ -104,7 +106,7 @@ class SilenceTrimmerTest : public CppUnit::TestFixture
 		trimmer->process (c);
 		nframes_t frames_processed = sink->get_data().size();
 		CPPUNIT_ASSERT_EQUAL (2 * frames + frames / 2, frames_processed);
-		CPPUNIT_ASSERT (Utils::array_equals (&sink->get_array()[frames + frames / 2], half_random_data, frames));
+		CPPUNIT_ASSERT (TestUtils::array_equals (&sink->get_array()[frames + frames / 2], half_random_data, frames));
 		}
 	}
 	

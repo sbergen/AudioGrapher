@@ -20,6 +20,11 @@ class Normalizer : public ListedSource<float>, Sink<float>
 	{
 		target = pow (10.0f, target_dB * 0.05f);
 	}
+	
+	~Normalizer()
+	{
+		delete [] buffer;
+	}
 
 	void set_peak (float peak)
 	{
@@ -34,7 +39,7 @@ class Normalizer : public ListedSource<float>, Sink<float>
 
 	void alloc_buffer(nframes_t frames)
 	{
-		delete buffer;
+		delete [] buffer;
 		buffer = new float[frames];
 		buffer_size = frames;
 	}

@@ -15,7 +15,7 @@ class IdentityVertexTest : public CppUnit::TestFixture
 	void setUp()
 	{
 		frames = 128;
-		random_data = Utils::init_random_data(frames);
+		random_data = TestUtils::init_random_data(frames);
 		
 		zero_data = new float[frames];
 		memset (zero_data, 0, frames * sizeof(float));
@@ -47,8 +47,8 @@ class IdentityVertexTest : public CppUnit::TestFixture
 		frames_output = sink_b->get_data().size();
 		CPPUNIT_ASSERT_EQUAL (frames, frames_output);
 		
-		CPPUNIT_ASSERT (Utils::array_equals (random_data, sink_a->get_array(), frames));
-		CPPUNIT_ASSERT (Utils::array_equals (random_data, sink_b->get_array(), frames));
+		CPPUNIT_ASSERT (TestUtils::array_equals (random_data, sink_a->get_array(), frames));
+		CPPUNIT_ASSERT (TestUtils::array_equals (random_data, sink_b->get_array(), frames));
 	}
 	
 	void testRemoveOutput()
@@ -64,8 +64,8 @@ class IdentityVertexTest : public CppUnit::TestFixture
 		ProcessContext<float> zc (zero_data, frames);
 		vertex->process (zc);
 		
-		CPPUNIT_ASSERT (Utils::array_equals (random_data, sink_a->get_array(), frames));
-		CPPUNIT_ASSERT (Utils::array_equals (zero_data, sink_b->get_array(), frames));
+		CPPUNIT_ASSERT (TestUtils::array_equals (random_data, sink_a->get_array(), frames));
+		CPPUNIT_ASSERT (TestUtils::array_equals (zero_data, sink_b->get_array(), frames));
 	}
 	
 	void testClearOutputs()
@@ -81,8 +81,8 @@ class IdentityVertexTest : public CppUnit::TestFixture
 		ProcessContext<float> zc (zero_data, frames);
 		vertex->process (zc);
 		
-		CPPUNIT_ASSERT (Utils::array_equals (random_data, sink_a->get_array(), frames));
-		CPPUNIT_ASSERT (Utils::array_equals (random_data, sink_b->get_array(), frames));
+		CPPUNIT_ASSERT (TestUtils::array_equals (random_data, sink_a->get_array(), frames));
+		CPPUNIT_ASSERT (TestUtils::array_equals (random_data, sink_b->get_array(), frames));
 	}
 
   private:
