@@ -153,6 +153,10 @@ SampleRateConverter::process (ProcessContext<float> const & c)
 		DEBUG ("src_data.output_frames_gen: " << src_data.output_frames_gen << ", leftover_frames: " << leftover_frames);
 
 	} while (leftover_frames > frames);
+	
+	if (c.has_flag(ProcessContext<float>::EndOfInput)) {
+		set_end_of_input();
+	}
 }
 
 void SampleRateConverter::set_end_of_input ()
@@ -161,6 +165,10 @@ void SampleRateConverter::set_end_of_input ()
 	
 	float f;
 	ProcessContext<float> const dummy (&f);
+	
+	/* No idea why this has to be done twice for all data to be written,
+	 * but that just seems to be the way it is...
+	 */
 	process (dummy);
 	process (dummy);
 }

@@ -27,7 +27,7 @@ class SndfileWriterTest : public CppUnit::TestFixture
 		std::string filename ("test.wav");
 		writer.reset (new SndfileWriter<float>(channels, 44100, SF_FORMAT_WAV | SF_FORMAT_FLOAT, filename));
 		ProcessContext<float> c (random_data, frames, channels);
-		writer->set_end_of_input();
+		c.set_flag (ProcessContext<float>::EndOfInput);
 		writer->process (c);
 	}
 

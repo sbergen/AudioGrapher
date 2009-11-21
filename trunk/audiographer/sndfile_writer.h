@@ -15,7 +15,6 @@ class SndfileWriterBase
 {
   public:
 
-	void set_end_of_input () { end_of_input = true; }
 	SNDFILE * get_sndfile () const { return sndfile; }
 
   protected:
@@ -25,7 +24,6 @@ class SndfileWriterBase
 	std::string    path;
 	SF_INFO        sf_info;
 	SNDFILE *      sndfile;
-	bool           end_of_input;
 };
 
 
