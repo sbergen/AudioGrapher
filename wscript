@@ -30,12 +30,12 @@ def configure(conf):
 	conf.check_tool('compiler_cxx')
 	
 	autowaf.check_pkg(conf, 'cppunit', uselib_store='CPPUNIT', atleast_version='1.12.0', mandatory=False)
-	autowaf.check_pkg(conf, 'glib-2.0', uselib_store='GLIB', atleast_version='2.2')
-	autowaf.check_pkg(conf, 'glibmm-2.4', uselib_store='GLIBMM', atleast_version='2.14.0')
-	autowaf.check_pkg(conf, 'gthread-2.0', uselib_store='GTHREAD', atleast_version='2.14.0')
-	autowaf.check_pkg(conf, 'samplerate', uselib_store='SAMPLERATE', atleast_version='0.1.7')
-	autowaf.check_pkg(conf, 'sndfile', uselib_store='SNDFILE', atleast_version='1.0.18')
-
+	autowaf.check_pkg(conf, 'glib-2.0', uselib_store='GLIB', atleast_version='2.2', mandatory=False)
+	autowaf.check_pkg(conf, 'glibmm-2.4', uselib_store='GLIBMM', atleast_version='2.14.0', mandatory=False)
+	autowaf.check_pkg(conf, 'gthread-2.0', uselib_store='GTHREAD', atleast_version='2.14.0', mandatory=False)
+	autowaf.check_pkg(conf, 'samplerate', uselib_store='SAMPLERATE', atleast_version='0.1.7', mandatory=False)
+	autowaf.check_pkg(conf, 'sndfile', uselib_store='SNDFILE', atleast_version='1.0.18', mandatory=False)
+	
 	# Boost headers
 	autowaf.check_header(conf, 'boost/shared_ptr.hpp')
 	autowaf.check_header(conf, 'boost/format.hpp')
@@ -44,16 +44,27 @@ def build(bld):
 
 	# Headers
 	#bld.install_files('${INCLUDEDIR}/audiographer', 'audiographer/*.h')
+	
+	bld.env['HAVE_ALL_GTHREAD'] = bld.env['HAVE_GLIB'] and bld.env['HAVE_GLIBMM'] and bld.env['HAVE_GTHREAD']
 
 	audiographer = bld.new_task_gen('cxx', 'shlib')
 	audiographer.source = '''
 		src/gdither/gdither.cc
-		src/sr_converter.cc
 		src/sample_format_converter.cc
-		src/sndfile_writer.cc
 		src/routines.cc
 		src/utils.cc
 	'''
+	
+	if bld.env['HAVE_SNDFILE']:
+		audiographer.source += '''
+			src/sndfile_writer.cc
+		'''
+	
+	if bld.env['HAVE_SAMPLERATE']:
+		audiographer.source += '''
+			src/sr_converter.cc
+		'''
+	
 	audiographer.name           = 'libaudiographer'
 	audiographer.target         = 'audiographer'
 	audiographer.export_incdirs = ['.', './src']
@@ -71,16 +82,29 @@ def build(bld):
 			tests/interleaver_test.cc
 			tests/deinterleaver_test.cc
 			tests/interleaver_deinterleaver_test.cc
-			tests/threader_test.cc
-			tests/sr_converter_test.cc
 			tests/chunker_test.cc
 			tests/sample_format_converter_test.cc
 			tests/test_runner.cc
-			tests/sndfile_writer_test.cc
 			tests/peak_reader_test.cc
 			tests/normalizer_test.cc
 			tests/silence_trimmer_test.cc
 		'''
+		
+		if bld.env['HAVE_ALL_GTHREAD']:
+			obj.source += '''
+				tests/threader_test.cc
+			'''
+		
+		if bld.env['HAVE_SNDFILE']:
+			obj.source += '''
+				tests/sndfile_writer_test.cc
+			'''
+
+		if bld.env['HAVE_SAMPLERATE']:
+			obj.source += '''
+				tests/sr_converter_test.cc
+			'''
+		
 		obj.uselib_local = 'libaudiographer'
 		obj.uselib       = 'CPPUNIT GLIBMM'
 		obj.target       = 'run-tests'
