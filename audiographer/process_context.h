@@ -65,12 +65,9 @@ class ConstProcessContext
 	ConstProcessContext (T const * data = 0, nframes_t frames = 0, ChannelCount channels = 1)
 	  : context (const_cast<T *>(data), frames, channels) {}
 
-	
 	inline operator ProcessContext<T> const & () { return context; }
 	inline ProcessContext<T> const & operator() () { return context; }
 	inline ProcessContext<T> const * operator& () { return &context; }
-	inline ProcessContext<T> const * operator-> () { return &context; }
-	
 
   private:
 	  ProcessContext<T> context;

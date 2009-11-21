@@ -16,7 +16,6 @@ using boost::format;
 
 SndfileWriterBase::SndfileWriterBase (int channels, nframes_t samplerate, int format, string const & path)
   : path (path)
-  , end_of_input (false)
 {
 	char errbuf[256];
 
@@ -102,7 +101,7 @@ SndfileWriter<T>::process (ProcessContext<T> const & c)
 		throw Exception (*this, str ( format("Could not write data to output file (%1%)") % errbuf));
 	}
 
-	if (end_of_input) {
+	if (c.has_flag(ProcessContext<T>::EndOfInput)) {
 		sf_write_sync (sndfile);
 	}
 }

@@ -22,12 +22,12 @@ class SampleRateConverter : public ListedSource<float>, public Sink<float>
 	// returns max amount of frames that will be output
 	nframes_t allocate_buffers (nframes_t max_frames);
 	
-	// should be RT safe (check libsamplerate to be sure)
+	// could be RT safe (check libsamplerate to be sure)
 	void process (ProcessContext<float> const & c);
-	void set_end_of_input ();
 
   private:
 
+	void set_end_of_input ();
 	void reset ();
 
 	bool           active;
