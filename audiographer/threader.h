@@ -66,6 +66,8 @@ class Threader : public Source<T>, public Sink<T>
 		wait();
 	}
 	
+	using Sink<T>::process;
+	
   private:
 
 	void wait()

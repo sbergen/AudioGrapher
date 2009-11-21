@@ -24,6 +24,7 @@ class SampleRateConverter : public ListedSource<float>, public Sink<float>
 	
 	// could be RT safe (check libsamplerate to be sure)
 	void process (ProcessContext<float> const & c);
+	using Sink<float>::process;
 
   private:
 

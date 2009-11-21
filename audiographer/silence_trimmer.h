@@ -42,6 +42,7 @@ class SilenceTrimmer : public ListedSource<T>, Sink<T>
 			}
 		}
 	}
+	using Sink<T>::process;
 
   private:
 	bool find_first_non_zero_sample (ProcessContext<T> const & c, nframes_t & result_frame)

@@ -67,6 +67,9 @@ class VectorSink : public AudioGrapher::Sink<T>
 		memcpy (&data[0], c.data(), c.frames() * sizeof(T));
 	}
 
+	void process (AudioGrapher::ProcessContext<T> & c) { AudioGrapher::Sink<T>::process (c); }
+	using AudioGrapher::Sink<T>::process;
+
 	std::vector<T> const & get_data() const { return data; }
 	T const * get_array() const { return &data[0]; }
 	void reset() { data.clear(); }
@@ -87,6 +90,7 @@ class AppendingVectorSink : public VectorSink<T>
 		memcpy (&data[total_frames], c.data(), c.frames() * sizeof(T));
 		total_frames += c.frames();
 	}
+	using AudioGrapher::Sink<T>::process;
 
 	void reset ()
 	{
@@ -107,6 +111,7 @@ class ThrowingSink : public AudioGrapher::Sink<T>
 	{
 		throw AudioGrapher::Exception(*this, "ThrowingSink threw!");
 	}
+	using AudioGrapher::Sink<T>::process;
 };
 
 #endif // AUDIOGRAPHER_TESTS_UTILS_H

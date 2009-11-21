@@ -199,7 +199,7 @@ def configure(conf):
 	if Options.options.strict:
 		conf.env.append_value('CCFLAGS', [ '-std=c99', '-pedantic' ])
 		conf.env.append_value('CXXFLAGS', [ '-ansi'])
-		append_cxx_flags('-Wall -Wextra -Wno-unused-parameter')
+		append_cxx_flags('-Wall -Wextra -Wno-unused-parameter -Woverloaded-virtual')
 	append_cxx_flags('-fPIC -DPIC -fshow-column')
 	g_step = 2
 	

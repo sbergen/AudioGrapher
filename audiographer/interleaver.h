@@ -39,6 +39,8 @@ class Interleaver : public ListedSource<T>
 			parent.write_channel (c, channel);
 		}
 		
+		using Sink<T>::process;
+		
 		nframes_t frames() { return frames_written; }
 		void reset() { frames_written = 0; }
 		
