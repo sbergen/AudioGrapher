@@ -25,6 +25,10 @@ class Sink  {
 	  * so this function does not need to be overriden.
 	  * However, if the sink can do in-place processing,
 	  * overriding this is highly recommended.
+	  *
+	  * If this is not overridden adding "using Sink<T>::process;"
+	  * to the deriving class declaration is suggested to avoid
+	  * warnings about hidden virtual functions.
 	  */
 	inline virtual void process (ProcessContext<T> & context)
 	{

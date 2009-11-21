@@ -39,6 +39,7 @@ class Chunker : public ListedSource<T>, public Sink<T>
 			position =  context.frames() - frames_to_copy;
 		}
 	}
+	using Sink<T>::process;
 	
   private:
 	nframes_t chunk_size;

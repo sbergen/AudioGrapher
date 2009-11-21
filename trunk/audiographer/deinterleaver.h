@@ -27,6 +27,7 @@ class DeInterleaver : public Sink<T>
 	void init (unsigned int num_channels, nframes_t max_frames_per_channel);
 	SourcePtr output (unsigned int channel);
 	void process (ProcessContext<T> const & c);
+	using Sink<T>::process;
 	
   private:
 
