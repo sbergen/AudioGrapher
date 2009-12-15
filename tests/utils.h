@@ -16,6 +16,8 @@
 #include <cstdlib>
 #include <ctime>
 
+using AudioGrapher::nframes_t;
+
 struct TestUtils
 {
 	template<typename T>

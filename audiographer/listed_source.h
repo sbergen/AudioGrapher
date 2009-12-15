@@ -33,7 +33,7 @@ class ListedSource : public Source<T>
 	{
 		if (output_size_is_one()) {
 			// only one output, so we can keep this non-const
-			(*outputs.begin())->process (c);
+			outputs.front()->process (c);
 		} else {
 			output (const_cast<ProcessContext<T> const &> (c));
 		}

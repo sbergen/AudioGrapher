@@ -67,7 +67,7 @@ Interleaver<T>::write_channel (ProcessContext<T> const & c, unsigned int channel
 	
 	nframes_t const ready_frames = ready_to_output();
 	if (ready_frames) {
-		ProcessContext<T> c_out (buffer, ready_frames, channels);
+		ProcessContext<T> c_out (c, buffer, ready_frames, channels);
 		ListedSource<T>::output (c_out);
 		reset_channels ();
 	}

@@ -31,27 +31,27 @@ class SampleFormatConverterTest : public CppUnit::TestFixture
 	void testInit()
 	{
 		boost::shared_ptr<SampleFormatConverter<float> > f_converter (new SampleFormatConverter<float>(1));
-		f_converter->init (frames, f_converter->D_Tri, 32); // Doesn't throw
-		CPPUNIT_ASSERT_THROW (f_converter->init (frames, f_converter->D_Tri, 24), Exception);
-		CPPUNIT_ASSERT_THROW (f_converter->init (frames, f_converter->D_Tri, 48), Exception);
+		f_converter->init (frames, D_Tri, 32); // Doesn't throw
+		CPPUNIT_ASSERT_THROW (f_converter->init (frames, D_Tri, 24), Exception);
+		CPPUNIT_ASSERT_THROW (f_converter->init (frames, D_Tri, 48), Exception);
 		
 		boost::shared_ptr<SampleFormatConverter<int32_t> > i_converter (new SampleFormatConverter<int32_t>(1));
-		i_converter->init (frames, i_converter->D_Tri, 32); // Doesn't throw
-		i_converter->init (frames, i_converter->D_Tri, 24); // Doesn't throw
-		CPPUNIT_ASSERT_THROW (i_converter->init (frames, i_converter->D_Tri, 8), Exception);
-		CPPUNIT_ASSERT_THROW (i_converter->init (frames, i_converter->D_Tri, 16), Exception);
-		CPPUNIT_ASSERT_THROW (i_converter->init (frames, i_converter->D_Tri, 48), Exception);
+		i_converter->init (frames, D_Tri, 32); // Doesn't throw
+		i_converter->init (frames, D_Tri, 24); // Doesn't throw
+		CPPUNIT_ASSERT_THROW (i_converter->init (frames, D_Tri, 8), Exception);
+		CPPUNIT_ASSERT_THROW (i_converter->init (frames, D_Tri, 16), Exception);
+		CPPUNIT_ASSERT_THROW (i_converter->init (frames, D_Tri, 48), Exception);
 		
 		boost::shared_ptr<SampleFormatConverter<int16_t> > i16_converter (new SampleFormatConverter<int16_t>(1));
-		i16_converter->init (frames, i16_converter->D_Tri, 16); // Doesn't throw
-		CPPUNIT_ASSERT_THROW (i16_converter->init (frames, i16_converter->D_Tri, 8), Exception);
-		CPPUNIT_ASSERT_THROW (i16_converter->init (frames, i16_converter->D_Tri, 32), Exception);
-		CPPUNIT_ASSERT_THROW (i16_converter->init (frames, i16_converter->D_Tri, 48), Exception);
+		i16_converter->init (frames, D_Tri, 16); // Doesn't throw
+		CPPUNIT_ASSERT_THROW (i16_converter->init (frames, D_Tri, 8), Exception);
+		CPPUNIT_ASSERT_THROW (i16_converter->init (frames, D_Tri, 32), Exception);
+		CPPUNIT_ASSERT_THROW (i16_converter->init (frames, D_Tri, 48), Exception);
 		
 		boost::shared_ptr<SampleFormatConverter<uint8_t> > ui_converter (new SampleFormatConverter<uint8_t>(1));
-		ui_converter->init (frames, ui_converter->D_Tri, 8); // Doesn't throw
-		CPPUNIT_ASSERT_THROW (ui_converter->init (frames, ui_converter->D_Tri, 4), Exception);
-		CPPUNIT_ASSERT_THROW (ui_converter->init (frames, ui_converter->D_Tri, 16), Exception);
+		ui_converter->init (frames, D_Tri, 8); // Doesn't throw
+		CPPUNIT_ASSERT_THROW (ui_converter->init (frames, D_Tri, 4), Exception);
+		CPPUNIT_ASSERT_THROW (ui_converter->init (frames, D_Tri, 16), Exception);
 	}
 
 	void testFrameCount()
@@ -59,26 +59,26 @@ class SampleFormatConverterTest : public CppUnit::TestFixture
 		boost::shared_ptr<SampleFormatConverter<int32_t> > converter (new SampleFormatConverter<int32_t>(1));
 		boost::shared_ptr<VectorSink<int32_t> > sink (new VectorSink<int32_t>());
 		
-		converter->init (frames, converter->D_Tri, 32);
+		converter->init (frames, D_Tri, 32);
 		converter->add_output (sink);
 		nframes_t frames_output = 0;
 		
 		{
-		ProcessContext<float> pc(random_data, frames / 2);
+		ProcessContext<float> pc(random_data, frames / 2, 1);
 		converter->process (pc);
 		frames_output = sink->get_data().size();
 		CPPUNIT_ASSERT_EQUAL (frames / 2, frames_output);
 		}
 		
 		{
-		ProcessContext<float> pc(random_data, frames);
+		ProcessContext<float> pc(random_data, frames, 1);
 		converter->process (pc);
 		frames_output = sink->get_data().size();
 		CPPUNIT_ASSERT_EQUAL (frames, frames_output);
 		}
 		
 		{
-		ProcessContext<float> pc(random_data, frames + 1);
+		ProcessContext<float> pc(random_data, frames + 1, 1);
 		CPPUNIT_ASSERT_THROW(converter->process (pc), Exception);
 		}
 	}
@@ -89,11 +89,11 @@ class SampleFormatConverterTest : public CppUnit::TestFixture
 		boost::shared_ptr<VectorSink<float> > sink (new VectorSink<float>());
 		nframes_t frames_output = 0;
 		
-		converter->init(frames, SampleFormatConverter<float>::D_Tri, 32);
+		converter->init(frames, D_Tri, 32);
 		converter->add_output (sink);
 		
 		converter->set_clip_floats (false);
-		ProcessContext<float> const pc(random_data, frames);
+		ProcessContext<float> const pc(random_data, frames, 1);
 		converter->process (pc);
 		frames_output = sink->get_data().size();
 		CPPUNIT_ASSERT_EQUAL (frames, frames_output);
@@ -122,10 +122,10 @@ class SampleFormatConverterTest : public CppUnit::TestFixture
 		boost::shared_ptr<VectorSink<int32_t> > sink (new VectorSink<int32_t>());
 		nframes_t frames_output = 0;
 		
-		converter->init(frames, SampleFormatConverter<int32_t>::D_Tri, 32);
+		converter->init(frames, D_Tri, 32);
 		converter->add_output (sink);
 		
-		ProcessContext<float> pc(random_data, frames);
+		ProcessContext<float> pc(random_data, frames, 1);
 		converter->process (pc);
 		frames_output = sink->get_data().size();
 		CPPUNIT_ASSERT_EQUAL (frames, frames_output);
@@ -138,10 +138,10 @@ class SampleFormatConverterTest : public CppUnit::TestFixture
 		boost::shared_ptr<VectorSink<int32_t> > sink (new VectorSink<int32_t>());
 		nframes_t frames_output = 0;
 		
-		converter->init(frames, SampleFormatConverter<int32_t>::D_Tri, 24);
+		converter->init(frames, D_Tri, 24);
 		converter->add_output (sink);
 		
-		ProcessContext<float> pc(random_data, frames);
+		ProcessContext<float> pc(random_data, frames, 1);
 		converter->process (pc);
 		frames_output = sink->get_data().size();
 		CPPUNIT_ASSERT_EQUAL (frames, frames_output);
@@ -154,10 +154,10 @@ class SampleFormatConverterTest : public CppUnit::TestFixture
 		boost::shared_ptr<VectorSink<int16_t> > sink (new VectorSink<int16_t>());
 		nframes_t frames_output = 0;
 		
-		converter->init(frames, SampleFormatConverter<int16_t>::D_Tri, 16);
+		converter->init(frames, D_Tri, 16);
 		converter->add_output (sink);
 		
-		ProcessContext<float> pc(random_data, frames);
+		ProcessContext<float> pc(random_data, frames, 1);
 		converter->process (pc);
 		frames_output = sink->get_data().size();
 		CPPUNIT_ASSERT_EQUAL (frames, frames_output);
@@ -170,10 +170,10 @@ class SampleFormatConverterTest : public CppUnit::TestFixture
 		boost::shared_ptr<VectorSink<uint8_t> > sink (new VectorSink<uint8_t>());
 		nframes_t frames_output = 0;
 		
-		converter->init(frames, SampleFormatConverter<uint8_t>::D_Tri, 8);
+		converter->init(frames, D_Tri, 8);
 		converter->add_output (sink);
 		
-		ProcessContext<float> pc(random_data, frames);
+		ProcessContext<float> pc(random_data, frames, 1);
 		converter->process (pc);
 		frames_output = sink->get_data().size();
 		CPPUNIT_ASSERT_EQUAL (frames, frames_output);
@@ -186,10 +186,10 @@ class SampleFormatConverterTest : public CppUnit::TestFixture
 		boost::shared_ptr<VectorSink<int32_t> > sink (new VectorSink<int32_t>());
 		nframes_t frames_output = 0;
 		
-		converter->init(frames, SampleFormatConverter<int32_t>::D_Tri, 32);
+		converter->init(frames, D_Tri, 32);
 		converter->add_output (sink);
 		
-		ProcessContext<float> pc(random_data, 4);
+		ProcessContext<float> pc(random_data, 4, 1);
 		CPPUNIT_ASSERT_THROW (converter->process (pc), Exception);
 		
 		pc.frames() = frames - (frames % 3);

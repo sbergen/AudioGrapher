@@ -35,19 +35,19 @@ class InterleaverTest : public CppUnit::TestFixture
 	void testUninitialized()
 	{
 		interleaver.reset (new Interleaver<float>());
-		ProcessContext<float> c (random_data, frames);
+		ProcessContext<float> c (random_data, frames, 1);
 		CPPUNIT_ASSERT_THROW (interleaver->input(0)->process (c), Exception);
 	}
 
 	void testInvalidInputIndex()
 	{
-		ProcessContext<float> c (random_data, frames);
+		ProcessContext<float> c (random_data, frames, 1);
 		CPPUNIT_ASSERT_THROW (interleaver->input (3)->process (c), Exception);
 	}
 
 	void testInvalidInputSize()
 	{
-		ProcessContext<float> c (random_data, frames + 1);
+		ProcessContext<float> c (random_data, frames + 1, 1);
 		CPPUNIT_ASSERT_THROW (interleaver->input (0)->process (c), Exception);
 		
 		c.frames() = frames;
@@ -66,7 +66,7 @@ class InterleaverTest : public CppUnit::TestFixture
 	{
 		interleaver->add_output (sink);
 
-		ProcessContext<float> c (random_data, frames);
+		ProcessContext<float> c (random_data, frames, 1);
 		interleaver->input (0)->process (c);
 		interleaver->input (1)->process (c);
 		interleaver->input (2)->process (c);
@@ -91,7 +91,7 @@ class InterleaverTest : public CppUnit::TestFixture
 		interleaver->add_output (sink);
 
 		// input zero frames to all inputs
-		ProcessContext<float> c (random_data, 0);
+		ProcessContext<float> c (random_data, 0, 1);
 		interleaver->input (0)->process (c);
 		interleaver->input (1)->process (c);
 		interleaver->input (2)->process (c);
@@ -112,7 +112,7 @@ class InterleaverTest : public CppUnit::TestFixture
 	void testChannelSync()
 	{
 		interleaver->add_output (sink);
-		ProcessContext<float> c (random_data, frames);
+		ProcessContext<float> c (random_data, frames, 1);
 		interleaver->input (0)->process (c);
 		CPPUNIT_ASSERT_THROW (interleaver->input (0)->process (c), Exception);		
 	}

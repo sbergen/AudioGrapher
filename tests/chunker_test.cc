@@ -31,7 +31,7 @@ class ChunkerTest : public CppUnit::TestFixture
 		chunker->add_output (sink);
 		nframes_t frames_output = 0;
 		
-		ProcessContext<float> const context (random_data, frames);
+		ProcessContext<float> const context (random_data, frames, 1);
 		
 		chunker->process (context);
 		frames_output = sink->get_data().size();
@@ -63,8 +63,8 @@ class ChunkerTest : public CppUnit::TestFixture
 		chunker->add_output (sink);
 		nframes_t frames_output = 0;
 		
-		ProcessContext<float> const half_context (random_data, frames / 2);
-		ProcessContext<float> const context (random_data, frames);
+		ProcessContext<float> const half_context (random_data, frames / 2, 1);
+		ProcessContext<float> const context (random_data, frames, 1);
 		
 		// 0.5
 		chunker->process (half_context);

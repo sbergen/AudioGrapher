@@ -13,7 +13,7 @@ template<typename T>
 class Source
 {
   public:
-	virtual ~Source () {}
+	virtual ~Source () { }
 	
 	typedef boost::shared_ptr<Sink<T> > SinkPtr;
 	

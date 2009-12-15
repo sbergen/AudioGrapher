@@ -60,7 +60,7 @@ class Threader : public Source<T>, public Sink<T>
 		unsigned int outs = outputs.size();
 		g_atomic_int_add (&readers, outs);
 		for (unsigned int i = 0; i < outs; ++i) {
-			thread_pool.push (sigc::bind (sigc::mem_fun (this, &Threader::process_channel), c, i));
+			thread_pool.push (sigc::bind (sigc::mem_fun (this, &Threader::process_output), c, i));
 		}
 		
 		wait();
@@ -86,10 +86,10 @@ class Threader : public Source<T>, public Sink<T>
 		}
 	}
 	
-	void process_channel(ProcessContext<T> const & c, unsigned int channel)
+	void process_output(ProcessContext<T> const & c, unsigned int output)
 	{
 		try {
-			outputs[channel]->process (c);
+			outputs[output]->process (c);
 		} catch (std::exception const & e) {
 			// Only first exception will be passed on
 			exception_mutex.lock();

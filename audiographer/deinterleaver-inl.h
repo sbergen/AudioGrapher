@@ -61,7 +61,7 @@ DeInterleaver<T>::process (ProcessContext<T> const & c)
 			buffer[i] = data[channel + (channels * i)];
 		}
 		
-		ProcessContext<T> c_out (buffer, frames_per_channel);
+		ProcessContext<T> c_out (c, buffer, frames_per_channel, 1);
 		(*it)->process (c_out);
 	}
 }

@@ -8,7 +8,7 @@
 namespace AudioGrapher
 {
 
-class PeakReader : public ListedSource<float>, Sink<float>
+class PeakReader : public ListedSource<float>, public Sink<float>
 {
   public:
 	PeakReader() : peak (0.0) {}

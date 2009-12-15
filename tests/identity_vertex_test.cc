@@ -38,7 +38,7 @@ class IdentityVertexTest : public CppUnit::TestFixture
 		
 		nframes_t frames_output = 0;
 		
-		ProcessContext<float> c (random_data, frames);
+		ProcessContext<float> c (random_data, frames, 1);
 		vertex->process (c);
 		
 		frames_output = sink_a->get_data().size();
@@ -57,11 +57,11 @@ class IdentityVertexTest : public CppUnit::TestFixture
 		vertex->add_output (sink_a);
 		vertex->add_output (sink_b);
 		
-		ProcessContext<float> c (random_data, frames);
+		ProcessContext<float> c (random_data, frames, 1);
 		vertex->process (c);
 		
 		vertex->remove_output (sink_a);
-		ProcessContext<float> zc (zero_data, frames);
+		ProcessContext<float> zc (zero_data, frames, 1);
 		vertex->process (zc);
 		
 		CPPUNIT_ASSERT (TestUtils::array_equals (random_data, sink_a->get_array(), frames));
@@ -74,11 +74,11 @@ class IdentityVertexTest : public CppUnit::TestFixture
 		vertex->add_output (sink_a);
 		vertex->add_output (sink_b);
 		
-		ProcessContext<float> c (random_data, frames);
+		ProcessContext<float> c (random_data, frames, 1);
 		vertex->process (c);
 		
 		vertex->clear_outputs ();
-		ProcessContext<float> zc (zero_data, frames);
+		ProcessContext<float> zc (zero_data, frames, 1);
 		vertex->process (zc);
 		
 		CPPUNIT_ASSERT (TestUtils::array_equals (random_data, sink_a->get_array(), frames));

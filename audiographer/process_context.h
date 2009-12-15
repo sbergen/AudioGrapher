@@ -2,7 +2,8 @@
 #define AUDIOGRAPHER_PROCESS_CONTEXT_H
 
 #include "types.h"
-#include <set>
+
+#include <cstring>
 
 namespace AudioGrapher
 {
@@ -16,16 +17,38 @@ class ProcessContext  {
 	
 public:
 
-	typedef uint8_t Flag;
+	typedef FlagField::Flag Flag;
 
 	enum Flags {
-		EndOfInput
+		EndOfInput = 0
 	};
-	
+
 public:
-	
-	ProcessContext(T * data = 0, nframes_t frames = 0, ChannelCount channels = 1)
+
+	/// Basic constructor with data, frame and channel count
+	ProcessContext (T * data, nframes_t frames, ChannelCount channels)
 		: _data (data), _frames (frames), _channels (channels) {}
+	
+	/// Normal copy constructor
+	ProcessContext (ProcessContext<T> const & other)
+		: _data (other._data), _frames (other._frames), _channels (other._channels), _flags (other._flags) {}
+	
+	/// "Copy constructor" with unique data, frame and channel count, but copies flags
+	template<typename Y>
+	ProcessContext (ProcessContext<Y> const & other, T * data, nframes_t frames, ChannelCount channels)
+		: _data (data), _frames (frames), _channels (channels), _flags (other.flags()) {}
+	
+	/// "Copy constructor" with unique data and frame count, but copies channel count and flags
+	template<typename Y>
+	ProcessContext (ProcessContext<Y> const & other, T * data, nframes_t frames)
+		: _data (data), _frames (frames), _channels (other.channels()), _flags (other.flags()) {}
+	
+	/// "Copy constructor" with unique data, but copies frame and channel count + flags
+	template<typename Y>
+	ProcessContext (ProcessContext<Y> const & other, T * data)
+		: _data (data), _frames (other.frames()), _channels (other.channels()), _flags (other.flags()) {}
+	
+	virtual ~ProcessContext () {}
 	
 	/// \a data points to the array of data to process
 	inline T const *            data()     const { return _data; }
@@ -46,15 +69,48 @@ public:
 
 	/* Flags */
 	
-	inline bool has_flag (Flag flag)    const { return _flags.find (flag) != _flags.end(); }
-	inline bool set_flag (Flag flag)    const { return _flags.insert (flag).second; }
-	inline bool remove_flag (Flag flag) const { return _flags.erase (flag); }
+	inline bool has_flag (Flag flag)    const { return _flags.has (flag); }
+	inline void set_flag (Flag flag)    const { _flags.set (flag); }
+	inline void remove_flag (Flag flag) const { _flags.remove (flag); }
+	inline FlagField const & flags ()   const { return _flags; }
 	
-private:
+protected:
 	T * const              _data;
 	nframes_t              _frames;
 	ChannelCount           _channels;
-	mutable std::set<Flag> _flags;
+	
+	mutable FlagField      _flags;
+};
+
+/// A process context that allocates and owns it's data buffer
+template <typename T>
+struct AllocatingProcessContext : public ProcessContext<T>
+{
+	/// Allocates uninitialized memory
+	AllocatingProcessContext (nframes_t frames, ChannelCount channels)
+		: ProcessContext<T> (new T[frames], frames, channels) {}
+	
+	/// Copy constructor, copies data from other ProcessContext
+	AllocatingProcessContext (ProcessContext<T> const & other)
+		: ProcessContext<T> (other, new T[other._frames])
+	{ memcpy (ProcessContext<T>::_data, other._data, other._channels * other._frames * sizeof (T)); }
+	
+	/// "Copy constructor" with uninitialized data, unique frame and channel count, but copies flags
+	template<typename Y>
+	AllocatingProcessContext (ProcessContext<Y> const & other, nframes_t frames, ChannelCount channels)
+		: ProcessContext<T> (other, new T[frames], frames, channels) {}
+	
+	/// "Copy constructor" with uninitialized data, unique frame count, but copies channel count and flags
+	template<typename Y>
+	AllocatingProcessContext (ProcessContext<Y> const & other, nframes_t frames)
+		: ProcessContext<T> (other, new T[frames], frames, other.channels()) {}
+	
+	/// "Copy constructor" uninitialized data, that copies frame and channel count + flags
+	template<typename Y>
+	AllocatingProcessContext (ProcessContext<Y> const & other)
+		: ProcessContext<T> (other, new T[other._frames]) {}
+	
+	~AllocatingProcessContext () { delete [] ProcessContext<T>::_data; }
 };
 
 /// A wrapper for a const ProcesContext which can be created from const data
@@ -62,15 +118,35 @@ template <typename T>
 class ConstProcessContext
 {
   public:
-	ConstProcessContext (T const * data = 0, nframes_t frames = 0, ChannelCount channels = 1)
+	/// Basic constructor with data, frame and channel count
+	ConstProcessContext (T const * data, nframes_t frames, ChannelCount channels)
 	  : context (const_cast<T *>(data), frames, channels) {}
+	
+	/// Copy constructor from const ProcessContext
+	ConstProcessContext (ProcessContext<T> const & other)
+	  : context (const_cast<ProcessContext<T> &> (other)) {}
+	
+	/// "Copy constructor", with unique data, frame and channel count, but copies flags
+	template<typename ProcessContext>
+	ConstProcessContext (ProcessContext const & other, T const * data, nframes_t frames, ChannelCount channels)
+		: context (other, const_cast<T *>(data), frames, channels) {}
+	
+	/// "Copy constructor", with unique data and frame count, but copies channel count and flags
+	template<typename ProcessContext>
+	ConstProcessContext (ProcessContext const & other, T const * data, nframes_t frames)
+		: context (other, const_cast<T *>(data), frames) {}
+	
+	/// "Copy constructor", with unique data, but copies frame and channel count + flags
+	template<typename ProcessContext>
+	ConstProcessContext (ProcessContext const & other, T const * data)
+		: context (other, const_cast<T *>(data)) {}
 
 	inline operator ProcessContext<T> const & () { return context; }
 	inline ProcessContext<T> const & operator() () { return context; }
 	inline ProcessContext<T> const * operator& () { return &context; }
 
   private:
-	  ProcessContext<T> context;
+	  ProcessContext<T> const context;
 };
 
 } // namespace

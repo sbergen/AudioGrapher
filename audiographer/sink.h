@@ -32,7 +32,7 @@ class Sink  {
 	  */
 	inline virtual void process (ProcessContext<T> & context)
 	{
-		this->process (const_cast<ProcessContext<T> const &> (context));
+		this->process (static_cast<ProcessContext<T> const &> (context));
 	}
 };
 

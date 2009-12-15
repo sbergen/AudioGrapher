@@ -30,6 +30,7 @@ def configure(conf):
 	conf.check_tool('compiler_cxx')
 	
 	autowaf.check_pkg(conf, 'cppunit', uselib_store='CPPUNIT', atleast_version='1.12.0', mandatory=False)
+	autowaf.check_pkg(conf, 'sigc++-2.0', uselib_store='SIGCPP', atleast_version='2.0', mandatory=False)
 	autowaf.check_pkg(conf, 'glib-2.0', uselib_store='GLIB', atleast_version='2.2', mandatory=False)
 	autowaf.check_pkg(conf, 'glibmm-2.4', uselib_store='GLIBMM', atleast_version='2.14.0', mandatory=False)
 	autowaf.check_pkg(conf, 'gthread-2.0', uselib_store='GTHREAD', atleast_version='2.14.0', mandatory=False)
@@ -45,6 +46,7 @@ def build(bld):
 	# Headers
 	#bld.install_files('${INCLUDEDIR}/audiographer', 'audiographer/*.h')
 	
+	bld.env['BUILD_TESTS'] = True
 	bld.env['HAVE_ALL_GTHREAD'] = bld.env['HAVE_GLIB'] and bld.env['HAVE_GLIBMM'] and bld.env['HAVE_GTHREAD']
 
 	audiographer = bld.new_task_gen('cxx', 'shlib')
@@ -57,7 +59,9 @@ def build(bld):
 	
 	if bld.env['HAVE_SNDFILE']:
 		audiographer.source += '''
+			src/sndfile_base.cc
 			src/sndfile_writer.cc
+			src/sndfile_reader.cc
 		'''
 	
 	if bld.env['HAVE_SAMPLERATE']:
@@ -74,7 +78,7 @@ def build(bld):
 	audiographer.install_path   = '${LIBDIR}'
 	
 
-	if bld.env['HAVE_CPPUNIT']:
+	if bld.env['BUILD_TESTS'] and bld.env['HAVE_CPPUNIT']:
 		# Unit tests
 		obj              = bld.new_task_gen('cxx', 'program')
 		obj.source       = '''
