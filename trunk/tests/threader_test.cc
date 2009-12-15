@@ -52,7 +52,7 @@ class ThreaderTest : public CppUnit::TestFixture
 		threader->add_output (sink_e);
 		threader->add_output (sink_f);
 		
-		ProcessContext<float> c (random_data, frames);
+		ProcessContext<float> c (random_data, frames, 1);
 		threader->process (c);
 		
 		CPPUNIT_ASSERT (TestUtils::array_equals(random_data, sink_a->get_array(), frames));
@@ -72,7 +72,7 @@ class ThreaderTest : public CppUnit::TestFixture
 		threader->add_output (sink_e);
 		threader->add_output (sink_f);
 		
-		ProcessContext<float> c (random_data, frames);
+		ProcessContext<float> c (random_data, frames, 1);
 		threader->process (c);
 		
 		// Remove a, b and f
@@ -80,7 +80,7 @@ class ThreaderTest : public CppUnit::TestFixture
 		threader->remove_output (sink_b);
 		threader->remove_output (sink_f);
 		
-		ProcessContext<float> zc (zero_data, frames);
+		ProcessContext<float> zc (zero_data, frames, 1);
 		threader->process (zc);
 		
 		CPPUNIT_ASSERT (TestUtils::array_equals(random_data, sink_a->get_array(), frames));
@@ -100,11 +100,11 @@ class ThreaderTest : public CppUnit::TestFixture
 		threader->add_output (sink_e);
 		threader->add_output (sink_f);
 		
-		ProcessContext<float> c (random_data, frames);
+		ProcessContext<float> c (random_data, frames, 1);
 		threader->process (c);
 		
 		threader->clear_outputs();
-		ProcessContext<float> zc (zero_data, frames);
+		ProcessContext<float> zc (zero_data, frames, 1);
 		threader->process (zc);
 		
 		CPPUNIT_ASSERT (TestUtils::array_equals(random_data, sink_a->get_array(), frames));
@@ -124,7 +124,7 @@ class ThreaderTest : public CppUnit::TestFixture
 		threader->add_output (sink_e);
 		threader->add_output (throwing_sink);
 		
-		ProcessContext<float> c (random_data, frames);
+		ProcessContext<float> c (random_data, frames, 1);
 		CPPUNIT_ASSERT_THROW (threader->process (c), Exception);
 		
 		CPPUNIT_ASSERT (TestUtils::array_equals(random_data, sink_a->get_array(), frames));

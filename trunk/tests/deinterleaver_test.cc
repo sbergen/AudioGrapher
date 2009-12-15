@@ -48,7 +48,7 @@ class DeInterleaverTest : public CppUnit::TestFixture
 	{
 		deinterleaver->init (channels, frames_per_channel);
 		
-		ProcessContext<float> c (random_data, 0);
+		ProcessContext<float> c (random_data, 0, channels);
 		
 		// Too many, frames % channels == 0
 		c.frames() = total_frames + channels;

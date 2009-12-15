@@ -28,7 +28,7 @@ class SampleRateConverter : public ListedSource<float>, public Sink<float>
 
   private:
 
-	void set_end_of_input ();
+	void set_end_of_input (ProcessContext<float> const & c);
 	void reset ();
 
 	bool           active;

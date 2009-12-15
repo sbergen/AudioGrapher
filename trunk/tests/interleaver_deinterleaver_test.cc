@@ -71,9 +71,9 @@ class InterleaverDeInterleaverTest : public CppUnit::TestFixture
 		deinterleaver->output (1)->add_output (sink_b);
 		deinterleaver->output (2)->add_output (sink_c);
 		
-		ProcessContext<float> c_a (random_data_a, frames_per_channel);
-		ProcessContext<float> c_b (random_data_b, frames_per_channel);
-		ProcessContext<float> c_c (random_data_c, frames_per_channel);
+		ProcessContext<float> c_a (random_data_a, frames_per_channel, 1);
+		ProcessContext<float> c_b (random_data_b, frames_per_channel, 1);
+		ProcessContext<float> c_c (random_data_c, frames_per_channel, 1);
 		
 		// Process and assert
 		interleaver->input (0)->process (c_a);

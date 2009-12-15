@@ -55,7 +55,7 @@ class Normalizer : public ListedSource<float>, Sink<float>
 			Routines::apply_gain_to_buffer (buffer, c.frames(), gain);
 		}
 		
-		ProcessContext<float> c_out (buffer, c.frames());
+		ProcessContext<float> c_out (c, buffer);
 		ListedSource<float>::output (c_out);
 	}
 	

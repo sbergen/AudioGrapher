@@ -31,7 +31,7 @@ class NormalizerTest : public CppUnit::TestFixture
 		peak_reader.reset (new PeakReader());
 		sink.reset (new VectorSink<float>());
 		
-		ProcessContext<float> const c (random_data, frames);
+		ProcessContext<float> const c (random_data, frames, 1);
 		peak_reader->process (c);
 		
 		float peak = peak_reader->get_peak();
@@ -41,7 +41,7 @@ class NormalizerTest : public CppUnit::TestFixture
 		normalizer->process (c);
 		
 		peak_reader->reset();
-		ConstProcessContext<float> normalized (sink->get_array(), frames);
+		ConstProcessContext<float> normalized (sink->get_array(), frames, 1);
 		peak_reader->process (normalized);
 		
 		peak = peak_reader->get_peak();

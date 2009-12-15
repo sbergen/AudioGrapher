@@ -2,7 +2,7 @@
 
 using namespace AudioGrapher;
 
-char * Utils::zeros = 0;
+char const * Utils::zeros = 0;
 unsigned long Utils::num_zeros = 0;
 
 void

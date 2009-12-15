@@ -24,7 +24,7 @@ class PeakReaderTest : public CppUnit::TestFixture
 	void testProcess()
 	{
 		reader.reset (new PeakReader());
-		ProcessContext<float> c (random_data, frames);
+		ProcessContext<float> c (random_data, frames, 1);
 		
 		float peak = 1.5;
 		random_data[10] = peak;

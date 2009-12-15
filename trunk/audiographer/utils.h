@@ -15,8 +15,9 @@ class Utils
 	
 	static void free_resources();
 	
+	/// Initialize zero buffer, if buffer is != 0, it will be used as the zero buffer
 	template <typename T>
-	static void init_zeros (nframes_t frames)
+	static void init_zeros (nframes_t frames, T const * buffer = 0)
 	{
 		if (frames == 0) {
 			throw Exception (Utils(), "init_zeros must be called with an argument greater than zero.");
@@ -24,8 +25,12 @@ class Utils
 		unsigned long n_zeros = frames * sizeof (T);
 		if (n_zeros <= num_zeros) { return; }
 		delete [] zeros;
-		zeros = new char[n_zeros];
-		memset (zeros, 0, n_zeros);
+		if (buffer) {
+			zeros = reinterpret_cast<char const *>(buffer);
+		} else {
+			zeros = new char[n_zeros];
+			memset (const_cast<char *>(zeros), 0, n_zeros);
+		}
 		num_zeros = n_zeros;
 	}
 	  
@@ -45,7 +50,7 @@ class Utils
 	}
 
   private:
-	static char *        zeros;
+	static char const *  zeros;
 	static unsigned long num_zeros;
 };
 

@@ -3,6 +3,8 @@
 #include "gdither/gdither.h"
 #include "audiographer/exception.h"
 
+#include <boost/format.hpp>
+
 #include <cstring>
 
 namespace AudioGrapher
@@ -20,7 +22,7 @@ SampleFormatConverter<TOut>::SampleFormatConverter (uint32_t channels) :
 
 template <>
 void
-SampleFormatConverter<float>::init (nframes_t max_frames, DitherType type, int data_width)
+SampleFormatConverter<float>::init (nframes_t max_frames, int type, int data_width)
 {
 	if (data_width != 32) { throw Exception (*this, "Unsupported data width"); }
 	init_common (max_frames);
@@ -29,7 +31,7 @@ SampleFormatConverter<float>::init (nframes_t max_frames, DitherType type, int d
 
 template <>
 void
-SampleFormatConverter<int32_t>::init (nframes_t max_frames, DitherType type, int data_width)
+SampleFormatConverter<int32_t>::init (nframes_t max_frames, int type, int data_width)
 {
 	if(data_width < 24) { throw Exception (*this, "Use SampleFormatConverter<int16_t> for data widths < 24"); }
 	
@@ -46,7 +48,7 @@ SampleFormatConverter<int32_t>::init (nframes_t max_frames, DitherType type, int
 
 template <>
 void
-SampleFormatConverter<int16_t>::init (nframes_t max_frames, DitherType type, int data_width)
+SampleFormatConverter<int16_t>::init (nframes_t max_frames, int type, int data_width)
 {
 	if (data_width != 16) { throw Exception (*this, "Unsupported data width"); }
 	init_common (max_frames);
@@ -55,7 +57,7 @@ SampleFormatConverter<int16_t>::init (nframes_t max_frames, DitherType type, int
 
 template <>
 void
-SampleFormatConverter<uint8_t>::init (nframes_t max_frames, DitherType type, int data_width)
+SampleFormatConverter<uint8_t>::init (nframes_t max_frames, int type, int data_width)
 {
 	if (data_width != 8) { throw Exception (*this, "Unsupported data width"); }
 	init_common (max_frames);
@@ -103,8 +105,8 @@ template <typename TOut>
 void
 SampleFormatConverter<TOut>::process (ProcessContext<float> const & c_in)
 {
-	float const * data = c_in.data();
-	nframes_t frames = c_in.frames();
+	float const * const data = c_in.data();
+	nframes_t const frames = c_in.frames();
 	
 	check_frame_count (frames);
 
@@ -116,7 +118,7 @@ SampleFormatConverter<TOut>::process (ProcessContext<float> const & c_in)
 
 	/* Write forward */
 
-	ProcessContext<TOut> c_out(data_out, frames);
+	ProcessContext<TOut> c_out(c_in, data_out);
 	output (c_out);
 }
 
@@ -125,7 +127,7 @@ template<typename TOut>
 void
 SampleFormatConverter<TOut>::process (ProcessContext<float> & c_in)
 {
-	process (const_cast<ProcessContext<float> const &> (c_in));
+	process (static_cast<ProcessContext<float> const &> (c_in));
 }
 
 /* template specialization for float, in-place processing (non-const) */
@@ -159,7 +161,7 @@ SampleFormatConverter<float>::process (ProcessContext<float> const & c_in)
 	check_frame_count (frames);
 	memcpy (data_out, c_in.data(), frames * sizeof(float));
 	
-	ProcessContext<float> c (data_out, frames);
+	ProcessContext<float> c (c_in, data_out);
 	process (c);
 }
 
@@ -168,11 +170,15 @@ void
 SampleFormatConverter<TOut>::check_frame_count(nframes_t frames)
 {
 	if (frames % channels != 0) {
-		throw Exception (*this, "Number of frames given to process() was not a multiple of channels");
+		throw Exception (*this, boost::str (boost::format (
+			"Number of frames given to process() was not a multiple of channels: %1% frames with %2% channels")
+			% frames % channels));
 	}
 	
 	if (frames  > data_out_size) {
-		throw Exception (*this, "Too many frames given to process()");
+		throw Exception (*this, boost::str (boost::format (
+			"Too many frames given to process(), %1% instad of %2%")
+			% frames % data_out_size));
 	}
 }
 

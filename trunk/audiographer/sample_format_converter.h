@@ -8,6 +8,15 @@
 namespace AudioGrapher
 {
 
+/// Dither types from the gdither library
+enum DitherType
+{
+	D_None   = GDitherNone,   ///< No didtering
+	D_Rect   = GDitherRect,   ///< Rectangular dithering, i.e. white noise
+	D_Tri    = GDitherTri,    ///< Triangular dithering
+	D_Shaped = GDitherShaped  ///< Actually noise shaping, only works for 46kHzish signals
+};
+	
 /** Sample format converter that does dithering.
   * This class can only convert floats to either \a float, \a int32_t, \a int16_t, or \a uint8_t 
   */
@@ -15,15 +24,6 @@ template <typename TOut>
 class SampleFormatConverter : public Sink<float>, public ListedSource<TOut>
 {
   public:
-	/// Dither types from the gdither library
-	enum DitherType
-	{
-		D_None   = GDitherNone,   ///< No didtering
-		D_Rect   = GDitherRect,   ///< Rectangular dithering, i.e. white noise
-		D_Tri    = GDitherTri,    ///< Triangular dithering
-		D_Shaped = GDitherShaped  ///< Actually noise shaping, only works for 46kHzish signals
-	};
-	
 	/** Constructor
 	  * \param channels number of channels in stream
 	  */
@@ -37,7 +37,7 @@ class SampleFormatConverter : public Sink<float>, public ListedSource<TOut>
 	  * \note If the non-const version of process() is used with floats,
 	  *       there is no need to call this function.
 	  */
-	void init (nframes_t max_frames, DitherType type, int data_width);
+	void init (nframes_t max_frames, int type, int data_width);
 
 	/// Set whether or not clipping to [-1.0, 1.0] should occur when TOut = float. Clipping is off by default
 	void set_clip_floats (bool yn) { clip_floats = yn; }
@@ -54,7 +54,6 @@ class SampleFormatConverter : public Sink<float>, public ListedSource<TOut>
 	void check_frame_count(nframes_t frames);
 
 	uint32_t     channels;
-	int          data_width;
 	GDither      dither;
 	nframes_t    data_out_size;
 	TOut *       data_out;
