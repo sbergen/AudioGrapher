@@ -2,7 +2,7 @@
 #define AUDIOGRAPHER_DEBUGGABLE_H
 
 #ifndef DEFAULT_DEBUG_LEVEL
-#define DEFAULT_DEBUG_LEVEL DebugNone
+#define DEFAULT_DEBUG_LEVEL DebugFlags
 #endif
 
 #include <iostream>
@@ -14,6 +14,7 @@ enum DebugLevel
 {
 	DebugNone,     //< Disabled
 	DebugObject,   //< Object level stuff, ctors, initalizers etc.
+	DebugFlags,    //< Debug ProcessContext flags only on process cycle level
 	DebugProcess,  //< Process cycle level stuff
 	DebugVerbose,  //< Lots of output, not on sample level
 	DebugSample    //< Sample level stuff
