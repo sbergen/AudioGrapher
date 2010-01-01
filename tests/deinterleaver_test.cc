@@ -48,19 +48,16 @@ class DeInterleaverTest : public CppUnit::TestFixture
 	{
 		deinterleaver->init (channels, frames_per_channel);
 		
-		ProcessContext<float> c (random_data, 0, channels);
+		ProcessContext<float> c (random_data, 2 * total_frames, channels);
 		
 		// Too many, frames % channels == 0
-		c.frames() = total_frames + channels;
-		CPPUNIT_ASSERT_THROW (deinterleaver->process (c), Exception);
+		CPPUNIT_ASSERT_THROW (deinterleaver->process (c.beginning (total_frames + channels)), Exception);
 		
 		// Too many, frames % channels != 0
-		c.frames() =  total_frames + 1;
-		CPPUNIT_ASSERT_THROW (deinterleaver->process (c), Exception);
+		CPPUNIT_ASSERT_THROW (deinterleaver->process (c.beginning (total_frames + 1)), Exception);
 		
 		// Too few, frames % channels != 0
-		c.frames() =  total_frames - 1;
-		CPPUNIT_ASSERT_THROW (deinterleaver->process (c), Exception);
+		CPPUNIT_ASSERT_THROW (deinterleaver->process (c.beginning (total_frames - 1)), Exception);
 	}
 
 	void assert_outputs (nframes_t expected_frames)
@@ -92,8 +89,7 @@ class DeInterleaverTest : public CppUnit::TestFixture
 		
 		// Now with less frames
 		nframes_t const less_frames = frames_per_channel / 4;
-		c.frames() = less_frames * channels;
-		deinterleaver->process (c);
+		deinterleaver->process (c.beginning (less_frames * channels));
 		assert_outputs (less_frames);
 	}
 	
@@ -106,11 +102,10 @@ class DeInterleaverTest : public CppUnit::TestFixture
 		deinterleaver->output (2)->add_output (sink_c);
 		
 		// Input zero frames
-		ProcessContext<float> c (random_data, 0, channels);
-		deinterleaver->process (c);
+		ProcessContext<float> c (random_data, total_frames, channels);
+		deinterleaver->process (c.beginning (0));
 		
 		// ...and now test regular input
-		c.frames() = total_frames;
 		deinterleaver->process (c);
 		assert_outputs (frames_per_channel);
 	}

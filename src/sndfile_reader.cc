@@ -32,11 +32,12 @@ SndfileReader<T>::read (ProcessContext<T> & context)
 	}
 	
 	nframes_t frames_read = (*read_func) (sndfile, context.data(), context.frames());
+	ProcessContext<T> c_out = context.beginning (frames_read);
+	
 	if (frames_read < context.frames()) {
-		context.frames() = frames_read;
-		context.set_flag (ProcessContext<T>::EndOfInput);
+		c_out.set_flag (ProcessContext<T>::EndOfInput);
 	}
-	output (context);
+	output (c_out);
 	return frames_read;
 }
 
