@@ -1,4 +1,4 @@
-#include "audiographer/sndfile_writer.h"
+#include "audiographer/sndfile/sndfile_writer.h"
 #include "audiographer/exception.h"
 
 #include <cstring>

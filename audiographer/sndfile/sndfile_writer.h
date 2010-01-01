@@ -1,10 +1,11 @@
 #ifndef AUDIOGRAPHER_SNDFILE_WRITER_H
 #define AUDIOGRAPHER_SNDFILE_WRITER_H
 
-#include "flag_debuggable.h"
-#include "sndfile_base.h"
-#include "types.h"
-#include "sink.h"
+#include "audiographer/sndfile/sndfile_base.h"
+
+#include "audiographer/flag_debuggable.h"
+#include "audiographer/sink.h"
+#include "audiographer/types.h"
 
 namespace AudioGrapher
 {
