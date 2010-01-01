@@ -37,10 +37,10 @@ class TypeUtils : private TypeUtilsBase
 	inline static void zero_fill (T * buffer, nframes_t frames)
 		{ do_zero_fill(buffer, frames, zero_fillable()); }
 	
-	inline static void copy (T* source, T* destination, nframes_t frames)
+	inline static void copy (T const * source, T * destination, nframes_t frames)
 		{ std::uninitialized_copy (source, &source[frames], destination); }
 	
-	inline static void move (T* source, T* destination, nframes_t frames)
+	inline static void move (T const * source, T * destination, nframes_t frames)
 	{
 		if (destination < source) {
 			std::copy (source, &source[frames], destination);

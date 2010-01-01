@@ -193,6 +193,7 @@ class SampleFormatConverterTest : public CppUnit::TestFixture
 		CPPUNIT_ASSERT_THROW (converter->process (pc), Exception);
 		
 		pc.frames() = frames - (frames % 3);
+		pc.channels() = 3;
 		converter->process (pc);
 		frames_output = sink->get_data().size();
 		CPPUNIT_ASSERT_EQUAL (pc.frames(), frames_output);

@@ -98,7 +98,7 @@ protected:
 	mutable FlagField      _flags;
 
   private:
-	void validate_data()
+	inline void validate_data()
 	{
 		if (throw_level (ThrowProcess) && (_frames % _channels != 0)) {
 			throw Exception (*this, boost::str (boost::format
