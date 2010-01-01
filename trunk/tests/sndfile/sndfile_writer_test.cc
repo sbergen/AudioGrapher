@@ -1,5 +1,5 @@
-#include "utils.h"
-#include "audiographer/sndfile_writer.h"
+#include "tests/utils.h"
+#include "audiographer/sndfile/sndfile_writer.h"
 
 using namespace AudioGrapher;
 

@@ -60,9 +60,9 @@ def build(bld):
 	
 	if bld.env['HAVE_SNDFILE']:
 		audiographer.source += '''
-			src/sndfile_base.cc
-			src/sndfile_writer.cc
-			src/sndfile_reader.cc
+			src/sndfile/sndfile_base.cc
+			src/sndfile/sndfile_writer.cc
+			src/sndfile/sndfile_reader.cc
 		'''
 	
 	if bld.env['HAVE_SAMPLERATE']:
@@ -102,7 +102,7 @@ def build(bld):
 		
 		if bld.env['HAVE_SNDFILE']:
 			obj.source += '''
-				tests/sndfile_writer_test.cc
+				tests/sndfile/sndfile_writer_test.cc
 			'''
 
 		if bld.env['HAVE_SAMPLERATE']:

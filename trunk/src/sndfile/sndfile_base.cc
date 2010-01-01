@@ -1,4 +1,4 @@
-#include "audiographer/sndfile_base.h"
+#include "audiographer/sndfile/sndfile_base.h"
 #include "audiographer/exception.h"
 
 #include <boost/format.hpp>

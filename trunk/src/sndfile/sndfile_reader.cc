@@ -1,4 +1,4 @@
-#include "audiographer/sndfile_reader.h"
+#include "audiographer/sndfile/sndfile_reader.h"
 
 #include <boost/format.hpp>
 
