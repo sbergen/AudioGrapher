@@ -1,4 +1,4 @@
-#include "audiographer/sample_format_converter.h"
+#include "audiographer/general/sample_format_converter.h"
 
 #include "gdither/gdither.h"
 #include "audiographer/exception.h"

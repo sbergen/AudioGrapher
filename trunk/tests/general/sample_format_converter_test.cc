@@ -1,5 +1,6 @@
-#include "utils.h"
-#include "audiographer/sample_format_converter.h"
+#include "tests/utils.h"
+
+#include "audiographer/general/sample_format_converter.h"
 
 using namespace AudioGrapher;
 

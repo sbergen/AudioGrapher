@@ -1,6 +1,6 @@
-#include "utils.h"
+#include "tests/utils.h"
 
-#include "audiographer/silence_trimmer.h"
+#include "audiographer/general/silence_trimmer.h"
 
 using namespace AudioGrapher;
 

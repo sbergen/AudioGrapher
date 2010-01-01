@@ -1,8 +1,8 @@
 #ifndef AUDIOGRAPHER_IDENTITY_VERTEX_H
 #define AUDIOGRAPHER_IDENTITY_VERTEX_H
 
-#include "listed_source.h"
-#include "sink.h"
+#include "audiographer/utils/listed_source.h"
+#include "audiographer/sink.h"
 
 namespace AudioGrapher
 {

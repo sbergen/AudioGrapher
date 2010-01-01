@@ -1,7 +1,7 @@
-#include "utils.h"
+#include "tests/utils.h"
 
-#include "audiographer/normalizer.h"
-#include "audiographer/peak_reader.h"
+#include "audiographer/general/normalizer.h"
+#include "audiographer/general/peak_reader.h"
 
 using namespace AudioGrapher;
 

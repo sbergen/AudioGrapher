@@ -1,9 +1,9 @@
 #ifndef AUDIOGRAPHER_PEAK_READER_H
 #define AUDIOGRAPHER_PEAK_READER_H
 
-#include "listed_source.h"
-#include "sink.h"
-#include "routines.h"
+#include "audiographer/sink.h"
+#include "audiographer/routines.h"
+#include "audiographer/utils/listed_source.h"
 
 namespace AudioGrapher
 {

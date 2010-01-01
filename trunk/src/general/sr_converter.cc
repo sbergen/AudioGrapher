@@ -1,4 +1,5 @@
-#include "audiographer/sr_converter.h"
+#include "audiographer/general/sr_converter.h"
+
 #include "audiographer/exception.h"
 #include "audiographer/type_utils.h"
 
