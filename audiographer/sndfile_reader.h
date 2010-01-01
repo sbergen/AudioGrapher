@@ -3,7 +3,7 @@
 
 #include "sndfile_base.h"
 #include "listed_source.h"
-#include "process_context.h"
+#include "audiographer/core/process_context.h"
 
 namespace AudioGrapher
 {

@@ -1,10 +1,10 @@
 #ifndef AUDIOGRAPHER_FLAG_DEBUGGABLE_H
 #define AUDIOGRAPHER_FLAG_DEBUGGABLE_H
 
-#include "debuggable.h"
-#include "debug_utils.h"
-#include "process_context.h"
-#include "types.h"
+#include "audiographer/core/debuggable.h"
+#include "audiographer/core/debug_utils.h"
+#include "audiographer/core/process_context.h"
+#include "audiographer/core/types.h"
 
 #include <boost/format.hpp>
 

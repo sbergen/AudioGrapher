@@ -1,8 +1,8 @@
 #include "audiographer/sample_format_converter.h"
 
 #include "gdither/gdither.h"
-#include "audiographer/exception.h"
-#include "audiographer/type_utils.h"
+#include "audiographer/core/exception.h"
+#include "audiographer/core/type_utils.h"
 
 #include <boost/format.hpp>
 
