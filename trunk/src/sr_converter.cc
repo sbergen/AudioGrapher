@@ -94,12 +94,6 @@ SampleRateConverter::process (ProcessContext<float> const & c)
 			"process() called with too many frames, %1% instead of %2%")
 			% frames % max_frames_in));
 	}
-	
-	if (throw_level (ThrowStrict) && frames % channels != 0) {
-		throw Exception (*this, boost::str (boost::format (
-			"Number of frames given to process() was not a multiple of channels: %1% frames with %2% channels")
-			% frames % channels));
-	}
 
 	int err;
 	bool first_time = true;
