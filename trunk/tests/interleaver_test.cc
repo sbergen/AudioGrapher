@@ -50,16 +50,13 @@ class InterleaverTest : public CppUnit::TestFixture
 		ProcessContext<float> c (random_data, frames + 1, 1);
 		CPPUNIT_ASSERT_THROW (interleaver->input (0)->process (c), Exception);
 		
-		c.frames() = frames;
-		interleaver->input (0)->process (c);
-		interleaver->input (1)->process (c);
-		c.frames() = frames -1;
-		CPPUNIT_ASSERT_THROW (interleaver->input (2)->process (c), Exception);
+		interleaver->input (0)->process (c.beginning (frames));
+		interleaver->input (1)->process (c.beginning (frames));
+		CPPUNIT_ASSERT_THROW (interleaver->input (2)->process (c.beginning (frames - 1)), Exception);
 
-		interleaver->input (0)->process (c);
-		interleaver->input (1)->process (c);
-		c.frames() = frames;
-		CPPUNIT_ASSERT_THROW (interleaver->input (2)->process (c), Exception);
+		interleaver->input (0)->process (c.beginning (frames - 1));
+		interleaver->input (1)->process (c.beginning (frames - 1));
+		CPPUNIT_ASSERT_THROW (interleaver->input (2)->process (c.beginning (frames)), Exception);
 	}
 
 	void testOutputSize()
@@ -76,10 +73,9 @@ class InterleaverTest : public CppUnit::TestFixture
 		CPPUNIT_ASSERT_EQUAL (expected_frames, generated_frames);
 
 		nframes_t less_frames = frames / 2;
-		c.frames() = less_frames;
-		interleaver->input (0)->process (c);
-		interleaver->input (1)->process (c);
-		interleaver->input (2)->process (c);
+		interleaver->input (0)->process (c.beginning (less_frames));
+		interleaver->input (1)->process (c.beginning (less_frames));
+		interleaver->input (2)->process (c.beginning (less_frames));
 
 		expected_frames = less_frames * channels;
 		generated_frames = sink->get_data().size();
@@ -91,15 +87,14 @@ class InterleaverTest : public CppUnit::TestFixture
 		interleaver->add_output (sink);
 
 		// input zero frames to all inputs
-		ProcessContext<float> c (random_data, 0, 1);
-		interleaver->input (0)->process (c);
-		interleaver->input (1)->process (c);
-		interleaver->input (2)->process (c);
+		ProcessContext<float> c (random_data, frames, 1);
+		interleaver->input (0)->process (c.beginning (0));
+		interleaver->input (1)->process (c.beginning (0));
+		interleaver->input (2)->process (c.beginning (0));
 		
 		// NOTE zero input is allowed to be a NOP
 		
 		// ...now test regular input
-		c.frames() = frames;
 		interleaver->input (0)->process (c);
 		interleaver->input (1)->process (c);
 		interleaver->input (2)->process (c);

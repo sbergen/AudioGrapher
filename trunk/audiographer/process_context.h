@@ -64,6 +64,19 @@ public:
 		: _data (data), _frames (other.frames()), _channels (other.channels()), _flags (other.flags())
 	{ /* No need to validate data */ }
 	
+	/// Make new Context out of the beginning of this context
+	ProcessContext beginning (nframes_t frames)
+	{
+		if (throw_level (ThrowProcess) && frames > _frames) {
+			throw Exception (*this, boost::str (boost::format
+				("Trying to use too many frames of %1% for a new Context: %2% instead of %3%")
+				% DebugUtils::demangled_name (*this) % frames % _frames));
+		}
+		validate_data ();
+		
+		return ProcessContext (*this, _data, frames);
+	}
+	
 	virtual ~ProcessContext () {}
 	
 	/// \a data points to the array of data to process
@@ -72,13 +85,11 @@ public:
 	
 	/// \a frames tells how many frames the array pointed by data contains
 	inline nframes_t const &    frames()   const { return _frames; }
-	inline nframes_t &          frames()         { return _frames; }
 	
 	/** \a channels tells how many interleaved channels \a data contains
 	  * If \a channels is greater than 1, each channel contains \a frames / \a channels frames of data
 	  */
 	inline ChannelCount const & channels() const { return _channels; }
-	inline ChannelCount &       channels()       { return _channels; }
 	
 	/// Returns the amount of frames per channel
 	inline nframes_t            frames_per_channel() const { return _frames / _channels; }

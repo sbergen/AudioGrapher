@@ -105,14 +105,13 @@ void
 SampleFormatConverter<TOut>::process (ProcessContext<float> const & c_in)
 {
 	float const * const data = c_in.data();
-	nframes_t const frames = c_in.frames();
 	
-	check_frame_and_channel_count (frames, c_in.channels());
+	check_frame_and_channel_count (c_in.frames (), c_in.channels ());
 
 	/* Do conversion */
 
-	for (uint32_t chn = 0; chn < channels; ++chn) {
-		gdither_runf (dither, chn, frames / channels, data, data_out);
+	for (uint32_t chn = 0; chn < c_in.channels(); ++chn) {
+		gdither_runf (dither, chn, c_in.frames_per_channel (), data, data_out);
 	}
 
 	/* Write forward */

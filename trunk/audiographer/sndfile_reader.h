@@ -27,6 +27,8 @@ class SndfileReader : public virtual SndfileBase, public ListedSource<T>
 	SndfileReader (ChannelCount channels, nframes_t samplerate, int format, std::string path);
 	
 	nframes_t seek (nframes_t frames, SeekType whence);
+	
+	/// Read data into buffer in \a context, only the data is modified (not frame count)
 	nframes_t read (ProcessContext<T> & context);
 	
   private:
