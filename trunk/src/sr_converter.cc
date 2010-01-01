@@ -1,6 +1,6 @@
 #include "audiographer/sr_converter.h"
-#include "audiographer/exception.h"
-#include "audiographer/type_utils.h"
+#include "audiographer/core/exception.h"
+#include "audiographer/core/type_utils.h"
 
 #include <cmath>
 #include <boost/format.hpp>

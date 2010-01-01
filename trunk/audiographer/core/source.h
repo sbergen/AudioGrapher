@@ -1,8 +1,8 @@
 #ifndef AUDIOGRAPHER_SOURCE_H
 #define AUDIOGRAPHER_SOURCE_H
 
-#include "types.h"
-#include "sink.h"
+#include "audiographer/core/types.h"
+#include "audiographer/core/sink.h"
 
 #include <boost/shared_ptr.hpp>
 

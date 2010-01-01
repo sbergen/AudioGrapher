@@ -1,7 +1,7 @@
 #ifndef AUDIOGRAPHER_ROUTINES_H
 #define AUDIOGRAPHER_ROUTINES_H
 
-#include "types.h"
+#include "audiographer/core/types.h"
 
 #include <cmath>
 

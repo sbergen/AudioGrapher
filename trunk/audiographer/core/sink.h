@@ -3,7 +3,7 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include "process_context.h"
+#include "audiographer/core/process_context.h"
 
 namespace AudioGrapher
 {

@@ -8,8 +8,8 @@
 
 // includes used in this file
 
-#include "audiographer/sink.h"
-#include "audiographer/exception.h"
+#include "audiographer/core/sink.h"
+#include "audiographer/core/exception.h"
 
 #include <vector>
 #include <list>

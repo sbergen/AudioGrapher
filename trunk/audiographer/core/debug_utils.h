@@ -1,7 +1,7 @@
 #ifndef AUDIOGRAPHER_DEBUG_UTILS_H
 #define AUDIOGRAPHER_DEBUG_UTILS_H
 
-#include "flag_field.h"
+#include "audiographer/core/flag_field.h"
 
 #include <string>
 

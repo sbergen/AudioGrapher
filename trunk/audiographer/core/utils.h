@@ -1,8 +1,8 @@
 #ifndef AUDIOGRAPHER_UTILS_H
 #define AUDIOGRAPHER_UTILS_H
 
-#include "types.h"
-#include "exception.h"
+#include "audiographer/core/types.h"
+#include "audiographer/core/exception.h"
 
 #include <cstring>
 

@@ -6,7 +6,7 @@
 
 #include <boost/format.hpp>
 
-#include "audiographer/debug_utils.h"
+#include "audiographer/core/debug_utils.h"
 
 namespace AudioGrapher
 {

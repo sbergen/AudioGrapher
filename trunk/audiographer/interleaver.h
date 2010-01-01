@@ -1,10 +1,10 @@
 #ifndef AUDIOGRAPHER_INTERLEAVER_H
 #define AUDIOGRAPHER_INTERLEAVER_H
 
-#include "types.h"
+#include "audiographer/core/types.h"
+#include "audiographer/core/sink.h"
+#include "audiographer/core/exception.h"
 #include "listed_source.h"
-#include "sink.h"
-#include "exception.h"
 
 #include <vector>
 #include <cmath>
