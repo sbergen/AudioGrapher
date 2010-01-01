@@ -21,13 +21,15 @@ enum DitherType
   * This class can only convert floats to either \a float, \a int32_t, \a int16_t, or \a uint8_t 
   */
 template <typename TOut>
-class SampleFormatConverter : public Sink<float>, public ListedSource<TOut>
+class SampleFormatConverter
+  : public Sink<float>
+  , public ListedSource<TOut>
 {
   public:
 	/** Constructor
 	  * \param channels number of channels in stream
 	  */
-	SampleFormatConverter (uint32_t channels);
+	SampleFormatConverter (ChannelCount channels);
 	~SampleFormatConverter ();
 	
 	/** Initialize and allocate buffers for processing.
@@ -51,9 +53,9 @@ class SampleFormatConverter : public Sink<float>, public ListedSource<TOut>
   private:
 	void reset();
 	void init_common(nframes_t max_frames); // not-template-specialized part of init
-	void check_frame_count(nframes_t frames);
+	void check_frame_and_channel_count(nframes_t frames, ChannelCount channels_);
 
-	uint32_t     channels;
+	ChannelCount channels;
 	GDither      dither;
 	nframes_t    data_out_size;
 	TOut *       data_out;

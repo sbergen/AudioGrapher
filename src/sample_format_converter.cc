@@ -2,16 +2,15 @@
 
 #include "gdither/gdither.h"
 #include "audiographer/exception.h"
+#include "audiographer/type_utils.h"
 
 #include <boost/format.hpp>
-
-#include <cstring>
 
 namespace AudioGrapher
 {
 
 template <typename TOut>
-SampleFormatConverter<TOut>::SampleFormatConverter (uint32_t channels) :
+SampleFormatConverter<TOut>::SampleFormatConverter (ChannelCount channels) :
   channels (channels),
   dither (0),
   data_out_size (0),
@@ -108,7 +107,7 @@ SampleFormatConverter<TOut>::process (ProcessContext<float> const & c_in)
 	float const * const data = c_in.data();
 	nframes_t const frames = c_in.frames();
 	
-	check_frame_count (frames);
+	check_frame_and_channel_count (frames, c_in.channels());
 
 	/* Do conversion */
 
@@ -157,9 +156,8 @@ void
 SampleFormatConverter<float>::process (ProcessContext<float> const & c_in)
 {
 	// Make copy of data and pass it to non-const version
-	nframes_t frames = c_in.frames();
-	check_frame_count (frames);
-	memcpy (data_out, c_in.data(), frames * sizeof(float));
+	check_frame_and_channel_count (c_in.frames(), c_in.channels());
+	TypeUtils<float>::copy (c_in.data(), data_out, c_in.frames());
 	
 	ProcessContext<float> c (c_in, data_out);
 	process (c);
@@ -167,11 +165,17 @@ SampleFormatConverter<float>::process (ProcessContext<float> const & c_in)
 
 template<typename TOut>
 void
-SampleFormatConverter<TOut>::check_frame_count(nframes_t frames)
+SampleFormatConverter<TOut>::check_frame_and_channel_count(nframes_t frames, ChannelCount channels_)
 {
+	if (channels_ != channels) {
+		throw Exception (*this, boost::str (boost::format
+			("Wrong channel count given to process(), %1% instead of %2%")
+			% channels_ % channels));
+	}
+	
 	if (frames  > data_out_size) {
-		throw Exception (*this, boost::str (boost::format (
-			"Too many frames given to process(), %1% instad of %2%")
+		throw Exception (*this, boost::str (boost::format
+			("Too many frames given to process(), %1% instad of %2%")
 			% frames % data_out_size));
 	}
 }
