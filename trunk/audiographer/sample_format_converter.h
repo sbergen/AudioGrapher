@@ -1,9 +1,9 @@
 #ifndef AUDIOGRAPHER_SAMPLE_FORMAT_CONVERTER_H
 #define AUDIOGRAPHER_SAMPLE_FORMAT_CONVERTER_H
 
-#include "audiographer/core/sink.h"
-#include "gdither/gdither_types.h"
 #include "listed_source.h"
+#include "sink.h"
+#include "gdither/gdither_types.h"
 
 namespace AudioGrapher
 {

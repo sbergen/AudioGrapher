@@ -1,6 +1,6 @@
-#include "audiographer/core/debug_utils.h"
+#include "audiographer/debug_utils.h"
 
-#include "audiographer/core/process_context.h"
+#include "audiographer/process_context.h"
 
 #include <sstream>
 

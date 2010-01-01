@@ -1,4 +1,4 @@
-#include "audiographer/core/utils.h"
+#include "audiographer/utils.h"
 
 using namespace AudioGrapher;
 

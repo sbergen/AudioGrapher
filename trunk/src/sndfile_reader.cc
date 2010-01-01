@@ -2,7 +2,7 @@
 
 #include <boost/format.hpp>
 
-#include "audiographer/core/exception.h"
+#include "audiographer/exception.h"
 
 namespace AudioGrapher
 {

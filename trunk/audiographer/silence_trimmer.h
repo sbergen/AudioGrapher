@@ -1,12 +1,11 @@
 #ifndef AUDIOGRAPHER_SILENCE_TRIMMER_H
 #define AUDIOGRAPHER_SILENCE_TRIMMER_H
 
-#include "audiographer/core/flag_debuggable.h"
-#include "audiographer/core/sink.h"
-#include "audiographer/core/exception.h"
-#include "audiographer/core/utils.h"
-
-#include "audiographer/listed_source.h"
+#include "flag_debuggable.h"
+#include "listed_source.h"
+#include "sink.h"
+#include "exception.h"
+#include "utils.h"
 
 #include <cstring>
 

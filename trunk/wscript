@@ -53,9 +53,9 @@ def build(bld):
 	audiographer.source = '''
 		src/gdither/gdither.cc
 		src/sample_format_converter.cc
-		src/core/routines.cc
-		src/core/utils.cc
-		src/core/debug_utils.cc
+		src/routines.cc
+		src/utils.cc
+		src/debug_utils.cc
 	'''
 	
 	if bld.env['HAVE_SNDFILE']:

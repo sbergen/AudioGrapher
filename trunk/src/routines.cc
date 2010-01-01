@@ -1,4 +1,4 @@
-#include "audiographer/core/routines.h"
+#include "audiographer/routines.h"
 
 namespace AudioGrapher
 {

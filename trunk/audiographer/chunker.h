@@ -1,10 +1,9 @@
 #ifndef AUDIOGRAPHER_CHUNKER_H
 #define AUDIOGRAPHER_CHUNKER_H
 
-#include "audiographer/core/flag_debuggable.h"
-#include "audiographer/core/sink.h"
+#include "flag_debuggable.h"
 #include "listed_source.h"
-
+#include "sink.h"
 #include <cstring>
 
 namespace AudioGrapher
