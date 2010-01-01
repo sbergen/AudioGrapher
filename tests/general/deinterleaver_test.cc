@@ -1,5 +1,6 @@
-#include "utils.h"
-#include "audiographer/deinterleaver.h"
+#include "tests/utils.h"
+
+#include "audiographer/general/deinterleaver.h"
 
 using namespace AudioGrapher;
 

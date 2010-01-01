@@ -1,5 +1,6 @@
-#include "utils.h"
-#include "audiographer/sr_converter.h"
+#include "tests/utils.h"
+
+#include "audiographer/general/sr_converter.h"
 
 using namespace AudioGrapher;
 

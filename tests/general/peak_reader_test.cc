@@ -1,5 +1,6 @@
-#include "utils.h"
-#include "audiographer/peak_reader.h"
+#include "tests/utils.h"
+
+#include "audiographer/general/peak_reader.h"
 
 using namespace AudioGrapher;
 

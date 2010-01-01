@@ -1,5 +1,6 @@
-#include "utils.h"
-#include "audiographer/identity_vertex.h"
+#include "tests/utils.h"
+
+#include "audiographer/utils/identity_vertex.h"
 
 using namespace AudioGrapher;
 

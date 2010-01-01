@@ -1,8 +1,8 @@
 #ifndef AUDIOGRAPHER_LISTED_SOURCE_H
 #define AUDIOGRAPHER_LISTED_SOURCE_H
 
-#include "types.h"
-#include "source.h"
+#include "audiographer/types.h"
+#include "audiographer/source.h"
 
 #include <list>
 

@@ -52,7 +52,7 @@ def build(bld):
 	audiographer = bld.new_task_gen('cxx', 'shlib')
 	audiographer.source = '''
 		src/gdither/gdither.cc
-		src/sample_format_converter.cc
+		src/general/sample_format_converter.cc
 		src/routines.cc
 		src/utils.cc
 		src/debug_utils.cc
@@ -67,7 +67,7 @@ def build(bld):
 	
 	if bld.env['HAVE_SAMPLERATE']:
 		audiographer.source += '''
-			src/sr_converter.cc
+			src/general/sr_converter.cc
 		'''
 	
 	audiographer.name           = 'libaudiographer'
@@ -83,21 +83,21 @@ def build(bld):
 		# Unit tests
 		obj              = bld.new_task_gen('cxx', 'program')
 		obj.source       = '''
-			tests/identity_vertex_test.cc
-			tests/interleaver_test.cc
-			tests/deinterleaver_test.cc
-			tests/interleaver_deinterleaver_test.cc
-			tests/chunker_test.cc
-			tests/sample_format_converter_test.cc
 			tests/test_runner.cc
-			tests/peak_reader_test.cc
-			tests/normalizer_test.cc
-			tests/silence_trimmer_test.cc
+			tests/utils/identity_vertex_test.cc
+			tests/general/interleaver_test.cc
+			tests/general/deinterleaver_test.cc
+			tests/general/interleaver_deinterleaver_test.cc
+			tests/general/chunker_test.cc
+			tests/general/sample_format_converter_test.cc
+			tests/general/peak_reader_test.cc
+			tests/general/normalizer_test.cc
+			tests/general/silence_trimmer_test.cc
 		'''
 		
 		if bld.env['HAVE_ALL_GTHREAD']:
 			obj.source += '''
-				tests/threader_test.cc
+				tests/general/threader_test.cc
 			'''
 		
 		if bld.env['HAVE_SNDFILE']:
@@ -107,7 +107,7 @@ def build(bld):
 
 		if bld.env['HAVE_SAMPLERATE']:
 			obj.source += '''
-				tests/sr_converter_test.cc
+				tests/general/sr_converter_test.cc
 			'''
 		
 		obj.uselib_local = 'libaudiographer'

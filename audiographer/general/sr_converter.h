@@ -3,11 +3,11 @@
 
 #include <samplerate.h>
 
-#include "flag_debuggable.h"
-#include "listed_source.h"
-#include "sink.h"
-#include "throwing.h"
-#include "types.h"
+#include "audiographer/flag_debuggable.h"
+#include "audiographer/sink.h"
+#include "audiographer/throwing.h"
+#include "audiographer/types.h"
+#include "audiographer/utils/listed_source.h"
 
 namespace AudioGrapher
 {

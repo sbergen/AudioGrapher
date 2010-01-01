@@ -1,11 +1,11 @@
 #ifndef AUDIOGRAPHER_DEINTERLEAVER_H
 #define AUDIOGRAPHER_DEINTERLEAVER_H
 
-#include "types.h"
-#include "source.h"
-#include "sink.h"
-#include "identity_vertex.h"
-#include "exception.h"
+#include "audiographer/types.h"
+#include "audiographer/source.h"
+#include "audiographer/sink.h"
+#include "audiographer/exception.h"
+#include "audiographer/utils/identity_vertex.h"
 
 #include <vector>
 

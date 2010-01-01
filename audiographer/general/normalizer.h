@@ -1,9 +1,9 @@
 #ifndef AUDIOGRAPHER_NORMALIZER_H
 #define AUDIOGRAPHER_NORMALIZER_H
 
-#include "listed_source.h"
-#include "sink.h"
-#include "routines.h"
+#include "audiographer/sink.h"
+#include "audiographer/routines.h"
+#include "audiographer/utils/listed_source.h"
 
 #include <cstring>
 

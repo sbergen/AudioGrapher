@@ -1,7 +1,7 @@
 #ifndef AUDIOGRAPHER_TYPE_UTILS_H
 #define AUDIOGRAPHER_TYPE_UTILS_H
 
-#include "types.h"
+#include "audiographer/types.h"
 #include <boost/static_assert.hpp>
 #include <boost/type_traits.hpp>
 #include <memory>

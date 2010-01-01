@@ -2,8 +2,7 @@
 #define AUDIOGRAPHER_SNDFILE_READER_H
 
 #include "audiographer/sndfile/sndfile_base.h"
-
-#include "audiographer/listed_source.h"
+#include "audiographer/utils/listed_source.h"
 #include "audiographer/process_context.h"
 
 namespace AudioGrapher

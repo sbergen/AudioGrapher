@@ -1,5 +1,6 @@
-#include "utils.h"
-#include "audiographer/chunker.h"
+#include "tests/utils.h"
+
+#include "audiographer/general/chunker.h"
 
 #include <cassert>
 
