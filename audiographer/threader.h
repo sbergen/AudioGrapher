@@ -9,9 +9,9 @@
 #include <vector>
 #include <algorithm>
 
-#include "audiographer/core/source.h"
-#include "audiographer/core/sink.h"
-#include "audiographer/core/exception.h"
+#include "source.h"
+#include "sink.h"
+#include "exception.h"
 
 namespace AudioGrapher
 {

@@ -5,12 +5,12 @@
 #include <boost/type_traits.hpp>
 #include <boost/format.hpp>
 
-#include "audiographer/core/exception.h"
-#include "audiographer/core/debug_utils.h"
-#include "audiographer/core/types.h"
-#include "audiographer/core/flag_field.h"
-#include "audiographer/core/throwing.h"
-#include "audiographer/core/type_utils.h"
+#include "exception.h"
+#include "debug_utils.h"
+#include "types.h"
+#include "flag_field.h"
+#include "throwing.h"
+#include "type_utils.h"
 
 namespace AudioGrapher
 {

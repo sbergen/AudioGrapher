@@ -5,7 +5,7 @@
 #include <sndfile.h>
 #include <sigc++/signal.h>
 
-#include "audiographer/core/types.h"
+#include "types.h"
 
 namespace AudioGrapher {
 
