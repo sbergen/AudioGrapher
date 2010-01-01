@@ -1,6 +1,7 @@
 #ifndef AUDIOGRAPHER_CHUNKER_H
 #define AUDIOGRAPHER_CHUNKER_H
 
+#include "flag_debuggable.h"
 #include "listed_source.h"
 #include "sink.h"
 #include <cstring>
@@ -9,7 +10,10 @@ namespace AudioGrapher
 {
 
 template<typename T>
-class Chunker : public ListedSource<T>, public Sink<T>
+class Chunker
+  : public ListedSource<T>
+  , public Sink<T>
+  , public FlagDebuggable<>
 {
   public:
 	Chunker (nframes_t chunk_size)
@@ -17,6 +21,7 @@ class Chunker : public ListedSource<T>, public Sink<T>
 	  , position (0)
 	{
 		buffer = new T[chunk_size];
+		add_supported_flag (ProcessContext<T>::EndOfInput);
 	}
 	
 	~Chunker()
@@ -26,6 +31,8 @@ class Chunker : public ListedSource<T>, public Sink<T>
 	
 	void process (ProcessContext<T> const & context)
 	{
+		check_flags (*this, context);
+		
 		if (position + context.frames() < chunk_size) {
 			memcpy (&buffer[position], (float const *)context.data(), context.frames() * sizeof(T));
 			position += context.frames();

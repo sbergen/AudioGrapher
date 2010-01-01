@@ -1,6 +1,7 @@
 #ifndef AUDIOGRAPHER_SNDFILE_WRITER_H
 #define AUDIOGRAPHER_SNDFILE_WRITER_H
 
+#include "flag_debuggable.h"
 #include "sndfile_base.h"
 #include "types.h"
 #include "sink.h"
@@ -10,7 +11,10 @@ namespace AudioGrapher
 
 /// Template parameter specific parts of sndfile writer
 template <typename T>
-class SndfileWriter : public virtual SndfileBase, public Sink<T>
+class SndfileWriter
+  : public virtual SndfileBase
+  , public Sink<T>
+  , public FlagDebuggable<>
 {
   public:
 	SndfileWriter (ChannelCount channels, nframes_t samplerate, int format, std::string const & path);

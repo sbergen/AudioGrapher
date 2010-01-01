@@ -18,6 +18,8 @@ SndfileWriter<T>::SndfileWriter (ChannelCount channels, nframes_t samplerate, in
 {
 	// init write function
 	init ();
+	
+	add_supported_flag (ProcessContext<T>::EndOfInput);
 }
 
 template <>
@@ -45,6 +47,8 @@ template <typename T>
 void
 SndfileWriter<T>::process (ProcessContext<T> const & c)
 {
+	check_flags (*this, c);
+	
 	if (c.channels() != sf_info.channels) {
 		throw Exception (*this, str (boost::format(
 			"Wrong number of channels given to process(), %1% instead of %2%")

@@ -1,6 +1,7 @@
 #ifndef AUDIOGRAPHER_SILENCE_TRIMMER_H
 #define AUDIOGRAPHER_SILENCE_TRIMMER_H
 
+#include "flag_debuggable.h"
 #include "listed_source.h"
 #include "sink.h"
 #include "exception.h"
@@ -11,13 +12,17 @@
 namespace AudioGrapher {
 
 template<typename T>
-class SilenceTrimmer : public ListedSource<T>, public Sink<T>
+class SilenceTrimmer
+  : public ListedSource<T>
+  , public Sink<T>
+  , public FlagDebuggable<>
 {
   public:
 
 	SilenceTrimmer()
 	{
-	reset ();
+		reset ();
+		add_supported_flag (ProcessContext<T>::EndOfInput);
 	}
 
 	void reset()
@@ -71,6 +76,8 @@ class SilenceTrimmer : public ListedSource<T>, public Sink<T>
 
 	void process (ProcessContext<T> const & c)
 	{
+		check_flags (*this, c);
+		
 		if (in_end) { throw Exception(*this, "process() after reacing end of input"); }
 		in_end = c.has_flag (ProcessContext<T>::EndOfInput);
 		
