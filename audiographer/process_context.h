@@ -3,9 +3,13 @@
 
 #include <boost/static_assert.hpp>
 #include <boost/type_traits.hpp>
+#include <boost/format.hpp>
 
+#include "exception.h"
+#include "debug_utils.h"
 #include "types.h"
 #include "flag_field.h"
+#include "throwing.h"
 #include "type_utils.h"
 
 namespace AudioGrapher
@@ -16,7 +20,9 @@ namespace AudioGrapher
  */
 
 template <typename T = float>
-class ProcessContext  {
+class ProcessContext
+  : public Throwing<>
+{
 
 	BOOST_STATIC_ASSERT (boost::has_trivial_destructor<T>::value);
 
@@ -32,26 +38,31 @@ public:
 
 	/// Basic constructor with data, frame and channel count
 	ProcessContext (T * data, nframes_t frames, ChannelCount channels)
-		: _data (data), _frames (frames), _channels (channels) {}
+		: _data (data), _frames (frames), _channels (channels)
+	{ validate_data(); }
 	
 	/// Normal copy constructor
 	ProcessContext (ProcessContext<T> const & other)
-		: _data (other._data), _frames (other._frames), _channels (other._channels), _flags (other._flags) {}
+		: _data (other._data), _frames (other._frames), _channels (other._channels), _flags (other._flags)
+	{ /* No need to validate data */ }
 	
 	/// "Copy constructor" with unique data, frame and channel count, but copies flags
 	template<typename Y>
 	ProcessContext (ProcessContext<Y> const & other, T * data, nframes_t frames, ChannelCount channels)
-		: _data (data), _frames (frames), _channels (channels), _flags (other.flags()) {}
+		: _data (data), _frames (frames), _channels (channels), _flags (other.flags())
+	{ validate_data(); }
 	
 	/// "Copy constructor" with unique data and frame count, but copies channel count and flags
 	template<typename Y>
 	ProcessContext (ProcessContext<Y> const & other, T * data, nframes_t frames)
-		: _data (data), _frames (frames), _channels (other.channels()), _flags (other.flags()) {}
+		: _data (data), _frames (frames), _channels (other.channels()), _flags (other.flags())
+	{ validate_data(); }
 	
 	/// "Copy constructor" with unique data, but copies frame and channel count + flags
 	template<typename Y>
 	ProcessContext (ProcessContext<Y> const & other, T * data)
-		: _data (data), _frames (other.frames()), _channels (other.channels()), _flags (other.flags()) {}
+		: _data (data), _frames (other.frames()), _channels (other.channels()), _flags (other.flags())
+	{ /* No need to validate data */ }
 	
 	virtual ~ProcessContext () {}
 	
@@ -85,6 +96,16 @@ protected:
 	ChannelCount           _channels;
 	
 	mutable FlagField      _flags;
+
+  private:
+	void validate_data()
+	{
+		if (throw_level (ThrowProcess) && (_frames % _channels != 0)) {
+			throw Exception (*this, boost::str (boost::format
+				("Number of frames given to %1% was not a multiple of channels: %2% frames with %3% channels")
+				% DebugUtils::demangled_name (*this) % _frames % _channels));
+		}
+	}
 };
 
 /// A process context that allocates and owns it's data buffer

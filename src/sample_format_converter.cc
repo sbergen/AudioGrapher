@@ -169,12 +169,6 @@ template<typename TOut>
 void
 SampleFormatConverter<TOut>::check_frame_count(nframes_t frames)
 {
-	if (frames % channels != 0) {
-		throw Exception (*this, boost::str (boost::format (
-			"Number of frames given to process() was not a multiple of channels: %1% frames with %2% channels")
-			% frames % channels));
-	}
-	
 	if (frames  > data_out_size) {
 		throw Exception (*this, boost::str (boost::format (
 			"Too many frames given to process(), %1% instad of %2%")

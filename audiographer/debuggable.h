@@ -2,7 +2,7 @@
 #define AUDIOGRAPHER_DEBUGGABLE_H
 
 #ifndef DEFAULT_DEBUG_LEVEL
-#define DEFAULT_DEBUG_LEVEL DebugFlags
+#define DEFAULT_DEBUG_LEVEL DebugNone
 #endif
 
 #include <iostream>

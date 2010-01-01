@@ -55,6 +55,7 @@ def build(bld):
 		src/sample_format_converter.cc
 		src/routines.cc
 		src/utils.cc
+		src/debug_utils.cc
 	'''
 	
 	if bld.env['HAVE_SNDFILE']:
