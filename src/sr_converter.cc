@@ -21,6 +21,7 @@ SampleRateConverter::SampleRateConverter (uint32_t channels)
   , data_out_size (0)
   , src_state (0)
 {
+	add_supported_flag (ProcessContext<>::EndOfInput);
 }
 
 void
@@ -78,6 +79,8 @@ SampleRateConverter::allocate_buffers (nframes_t max_frames)
 void
 SampleRateConverter::process (ProcessContext<float> const & c)
 {
+	check_flags (*this, c);
+	
 	if (!active) {
 		output (c);
 		return;

@@ -5,6 +5,7 @@
 #include <boost/type_traits.hpp>
 
 #include "types.h"
+#include "flag_field.h"
 #include "type_utils.h"
 
 namespace AudioGrapher
@@ -14,7 +15,7 @@ namespace AudioGrapher
  * Processing context. Constness only applies to data, not flags
  */
 
-template <typename T>
+template <typename T = float>
 class ProcessContext  {
 
 	BOOST_STATIC_ASSERT (boost::has_trivial_destructor<T>::value);
