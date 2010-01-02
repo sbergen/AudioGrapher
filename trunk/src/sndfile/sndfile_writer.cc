@@ -9,8 +9,6 @@ namespace AudioGrapher
 {
 
 using std::string;
-using boost::str;
-using boost::format;
 
 template <typename T>
 SndfileWriter<T>::SndfileWriter (ChannelCount channels, nframes_t samplerate, int format, string const & path) :
@@ -49,17 +47,19 @@ SndfileWriter<T>::process (ProcessContext<T> const & c)
 {
 	check_flags (*this, c);
 	
-	if (c.channels() != sf_info.channels) {
-		throw Exception (*this, str (boost::format(
-			"Wrong number of channels given to process(), %1% instead of %2%")
+	if (throw_level (ThrowStrict) && c.channels() != sf_info.channels) {
+		throw Exception (*this, boost::str (boost::format
+			("Wrong number of channels given to process(), %1% instead of %2%")
 			% c.channels() % sf_info.channels));
 	}
 	
-	char errbuf[256];
 	nframes_t written = (*write_func) (sndfile, c.data(), c.frames());
-	if (written != c.frames()) {
+	if (throw_level (ThrowProcess) && written != c.frames()) {
+		char errbuf[256];
 		sf_error_str (sndfile, errbuf, sizeof (errbuf) - 1);
-		throw Exception (*this, str ( format("Could not write data to output file (%1%)") % errbuf));
+		throw Exception (*this, boost::str ( boost::format
+			("Could not write data to output file (%1%)")
+			% errbuf));
 	}
 
 	if (c.has_flag(ProcessContext<T>::EndOfInput)) {

@@ -13,7 +13,9 @@ namespace AudioGrapher
 {
 
 template<typename T>
-class DeInterleaver : public Sink<T>
+class DeInterleaver
+  : public Sink<T>
+  , public Throwing<>
 {
   private:
 	typedef boost::shared_ptr<IdentityVertex<T> > OutputPtr;
@@ -43,11 +45,11 @@ class DeInterleaver : public Sink<T>
 	
 	SourcePtr output (unsigned int channel)
 	{
-		if (channel >= channels) {
+		if (throw_level (ThrowObject) && channel >= channels) {
 			throw Exception (*this, "channel out of range");
 		}
 		
-		return boost::static_pointer_cast<Source<T> > (outputs[channel]);
+		return outputs[channel];
 	}
 	
 	void process (ProcessContext<T> const & c)
@@ -55,19 +57,13 @@ class DeInterleaver : public Sink<T>
 		nframes_t frames = c.frames();
 		T const * data = c.data();
 		
-		if (frames == 0) { return; }
-		
 		nframes_t const  frames_per_channel = frames / channels;
 		
-		if (c.channels() != channels) {
+		if (throw_level (ThrowProcess) && c.channels() != channels) {
 			throw Exception (*this, "wrong amount of channels given to process()");
 		}
 		
-		if (frames % channels != 0) {
-			throw Exception (*this, "wrong amount of frames given to process()");
-		}
-		
-		if (frames_per_channel > max_frames) {
+		if (throw_level (ThrowProcess) && frames_per_channel > max_frames) {
 			throw Exception (*this, "too many frames given to process()");
 		}
 		

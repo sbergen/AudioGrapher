@@ -10,8 +10,6 @@ using std::string;
 using boost::str;
 using boost::format;
 
-/* SndfileWriterBase */
-
 SndfileBase::SndfileBase (ChannelCount channels, nframes_t samplerate, int format, string const & path)
   : path (path)
 {
@@ -21,11 +19,11 @@ SndfileBase::SndfileBase (ChannelCount channels, nframes_t samplerate, int forma
 	sf_info.samplerate = samplerate;
 	sf_info.format = format;
 
-	if (!sf_format_check (&sf_info)) {
+	if (throw_level (ThrowObject) && !sf_format_check (&sf_info)) {
 		throw Exception (*this, "Invalid format in constructor");
 	}
 
-	if (path.length() == 0) {
+	if (throw_level (ThrowObject) && path.length() == 0) {
 		throw Exception (*this, "No output file specified");
 	}
 
@@ -35,13 +33,16 @@ SndfileBase::SndfileBase (ChannelCount channels, nframes_t samplerate, int forma
 
 	// Open file
 	if (path.compare ("temp")) {
-		if ((sndfile = sf_open (path.c_str(), SFM_WRITE, &sf_info)) == 0) {
+		sndfile = sf_open (path.c_str(), SFM_WRITE, &sf_info);
+		if (throw_level (ThrowObject) &&  !sndfile) {
 			sf_error_str (0, errbuf, sizeof (errbuf) - 1);
-			throw Exception (*this, str (boost::format ("Cannot open output file \"%1%\" (%2%)") % path % errbuf));
+			throw Exception (*this, str (boost::format
+				("Cannot open output file \"%1%\" (%2%)")
+				% path % errbuf));
 		}
 	} else {
-		FILE * file;
-		if (!(file = tmpfile ())) {
+		FILE * file = tmpfile ();
+		if (throw_level (ThrowObject) && !file) {
 			throw Exception (*this, "Cannot open tempfile");
 		}
 		sndfile = sf_open_fd (fileno(file), SFM_RDWR, &sf_info, true);

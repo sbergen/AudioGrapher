@@ -25,9 +25,9 @@ template<typename T>
 nframes_t
 SndfileReader<T>::read (ProcessContext<T> & context)
 {
-	if (context.channels() != sf_info.channels) {
-		throw Exception (*this, boost::str (boost::format (
-			"ProcessContext given to read() has a wrong amount of channels: %1% instead of %2%")
+	if (throw_level (ThrowStrict) && context.channels() != sf_info.channels) {
+		throw Exception (*this, boost::str (boost::format
+			("Wrong number of channels given to process(), %1% instead of %2%")
 			% context.channels() % sf_info.channels));
 	}
 	
