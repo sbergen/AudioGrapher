@@ -10,11 +10,11 @@ namespace AudioGrapher
 
 enum ThrowLevel
 {
-	ThrowNone,     //< Not allowed to throw
-	ThrowObject,   //< Object level stuff, ctors, initalizers etc.
-	ThrowProcess,  //< Process cycle level stuff
-	ThrowStrict,   //< Stricter checks than ThrowProcess, less than ThrowSample
-	ThrowSample    //< Sample level stuff
+	ThrowNone,     ///< Not allowed to throw
+	ThrowObject,   ///< Object level stuff, ctors, initalizers etc.
+	ThrowProcess,  ///< Process cycle level stuff
+	ThrowStrict,   ///< Stricter checks than ThrowProcess, less than ThrowSample
+	ThrowSample    ///< Sample level stuff
 };
 
 /// Class that allows optimizing out error checking during compile time
