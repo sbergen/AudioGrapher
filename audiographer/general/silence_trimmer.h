@@ -16,6 +16,7 @@ class SilenceTrimmer
   : public ListedSource<T>
   , public Sink<T>
   , public FlagDebuggable<>
+  , public Throwing<>
 {
   public:
 
@@ -39,7 +40,7 @@ class SilenceTrimmer
 	
 	void add_silence_to_beginning (nframes_t frames_per_channel)
 	{
-		if (!in_beginning) {
+		if (throw_level (ThrowObject) && !in_beginning) {
 			throw Exception(*this, "Tried to add silence to beginning after already outputting data");
 		}
 		add_to_beginning = frames_per_channel;
@@ -47,7 +48,7 @@ class SilenceTrimmer
 	
 	void add_silence_to_end (nframes_t frames_per_channel)
 	{
-		if (in_end) {
+		if (throw_level (ThrowObject) && in_end) {
 			throw Exception(*this, "Tried to add silence to end after already reaching end");
 		}
 		add_to_end = frames_per_channel;
@@ -55,7 +56,7 @@ class SilenceTrimmer
 	
 	void set_trim_beginning (bool yn)
 	{
-		if (!in_beginning) {
+		if (throw_level (ThrowObject) && !in_beginning) {
 			throw Exception(*this, "Tried to set beginning trim after already outputting data");
 		}
 		trim_beginning = yn;
@@ -63,7 +64,7 @@ class SilenceTrimmer
 	
 	void set_trim_end (bool yn)
 	{
-		if (in_end) {
+		if (throw_level (ThrowObject) && in_end) {
 			throw Exception(*this, "Tried to set end trim after already reaching end");
 		}
 		trim_end = yn;
@@ -78,7 +79,9 @@ class SilenceTrimmer
 	{
 		check_flags (*this, c);
 		
-		if (in_end) { throw Exception(*this, "process() after reacing end of input"); }
+		if (throw_level (ThrowStrict) && in_end) {
+			throw Exception(*this, "process() after reacing end of input");
+		}
 		in_end = c.has_flag (ProcessContext<T>::EndOfInput);
 		
 		nframes_t frame_index = 0;
@@ -154,7 +157,9 @@ class SilenceTrimmer
 	void output_silence_frames (ProcessContext<T> const & c, nframes_t & total_frames, bool adding_to_end = false)
 	{
 		nframes_t silence_buffer_size = Utils::get_zero_buffer_size<T>();
-		if (silence_buffer_size == 0) { throw Exception (*this, "Utils::init_zeros has not been called!"); }
+		if (throw_level (ThrowProcess) && silence_buffer_size == 0) {
+			throw Exception (*this, "Utils::init_zeros has not been called!");
+		}
 		
 		bool end_of_input = c.has_flag (ProcessContext<T>::EndOfInput);
 		c.remove_flag (ProcessContext<T>::EndOfInput);

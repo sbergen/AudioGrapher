@@ -4,6 +4,7 @@
 #include "audiographer/types.h"
 #include "audiographer/sink.h"
 #include "audiographer/exception.h"
+#include "audiographer/throwing.h"
 #include "audiographer/utils/listed_source.h"
 
 #include <vector>
@@ -13,7 +14,9 @@ namespace AudioGrapher
 {
 
 template<typename T>
-class Interleaver : public ListedSource<T>
+class Interleaver
+  : public ListedSource<T>
+  , public Throwing<>
 {
   public: 
 	
@@ -40,7 +43,7 @@ class Interleaver : public ListedSource<T>
 	
 	typename Source<T>::SinkPtr input (unsigned int channel)
 	{
-		if (channel >= channels) {
+		if (throw_level (ThrowObject) && channel >= channels) {
 			throw Exception (*this, "Channel out of range");
 		}
 		
@@ -57,8 +60,12 @@ class Interleaver : public ListedSource<T>
 		
 		void process (ProcessContext<T> const & c)
 		{
-			if (c.channels() > 1) { throw Exception (*this, "Data input has more than on channel"); }
-			if (frames_written) { throw Exception (*this, "Input channels out of sync"); }
+			if (parent.throw_level (ThrowProcess) && c.channels() > 1) {
+				throw Exception (*this, "Data input has more than on channel");
+			}
+			if (parent.throw_level (ThrowStrict) && frames_written) {
+				throw Exception (*this, "Input channels out of sync");
+			}
 			frames_written = c.frames();
 			parent.write_channel (c, channel);
 		}
@@ -93,7 +100,7 @@ class Interleaver : public ListedSource<T>
 	
 	void write_channel (ProcessContext<T> const & c, unsigned int channel)
 	{
-		if (c.frames() > max_frames) {
+		if (throw_level (ThrowProcess) && c.frames() > max_frames) {
 			reset_channels();
 			throw Exception (*this, "Too many frames given to an input");
 		}
@@ -118,7 +125,7 @@ class Interleaver : public ListedSource<T>
 		for (unsigned int i = 1; i < channels; ++i) {
 			nframes_t const frames = inputs[i]->frames();
 			if (!frames) { return 0; }
-			if (frames != ready_frames) {
+			if (throw_level (ThrowProcess) && frames != ready_frames) {
 				init (channels, max_frames);
 				throw Exception (*this, "Frames count out of sync");
 			}

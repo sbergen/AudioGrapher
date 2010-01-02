@@ -24,6 +24,7 @@ template <typename TOut>
 class SampleFormatConverter
   : public Sink<float>
   , public ListedSource<TOut>
+  , public Throwing<>
 {
   public:
 	/** Constructor

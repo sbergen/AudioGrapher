@@ -1,8 +1,9 @@
 #ifndef AUDIOGRAPHER_SNDFILE_WRITER_H
 #define AUDIOGRAPHER_SNDFILE_WRITER_H
 
-#include "audiographer/sndfile/sndfile_base.h"
+#include <boost/signals2.hpp>
 
+#include "audiographer/sndfile/sndfile_base.h"
 #include "audiographer/flag_debuggable.h"
 #include "audiographer/sink.h"
 #include "audiographer/types.h"
@@ -22,6 +23,8 @@ class SndfileWriter
 	
 	void process (ProcessContext<T> const & c);
 	using Sink<T>::process;
+	
+	boost::signals2::signal<void (std::string)> FileWritten;
 
   private:
 

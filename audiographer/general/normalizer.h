@@ -10,7 +10,10 @@
 namespace AudioGrapher
 {
 
-class Normalizer : public ListedSource<float>, Sink<float>
+class Normalizer
+  : public ListedSource<float>
+  , public Sink<float>
+  , public Throwing<>
 {
   public:
 	Normalizer (float target_dB)
@@ -46,7 +49,7 @@ class Normalizer : public ListedSource<float>, Sink<float>
 
 	void process (ProcessContext<float> const & c)
 	{
-		if (c.frames() > buffer_size) {
+		if (throw_level (ThrowProcess) && c.frames() > buffer_size) {
 			throw Exception (*this, "Too many frames given to process()");
 		}
 		

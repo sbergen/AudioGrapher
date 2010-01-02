@@ -90,7 +90,7 @@ SampleRateConverter::process (ProcessContext<float> const & c)
 	nframes_t frames = c.frames();
 	float * in = const_cast<float *> (c.data()); // TODO check if this is safe!
 
-	if (throw_level (ThrowStrict) && frames > max_frames_in) {
+	if (throw_level (ThrowProcess) && frames > max_frames_in) {
 		throw Exception (*this, str (format (
 			"process() called with too many frames, %1% instead of %2%")
 			% frames % max_frames_in));
