@@ -12,12 +12,12 @@ namespace AudioGrapher
 
 enum DebugLevel
 {
-	DebugNone,     //< Disabled
-	DebugObject,   //< Object level stuff, ctors, initalizers etc.
-	DebugFlags,    //< Debug ProcessContext flags only on process cycle level
-	DebugProcess,  //< Process cycle level stuff
-	DebugVerbose,  //< Lots of output, not on sample level
-	DebugSample    //< Sample level stuff
+	DebugNone,     ///< Disabled
+	DebugObject,   ///< Object level stuff, ctors, initalizers etc.
+	DebugFlags,    ///< Debug ProcessContext flags only on process cycle level
+	DebugProcess,  ///< Process cycle level stuff
+	DebugVerbose,  ///< Lots of output, not on sample level
+	DebugSample    ///< Sample level stuff
 };
 
 /// Class that allows optimizing out debugging code during compile time
