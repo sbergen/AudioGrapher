@@ -5,7 +5,7 @@
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = AudioGrapher
 PROJECT_NUMBER         = 
-OUTPUT_DIRECTORY       = /home/sbergen/sourcecode/audiographer/doc
+OUTPUT_DIRECTORY       = ./doc
 CREATE_SUBDIRS         = NO
 OUTPUT_LANGUAGE        = English
 BRIEF_MEMBER_DESC      = YES
@@ -24,8 +24,8 @@ ABBREVIATE_BRIEF       = "The $name class" \
 ALWAYS_DETAILED_SEC    = NO
 INLINE_INHERITED_MEMB  = NO
 FULL_PATH_NAMES        = YES
-STRIP_FROM_PATH        = /Users/dimitri/doxygen/mail/1.5.7/doxywizard/
-STRIP_FROM_INC_PATH    = 
+STRIP_FROM_PATH        = ./
+STRIP_FROM_INC_PATH    = ./
 SHORT_NAMES            = NO
 JAVADOC_AUTOBRIEF      = NO
 QT_AUTOBRIEF           = NO
@@ -103,7 +103,7 @@ INPUT                  = audiographer \
                          doc/mainpage.dox
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.h \
-                         *.cc \
+                         *.cc
 RECURSIVE              = YES
 EXCLUDE                = src/gdither
 EXCLUDE_SYMLINKS       = NO
