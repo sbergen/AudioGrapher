@@ -44,7 +44,10 @@ def configure(conf):
 def build(bld):
 
 	# Headers
-	#bld.install_files('${INCLUDEDIR}/audiographer', 'audiographer/*.h')
+	bld.install_files('${INCLUDEDIR}/audiographer', 'audiographer/*.h')
+	bld.install_files('${INCLUDEDIR}/audiographer/general', 'audiographer/general/*.h')
+	bld.install_files('${INCLUDEDIR}/audiographer/sndfile', 'audiographer/sndfile/*.h')
+	bld.install_files('${INCLUDEDIR}/audiographer/utils', 'audiographer/utils/*.h')
 	
 	bld.env['BUILD_TESTS'] = True
 	bld.env['HAVE_ALL_GTHREAD'] = bld.env['HAVE_GLIB'] and bld.env['HAVE_GLIBMM'] and bld.env['HAVE_GTHREAD']
@@ -57,13 +60,6 @@ def build(bld):
 		src/utils.cc
 		src/debug_utils.cc
 	'''
-	
-	if bld.env['HAVE_SNDFILE']:
-		audiographer.source += '''
-			src/sndfile/sndfile_base.cc
-			src/sndfile/sndfile_writer.cc
-			src/sndfile/sndfile_reader.cc
-		'''
 	
 	if bld.env['HAVE_SAMPLERATE']:
 		audiographer.source += '''
@@ -102,7 +98,7 @@ def build(bld):
 		
 		if bld.env['HAVE_SNDFILE']:
 			obj.source += '''
-				tests/sndfile/sndfile_writer_test.cc
+				tests/sndfile/tmp_file_test.cc
 			'''
 
 		if bld.env['HAVE_SAMPLERATE']:
