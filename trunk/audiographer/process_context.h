@@ -127,10 +127,15 @@ struct AllocatingProcessContext : public ProcessContext<T>
 	AllocatingProcessContext (nframes_t frames, ChannelCount channels)
 		: ProcessContext<T> (new T[frames], frames, channels) {}
 	
+	/// Allocates and copies data from raw buffer
+	AllocatingProcessContext (T const * data, nframes_t frames, ChannelCount channels)
+		: ProcessContext<T> (new T[frames], frames, channels)
+	{ TypeUtils<float>::copy (data, ProcessContext<T>::_data, frames); }
+	
 	/// Copy constructor, copies data from other ProcessContext
 	AllocatingProcessContext (ProcessContext<T> const & other)
 		: ProcessContext<T> (other, new T[other._frames])
-	{ memcpy (ProcessContext<T>::_data, other._data, other._channels * other._frames * sizeof (T)); }
+	{ TypeUtils<float>::copy (ProcessContext<T>::_data, other._data, other._frames); }
 	
 	/// "Copy constructor" with uninitialized data, unique frame and channel count, but copies flags
 	template<typename Y>
