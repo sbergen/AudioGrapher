@@ -196,7 +196,7 @@ SndfileHandle::SndfileHandle (std::string const & path, int mode, int fmt, int c
 SndfileHandle::SndfileHandle (int fd, bool close_desc, int mode, int fmt, int chans, int srate)
 : p (NULL)
 {
-	if (fd == -1)
+	if (fd < 0)
 		return;
 
 	p = new (std::nothrow) SNDFILE_ref () ;

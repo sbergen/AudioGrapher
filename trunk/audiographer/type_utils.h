@@ -15,11 +15,11 @@ class TypeUtilsBase
   protected:
 	
 	template<typename T, bool b>
-	static void do_fill(T * buffer, nframes_t frames, const boost::integral_constant<bool, b>&)
+	static void do_zero_fill(T * buffer, nframes_t frames, const boost::integral_constant<bool, b>&)
 		{ std::uninitialized_fill_n (buffer, frames, T()); }
 
 	template<typename T>
-	static void do_fill(T * buffer, nframes_t frames, const boost::true_type&)
+	static void do_zero_fill(T * buffer, nframes_t frames, const boost::true_type&)
 		{ memset (buffer, frames * sizeof(T), 0); }
 	
   private:
