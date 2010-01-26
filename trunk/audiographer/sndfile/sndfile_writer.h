@@ -5,27 +5,24 @@
 #include <boost/format.hpp>
 #include <string>
 
-// We need to use our modified version until
-// the fd patch is accepted upstream
-#include "sndfile.hh"
-
 #include "audiographer/flag_debuggable.h"
 #include "audiographer/sink.h"
 #include "audiographer/types.h"
+#include "audiographer/sndfile/sndfile_base.h"
 
 namespace AudioGrapher
 {
 
-template <typename T = float>
+template <typename T = DefaultSampleType>
 class SndfileWriter
-  : public virtual SndfileHandle
+  : public virtual SndfileBase
   , public Sink<T>
   , public Throwing<>
   , public FlagDebuggable<>
 {
   public:
 	SndfileWriter (std::string const & path, int format, ChannelCount channels, nframes_t samplerate)
-	  : SndfileHandle (path, SFM_WRITE, format, channels, samplerate)
+	  : SndfileHandle (path, Write, format, channels, samplerate)
 	  , path (path)
 	{
 		add_supported_flag (ProcessContext<T>::EndOfInput);

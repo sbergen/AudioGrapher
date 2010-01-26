@@ -57,6 +57,9 @@
 #include <string>
 #include <new> // for std::nothrow
 
+// Prevent conflicts
+namespace AudioGrapher {
+
 class SndfileHandle
 {	private :
 		struct SNDFILE_ref
@@ -389,6 +392,8 @@ SndfileHandle::SndfileHandle (LPCWSTR wpath, int mode, int fmt, int chans, int s
 } /* SndfileHandle const wchar_t * constructor */
 
 #endif
+
+} // namespace AudioGrapher
 
 #endif	/* SNDFILE_HH */
 
