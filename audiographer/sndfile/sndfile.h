@@ -7,6 +7,9 @@
 namespace AudioGrapher
 {
 
+/** Reader/Writer for audio files using libsndfile.
+  * Only short, int and float are valid template parameters
+  */
 template<typename T = DefaultSampleType>
 class Sndfile : public SndfileWriter<T>, public SndfileReader<T>
 {

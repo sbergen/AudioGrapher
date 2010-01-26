@@ -13,6 +13,9 @@
 namespace AudioGrapher
 {
 
+/** Writer for audio files using libsndfile.
+  * Only short, int and float are valid template parameters
+  */
 template <typename T = DefaultSampleType>
 class SndfileWriter
   : public virtual SndfileBase
@@ -33,6 +36,7 @@ class SndfileWriter
 	SndfileWriter (SndfileWriter const & other) : SndfileHandle (other) {}
 	using SndfileHandle::operator=;
 	
+	/// Writes data to file
 	void process (ProcessContext<T> const & c)
 	{
 		check_flags (*this, c);

@@ -11,6 +11,7 @@
 namespace AudioGrapher
 {
 
+/// A debugging class for nodes that support a certain set of flags.
 template<DebugLevel L = DEFAULT_DEBUG_LEVEL>
 class FlagDebuggable : public Debuggable<L>
 {
@@ -19,11 +20,13 @@ class FlagDebuggable : public Debuggable<L>
 
   protected:
 
+	/// Adds a flag to the set of flags supported
 	void add_supported_flag (Flag flag)
 	{
 		flags.set (flag);
 	}
 	
+	/// Prints debug output if \a context contains flags that are not supported by this class
 	template<typename SelfType, typename ContextType>
 	void check_flags (SelfType & self, ProcessContext<ContextType> context)
 	{

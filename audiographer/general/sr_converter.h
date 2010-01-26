@@ -12,6 +12,7 @@
 namespace AudioGrapher
 {
 
+/// Samplerate converter
 class SampleRateConverter
   : public ListedSource<float>
   , public Sink<float>
@@ -19,16 +20,22 @@ class SampleRateConverter
   , public Throwing<>
 {
   public:
+	/// Constructor. \n RT safe
 	SampleRateConverter (uint32_t channels);
 	~SampleRateConverter ();
 
-	// not RT safe
+	/// Init converter \n Not RT safe
 	void init (nframes_t in_rate, nframes_t out_rate, int quality = 0);
 	
-	// returns max amount of frames that will be output
+	/// Returns max amount of frames that will be output \n RT safe
 	nframes_t allocate_buffers (nframes_t max_frames);
 	
-	// could be RT safe (check libsamplerate to be sure)
+	/** Does sample rate conversion.
+	  * Note that outpt size may vary a lot.
+	  * May or may not output several contexts of data.
+	  * \n Should be RT safe.
+	  * \TODO Check RT safety from libsamplerate
+	  */
 	void process (ProcessContext<float> const & c);
 	using Sink<float>::process;
 

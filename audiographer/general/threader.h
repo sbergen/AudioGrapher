@@ -16,6 +16,7 @@
 namespace AudioGrapher
 {
 
+/// Class that stores exceptions thrown from different threads
 class ThreaderException : public Exception
 {
   public:
@@ -28,6 +29,7 @@ class ThreaderException : public Exception
 	{ }
 };
 
+/// Class for distributing processing across several threads
 template <typename T = DefaultSampleType>
 class Threader : public Source<T>, public Sink<T>
 {
@@ -36,6 +38,11 @@ class Threader : public Source<T>, public Sink<T>
 
   public:
 	
+	/** Constructor
+	  * \n RT safe
+	  * \param thread_pool a thread pool from which all tasks are scheduled
+	  * \param wait_timeout_milliseconds maximum time allowed for threads to use in processing
+	  */
 	Threader (Glib::ThreadPool & thread_pool, long wait_timeout_milliseconds = 1000)
 	  : thread_pool (thread_pool)
 	  , readers (0)
@@ -44,14 +51,19 @@ class Threader : public Source<T>, public Sink<T>
 	
 	virtual ~Threader () {}
 	
+	/// Adds output \n RT safe
 	void add_output (typename Source<T>::SinkPtr output) { outputs.push_back (output); }
+	
+	/// Clears outputs \n RT safe
 	void clear_outputs () { outputs.clear (); }
+	
+	/// Removes a specific output \n RT safe
 	void remove_output (typename Source<T>::SinkPtr output) {
 		typename OutputVec::iterator new_end = std::remove(outputs.begin(), outputs.end(), output);
 		outputs.erase (new_end, outputs.end());
 	}
 	
-	/* The context has to be const, because this is working concurrently */
+	/// Processes context concurrently by scheduling each output separately to the given thread pool
 	void process (ProcessContext<T> const & c)
 	{
 		wait_mutex.lock();

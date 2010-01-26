@@ -7,6 +7,7 @@
 namespace AudioGrapher
 {
 
+/// Outputs its input directly to a number of Sinks
 template<typename T = DefaultSampleType>
 class IdentityVertex : public ListedSource<T>, Sink<T>
 {

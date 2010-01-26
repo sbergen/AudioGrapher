@@ -8,9 +8,12 @@ using namespace AudioGrapher;
 
 class ChunkerTest : public CppUnit::TestFixture
 {
+	// TODO: Test EndOfInput handling
+
   CPPUNIT_TEST_SUITE (ChunkerTest);
   CPPUNIT_TEST (testSynchronousProcess);
   CPPUNIT_TEST (testAsynchronousProcess);
+  CPPUNIT_TEST (testChoppingProcess);
   CPPUNIT_TEST_SUITE_END ();
 
   public:
@@ -97,6 +100,38 @@ class ChunkerTest : public CppUnit::TestFixture
 		frames_output = sink->get_data().size();
 		CPPUNIT_ASSERT_EQUAL (2 * frames, frames_output);
 		CPPUNIT_ASSERT (TestUtils::array_equals (&random_data[frames / 2], sink->get_array(), frames / 2));
+		CPPUNIT_ASSERT (TestUtils::array_equals (random_data, &sink->get_array()[frames / 2], frames));
+		CPPUNIT_ASSERT (TestUtils::array_equals (random_data, &sink->get_array()[ 3 * frames / 2], frames / 2));
+	}
+	
+	void testChoppingProcess()
+	{
+		sink.reset (new AppendingVectorSink<float>());
+		
+		assert (frames % 2 == 0);
+		chunker.reset (new Chunker<float>(frames / 4));
+		
+		chunker->add_output (sink);
+		nframes_t frames_output = 0;
+		
+		ProcessContext<float> const half_context (random_data, frames / 2, 1);
+		ProcessContext<float> const context (random_data, frames, 1);
+		
+		// 0.5
+		chunker->process (half_context);
+		frames_output = sink->get_data().size();
+		CPPUNIT_ASSERT_EQUAL ((nframes_t) frames / 2, frames_output);
+		
+		// 1.5
+		chunker->process (context);
+		frames_output = sink->get_data().size();
+		CPPUNIT_ASSERT_EQUAL ((nframes_t) frames / 2 * 3, frames_output);
+		
+		// 2.5
+		chunker->process (context);
+		frames_output = sink->get_data().size();
+		CPPUNIT_ASSERT_EQUAL (frames / 2 * 5, frames_output);
+		CPPUNIT_ASSERT (TestUtils::array_equals (random_data, sink->get_array(), frames / 2));
 		CPPUNIT_ASSERT (TestUtils::array_equals (random_data, &sink->get_array()[frames / 2], frames));
 		CPPUNIT_ASSERT (TestUtils::array_equals (random_data, &sink->get_array()[ 3 * frames / 2], frames / 2));
 	}

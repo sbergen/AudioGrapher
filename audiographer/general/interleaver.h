@@ -13,6 +13,7 @@
 namespace AudioGrapher
 {
 
+/// Interleaves many streams of non-interleaved data into one interleaved stream
 template<typename T = DefaultSampleType>
 class Interleaver
   : public ListedSource<T>
@@ -20,6 +21,7 @@ class Interleaver
 {
   public: 
 	
+	/// Constructs an interleaver \n RT safe
 	Interleaver()
 	  : channels (0)
 	  , max_frames (0)
@@ -28,6 +30,7 @@ class Interleaver
 	
 	~Interleaver() { reset(); }
 	
+	/// Inits the interleaver. Must be called before using. \n Not RT safe
 	void init (unsigned int num_channels, nframes_t max_frames_per_channel)
 	{
 		reset();
@@ -41,6 +44,9 @@ class Interleaver
 		}
 	}
 	
+	/** Returns the input indexed by \a channel \n RT safe
+	  * \n The \a process function of returned Sinks are also RT Safe
+	  */
 	typename Source<T>::SinkPtr input (unsigned int channel)
 	{
 		if (throw_level (ThrowObject) && channel >= channels) {
@@ -80,7 +86,7 @@ class Interleaver
 		Interleaver & parent;
 		unsigned int channel;
 	};
-	  
+	
 	void reset ()
 	{
 		inputs.clear();

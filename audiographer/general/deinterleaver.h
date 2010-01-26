@@ -12,6 +12,7 @@
 namespace AudioGrapher
 {
 
+/// Converts on stream of interleaved data to many streams of uninterleaved data.
 template<typename T = DefaultSampleType>
 class DeInterleaver
   : public Sink<T>
@@ -21,6 +22,7 @@ class DeInterleaver
 	typedef boost::shared_ptr<IdentityVertex<T> > OutputPtr;
 	
   public:
+	/// Constructor. \n RT safe
 	DeInterleaver()
 	  : channels (0)
 	  , max_frames (0)
@@ -31,6 +33,7 @@ class DeInterleaver
 	
 	typedef boost::shared_ptr<Source<T> > SourcePtr;
 	
+	/// Inits the deinterleaver. Must be called before using. \n Not RT safe
 	void init (unsigned int num_channels, nframes_t max_frames_per_channel)
 	{
 		reset();
@@ -43,6 +46,7 @@ class DeInterleaver
 		}
 	}
 	
+	/// Returns an output indexed by \a channel \n RT safe
 	SourcePtr output (unsigned int channel)
 	{
 		if (throw_level (ThrowObject) && channel >= channels) {
@@ -52,6 +56,7 @@ class DeInterleaver
 		return outputs[channel];
 	}
 	
+	/// Deinterleaves data and outputs it to the outputs. \n RT safe
 	void process (ProcessContext<T> const & c)
 	{
 		nframes_t frames = c.frames();

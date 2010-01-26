@@ -9,6 +9,7 @@
 namespace AudioGrapher
 {
 
+/// An generic \a Source that uses a \a std::list for managing outputs
 template<typename T = DefaultSampleType>
 class ListedSource : public Source<T>
 {

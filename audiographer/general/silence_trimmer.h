@@ -11,6 +11,7 @@
 
 namespace AudioGrapher {
 
+/// Removes and adds silent frames to beginning and/or end of stream
 template<typename T = DefaultSampleType>
 class SilenceTrimmer
   : public ListedSource<T>
@@ -20,6 +21,7 @@ class SilenceTrimmer
 {
   public:
 
+	/// Constructor, \see reset() \n Not RT safe
 	SilenceTrimmer(nframes_t silence_buffer_size_ = 1024)
 	  : silence_buffer_size (0)
 	  , silence_buffer (0)
@@ -33,6 +35,11 @@ class SilenceTrimmer
 		delete [] silence_buffer;
 	}
 
+	/** Reset state \n Not RT safe
+	  * Allocates a buffer the size of \a silence_buffer_size_
+	  * This also defines the maximum length of output process context
+	  * which can be output during long intermediate silence.
+	  */
 	void reset (nframes_t silence_buffer_size_ = 1024)
 	{
 		if (throw_level (ThrowObject) && silence_buffer_size_ == 0) {
@@ -45,12 +52,6 @@ class SilenceTrimmer
 			delete [] silence_buffer;
 			silence_buffer = new T[silence_buffer_size];
 			TypeUtils<T>::zero_fill (silence_buffer, silence_buffer_size);
-			
-			for (int i = 0; i < silence_buffer_size; ++i) {
-				if (silence_buffer[i] != 0.0) {
-					debug_stream() << i << " " << silence_buffer[i] << std::endl;
-				}
-			}
 		}
 		
 		in_beginning = true;
@@ -63,6 +64,10 @@ class SilenceTrimmer
 		add_to_end = 0;
 	}
 	
+	/** Tells that \a frames_per_channel frames of silence per channel should be added to beginning
+	  * Needs to be called before starting processing.
+	  * \n RT safe
+	  */
 	void add_silence_to_beginning (nframes_t frames_per_channel)
 	{
 		if (throw_level (ThrowObject) && !in_beginning) {
@@ -71,6 +76,10 @@ class SilenceTrimmer
 		add_to_beginning = frames_per_channel;
 	}
 	
+	/** Tells that \a frames_per_channel frames of silence per channel should be added to end
+	  * Needs to be called before end is reached.
+	  * \n RT safe
+	  */
 	void add_silence_to_end (nframes_t frames_per_channel)
 	{
 		if (throw_level (ThrowObject) && in_end) {
@@ -79,6 +88,10 @@ class SilenceTrimmer
 		add_to_end = frames_per_channel;
 	}
 	
+	/** Tells whether ot nor silence should be trimmed from the beginning
+	  * Has to be called before starting processing.
+	  * \n RT safe
+	  */
 	void set_trim_beginning (bool yn)
 	{
 		if (throw_level (ThrowObject) && !in_beginning) {
@@ -87,6 +100,10 @@ class SilenceTrimmer
 		trim_beginning = yn;
 	}
 	
+	/** Tells whether ot nor silence should be trimmed from the end
+	  * Has to be called before the is reached.
+	  * \n RT safe
+	  */
 	void set_trim_end (bool yn)
 	{
 		if (throw_level (ThrowObject) && in_end) {
@@ -94,12 +111,12 @@ class SilenceTrimmer
 		}
 		trim_end = yn;
 	}
-	
-	void limit_output_size (nframes_t max_frames)
-	{
-		max_output_frames = max_frames;
-	}
 
+	/** Process stream according to current settings.
+	  * Note that some calls will not produce any output,
+	  * while others may produce many. \see reset()
+	  * \n RT safe
+	  */
 	void process (ProcessContext<T> const & c)
 	{
 		if (debug_level (DebugVerbose)) {

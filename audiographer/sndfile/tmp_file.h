@@ -7,6 +7,7 @@
 namespace AudioGrapher
 {
 
+/// A temporary file deleted after this class is destructed
 template<typename T = DefaultSampleType>
 class TmpFile : public SndfileWriter<T>, public SndfileReader<T>
 {

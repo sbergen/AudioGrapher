@@ -10,12 +10,14 @@
 namespace AudioGrapher
 {
 
+/// A class for normalizing to a specified target in dB
 class Normalizer
   : public ListedSource<float>
   , public Sink<float>
   , public Throwing<>
 {
   public:
+	/// Constructs a normalizer with a specific target in dB \n RT safe
 	Normalizer (float target_dB)
 	  : enabled (false)
 	  , buffer (0)
@@ -29,6 +31,7 @@ class Normalizer
 		delete [] buffer;
 	}
 
+	/// Sets the peak found in the material to be normalized \see PeakReader \n RT safe
 	void set_peak (float peak)
 	{
 		if (peak == 0.0f || peak == target) {
@@ -40,6 +43,11 @@ class Normalizer
 		}
 	}
 
+	/** Allocates a buffer for using with const ProcessContexts
+	  * This function does not need to be called if
+	  * non-const ProcessContexts are given to \a process() .
+	  * \n Not RT safe
+	  */
 	void alloc_buffer(nframes_t frames)
 	{
 		delete [] buffer;
@@ -47,6 +55,7 @@ class Normalizer
 		buffer_size = frames;
 	}
 
+	/// Process a const ProcessContext \see alloc_buffer() \n RT safe
 	void process (ProcessContext<float> const & c)
 	{
 		if (throw_level (ThrowProcess) && c.frames() > buffer_size) {
@@ -62,6 +71,7 @@ class Normalizer
 		ListedSource<float>::output (c_out);
 	}
 	
+	/// Process a non-const ProcsesContext in-place \n RT safe
 	void process (ProcessContext<float> & c)
 	{
 		if (enabled) {
