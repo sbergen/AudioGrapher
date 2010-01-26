@@ -1,12 +1,9 @@
 #ifndef AUDIOGRAPHER_SNDFILE_READER_H
 #define AUDIOGRAPHER_SNDFILE_READER_H
 
-// We need to use our modified version until
-// the fd patch is accepted upstream
-#include "sndfile.hh"
-
 #include "audiographer/utils/listed_source.h"
 #include "audiographer/process_context.h"
+#include "audiographer/sndfile/sndfile_base.h"
 
 namespace AudioGrapher
 {
@@ -14,9 +11,9 @@ namespace AudioGrapher
 /** Reader for audio files using libsndfile.
   * Only short, int and float are valid template parameters
   */
-template<typename T = float>
+template<typename T = DefaultSampleType>
 class SndfileReader
-  : public virtual SndfileHandle
+  : public virtual SndfileBase
   , public ListedSource<T>
   , public Throwing<>
 {

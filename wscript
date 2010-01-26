@@ -54,7 +54,7 @@ def build(bld):
 
 	audiographer = bld.new_task_gen('cxx', 'shlib')
 	audiographer.source = '''
-		src/gdither/gdither.cc
+		private/gdither/gdither.cc
 		src/general/sample_format_converter.cc
 		src/routines.cc
 		src/utils.cc

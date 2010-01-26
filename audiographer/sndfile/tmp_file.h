@@ -11,9 +11,9 @@ template<typename T = float>
 class TmpFile : public SndfileWriter<T>, public SndfileReader<T>
 {
   public:
-	  
+	
 	TmpFile (int format, ChannelCount channels, nframes_t samplerate)
-	  : SndfileHandle (fileno (tmpfile()), true, SFM_RDWR, format, channels, samplerate)
+	  : SndfileHandle (fileno (tmpfile()), true, SndfileBase::ReadWrite, format, channels, samplerate)
 	{}
 	
 	TmpFile (TmpFile const & other) : SndfileHandle (other) {}
