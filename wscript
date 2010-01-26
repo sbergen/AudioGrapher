@@ -79,6 +79,7 @@ def build(bld):
 		obj              = bld.new_task_gen('cxx', 'program')
 		obj.source       = '''
 			tests/test_runner.cc
+			tests/type_utils_test.cc
 			tests/utils/identity_vertex_test.cc
 			tests/general/interleaver_test.cc
 			tests/general/deinterleaver_test.cc
