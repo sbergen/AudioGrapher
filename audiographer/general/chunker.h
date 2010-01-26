@@ -9,7 +9,7 @@
 namespace AudioGrapher
 {
 
-template<typename T>
+template<typename T = DefaultSampleType>
 class Chunker
   : public ListedSource<T>
   , public Sink<T>

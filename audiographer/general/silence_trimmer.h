@@ -11,7 +11,7 @@
 
 namespace AudioGrapher {
 
-template<typename T>
+template<typename T = DefaultSampleType>
 class SilenceTrimmer
   : public ListedSource<T>
   , public Sink<T>

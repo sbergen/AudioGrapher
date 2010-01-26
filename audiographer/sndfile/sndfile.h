@@ -7,7 +7,7 @@
 namespace AudioGrapher
 {
 
-template<typename T = float>
+template<typename T = DefaultSampleType>
 class Sndfile : public SndfileWriter<T>, public SndfileReader<T>
 {
   public:

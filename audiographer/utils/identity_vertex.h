@@ -7,7 +7,7 @@
 namespace AudioGrapher
 {
 
-template<typename T>
+template<typename T = DefaultSampleType>
 class IdentityVertex : public ListedSource<T>, Sink<T>
 {
   public:
