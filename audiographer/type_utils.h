@@ -20,7 +20,7 @@ class TypeUtilsBase
 
 	template<typename T>
 	static void do_zero_fill(T * buffer, nframes_t frames, const boost::true_type&)
-		{ memset (buffer, frames * sizeof(T), 0); }
+		{ memset (buffer, 0, frames * sizeof(T)); }
 	
   private:
 };
