@@ -10,6 +10,7 @@
 namespace AudioGrapher
 {
 
+/// Non-template base class for TypeUtils
 class TypeUtilsBase
 {
   protected:
@@ -21,10 +22,9 @@ class TypeUtilsBase
 	template<typename T>
 	static void do_zero_fill(T * buffer, nframes_t frames, const boost::true_type&)
 		{ memset (buffer, 0, frames * sizeof(T)); }
-	
-  private:
 };
 
+/// Utilities for initializing, copying, moving, etc. data
 template<typename T = DefaultSampleType>
 class TypeUtils : private TypeUtilsBase
 {
@@ -34,23 +34,33 @@ class TypeUtils : private TypeUtilsBase
 			boost::is_floating_point<T>::value ||
 			boost::is_signed<T>::value> zero_fillable;
   public:
+	/** Fill buffer with a zero value
+	  * The value used for filling is either 0 or the value of T()
+	  * if T is not a floating point or signed integer type
+	  * \n RT safe
+	  */
 	inline static void zero_fill (T * buffer, nframes_t frames)
 		{ do_zero_fill(buffer, frames, zero_fillable()); }
 	
+	/** Copies \a frames frames of data from \a source to \a destination
+	  * The source and destination may NOT overlap.
+	  * \n RT safe
+	  */
 	inline static void copy (T const * source, T * destination, nframes_t frames)
 		{ std::uninitialized_copy (source, &source[frames], destination); }
 	
+	/** Moves \a frames frames of data from \a source to \a destination
+	  * The source and destination may overlap in any way.
+	  * \n RT safe
+	  */
 	inline static void move (T const * source, T * destination, nframes_t frames)
 	{
 		if (destination < source) {
 			std::copy (source, &source[frames], destination);
-		} else {
+		} else if (destination > source) {
 			std::copy_backward (source, &source[frames], destination + frames);
 		}
 	}
-	
-  private:
-
 };
 
 

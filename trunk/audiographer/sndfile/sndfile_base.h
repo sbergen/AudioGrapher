@@ -8,6 +8,7 @@
 namespace AudioGrapher
 {
 
+/// Base class for all classes using libsndfile
 class SndfileBase : public virtual SndfileHandle
 {
   public:

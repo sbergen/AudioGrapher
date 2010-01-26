@@ -27,7 +27,7 @@ class SndfileReader
 	
 	/** Read data into buffer in \a context, only the data is modified (not frame count)
 	 *  Note that the data read is output to the outputs, as well as read into the context
-	 *  @return number of frames read
+	 *  \return number of frames read
 	 */
 	nframes_t read (ProcessContext<T> & context)
 	{

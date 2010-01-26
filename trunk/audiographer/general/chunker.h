@@ -3,12 +3,13 @@
 
 #include "audiographer/flag_debuggable.h"
 #include "audiographer/sink.h"
+#include "audiographer/type_utils.h"
 #include "audiographer/utils/listed_source.h"
-#include <cstring>
 
 namespace AudioGrapher
 {
 
+/// A class that chunks process cycles into equal sized frames
 template<typename T = DefaultSampleType>
 class Chunker
   : public ListedSource<T>
@@ -16,6 +17,9 @@ class Chunker
   , public FlagDebuggable<>
 {
   public:
+	/** Constructs a new Chunker with a constant chunk size.
+	  * \n NOT RT safe
+	  */
 	Chunker (nframes_t chunk_size)
 	  : chunk_size (chunk_size)
 	  , position (0)
@@ -29,21 +33,41 @@ class Chunker
 		delete [] buffer;
 	}
 	
+	/** Outputs data in \a context in chunks with the size specified in the constructor.
+	  * Note that some calls might not produce any output, while others may produce several.
+	  * \n RT safe
+	  */
 	void process (ProcessContext<T> const & context)
 	{
 		check_flags (*this, context);
 		
-		if (position + context.frames() < chunk_size) {
-			memcpy (&buffer[position], (float const *)context.data(), context.frames() * sizeof(T));
-			position += context.frames();
-		} else {
+		nframes_t frames_left = context.frames();
+		nframes_t input_position = 0;
+		
+		while (position + frames_left >= chunk_size) {
+			// Copy from context to buffer
 			nframes_t const frames_to_copy = chunk_size - position;
-			memcpy (&buffer[position], context.data(), frames_to_copy * sizeof(T));
+			TypeUtils<T>::copy (&context.data()[input_position], &buffer[position], frames_to_copy);
+			
+			// Output whole buffer
 			ProcessContext<T> c_out (context, buffer, chunk_size);
 			ListedSource<T>::output (c_out);
 			
-			memcpy (buffer, &context.data()[frames_to_copy], (context.frames() - frames_to_copy) * sizeof(T));
-			position =  context.frames() - frames_to_copy;
+			// Update counters
+			position = 0;
+			input_position += frames_to_copy;
+			frames_left -= frames_to_copy;
+		}
+		
+		if (frames_left) {
+			// Copy the rest of the data
+			TypeUtils<T>::copy (&context.data()[input_position], &buffer[position], frames_left);
+			position += frames_left;
+		}
+		
+		if (context.has_flag (ProcessContext<T>::EndOfInput)) {
+			ProcessContext<T> c_out (context, buffer, position);
+			ListedSource<T>::output (c_out);
 		}
 	}
 	using Sink<T>::process;
