@@ -12,7 +12,7 @@
 namespace AudioGrapher
 {
 
-template<typename T>
+template<typename T = DefaultSampleType>
 class DeInterleaver
   : public Sink<T>
   , public Throwing<>

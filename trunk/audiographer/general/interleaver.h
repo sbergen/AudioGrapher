@@ -13,7 +13,7 @@
 namespace AudioGrapher
 {
 
-template<typename T>
+template<typename T = DefaultSampleType>
 class Interleaver
   : public ListedSource<T>
   , public Throwing<>

@@ -9,7 +9,7 @@
 namespace AudioGrapher
 {
 
-template<typename T>
+template<typename T = DefaultSampleType>
 class ListedSource : public Source<T>
 {
   public:

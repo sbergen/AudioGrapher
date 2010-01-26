@@ -28,7 +28,7 @@ class ThreaderException : public Exception
 	{ }
 };
 
-template <typename T>
+template <typename T = DefaultSampleType>
 class Threader : public Source<T>, public Sink<T>
 {
   private:

@@ -25,7 +25,7 @@ class TypeUtilsBase
   private:
 };
 
-template<typename T>
+template<typename T = DefaultSampleType>
 class TypeUtils : private TypeUtilsBase
 {
 	BOOST_STATIC_ASSERT (boost::has_trivial_destructor<T>::value);

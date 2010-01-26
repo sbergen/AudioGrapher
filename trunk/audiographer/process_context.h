@@ -19,7 +19,7 @@ namespace AudioGrapher
  * Processing context. Constness only applies to data, not flags
  */
 
-template <typename T = float>
+template <typename T = DefaultSampleType>
 class ProcessContext
   : public Throwing<>
 {
@@ -120,7 +120,7 @@ protected:
 };
 
 /// A process context that allocates and owns it's data buffer
-template <typename T>
+template <typename T = DefaultSampleType>
 struct AllocatingProcessContext : public ProcessContext<T>
 {
 	/// Allocates uninitialized memory
@@ -156,7 +156,7 @@ struct AllocatingProcessContext : public ProcessContext<T>
 };
 
 /// A wrapper for a const ProcesContext which can be created from const data
-template <typename T>
+template <typename T = DefaultSampleType>
 class ConstProcessContext
 {
   public:
