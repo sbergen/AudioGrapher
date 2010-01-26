@@ -45,7 +45,7 @@ class TypeUtils : private TypeUtilsBase
 		if (destination < source) {
 			std::copy (source, &source[frames], destination);
 		} else {
-			std::copy_backward (source, &source[frames], destination);
+			std::copy_backward (source, &source[frames], destination + frames);
 		}
 	}
 	
