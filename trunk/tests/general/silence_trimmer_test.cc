@@ -29,7 +29,7 @@ class SilenceTrimmerTest : public CppUnit::TestFixture
 		half_random_data = TestUtils::init_random_data(frames);
 		memset(half_random_data, 0, (frames / 2) * sizeof(float));
 		
-		trimmer.reset (new SilenceTrimmer<float>());
+		trimmer.reset (new SilenceTrimmer<float> (frames / 2));
 		sink.reset (new AppendingVectorSink<float>());
 		
 		trimmer->set_trim_beginning (true);
@@ -41,14 +41,11 @@ class SilenceTrimmerTest : public CppUnit::TestFixture
 		delete [] random_data;
 		delete [] zero_data;
 		delete [] half_random_data;
-		
-		AudioGrapher::Utils::free_resources();
 	}
 
 	void testFullBuffers()
 	{
 		trimmer->add_output (sink);
-		AudioGrapher::Utils::init_zeros<float>(frames / 2);
 		
 		{
 		ProcessContext<float> c (zero_data, frames, 1);
@@ -93,7 +90,9 @@ class SilenceTrimmerTest : public CppUnit::TestFixture
 	void testPartialBuffers()
 	{
 		trimmer->add_output (sink);
-		AudioGrapher::Utils::init_zeros<float>(frames / 4);
+		trimmer->reset (frames / 4);
+		trimmer->set_trim_beginning (true);
+		trimmer->set_trim_end (true);
 		
 		{
 		ProcessContext<float> c (half_random_data, frames, 1);
@@ -121,31 +120,14 @@ class SilenceTrimmerTest : public CppUnit::TestFixture
 	
 	void testExceptions()
 	{
-		// TODO more tests here
-		
-		trimmer->add_output (sink);
-		
 		{
-		ProcessContext<float> c (random_data, frames, 1);
-		trimmer->process (c);
-		}
-		
-		{
-		ProcessContext<float> c (zero_data, frames, 1);
-		trimmer->process (c);
-		}
-		
-		{
-		// Zeros not inited, so this should throw
-		ProcessContext<float> c (random_data, frames, 1);
-		CPPUNIT_ASSERT_THROW (trimmer->process (c), Exception);
+		CPPUNIT_ASSERT_THROW (trimmer->reset (0), Exception);
 		}
 	}
 	
 	void testAddSilenceBeginning()
 	{
 		trimmer->add_output (sink);
-		AudioGrapher::Utils::init_zeros<float>(frames / 2);
 		
  		nframes_t silence = frames / 2;
 		trimmer->add_silence_to_beginning (silence);
@@ -162,7 +144,6 @@ class SilenceTrimmerTest : public CppUnit::TestFixture
 	void testAddSilenceEnd()
 	{
 		trimmer->add_output (sink);
-		AudioGrapher::Utils::init_zeros<float>(frames / 2);
 		
 		nframes_t silence = frames / 3;
 		trimmer->add_silence_to_end (silence);
@@ -178,6 +159,9 @@ class SilenceTrimmerTest : public CppUnit::TestFixture
 		trimmer->process (c);
 		}
 		
+		nframes_t frames_processed = sink->get_data().size();
+		nframes_t total_frames = 2 * frames + silence;
+		CPPUNIT_ASSERT_EQUAL (total_frames, frames_processed);
 		CPPUNIT_ASSERT (TestUtils::array_equals (sink->get_array(), random_data, frames));
 		CPPUNIT_ASSERT (TestUtils::array_equals (&sink->get_array()[frames], random_data, frames));
 		CPPUNIT_ASSERT (TestUtils::array_equals (&sink->get_array()[frames * 2], zero_data, silence));

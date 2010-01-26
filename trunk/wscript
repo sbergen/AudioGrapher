@@ -57,7 +57,6 @@ def build(bld):
 		private/gdither/gdither.cc
 		src/general/sample_format_converter.cc
 		src/routines.cc
-		src/utils.cc
 		src/debug_utils.cc
 	'''
 	
