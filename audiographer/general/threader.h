@@ -51,7 +51,7 @@ class Threader : public Source<T>, public Sink<T>
 	
 	virtual ~Threader () {}
 	
-	/// Adds output \n RT safe
+	/// Adds output \n not RT safe
 	void add_output (typename Source<T>::SinkPtr output) { outputs.push_back (output); }
 	
 	/// Clears outputs \n RT safe
@@ -63,7 +63,9 @@ class Threader : public Source<T>, public Sink<T>
 		outputs.erase (new_end, outputs.end());
 	}
 	
-	/// Processes context concurrently by scheduling each output separately to the given thread pool
+	/** Processes context concurrently by scheduling each output separately to the given thread pool
+	  * \n not RT safe
+	  */
 	void process (ProcessContext<T> const & c)
 	{
 		wait_mutex.lock();
