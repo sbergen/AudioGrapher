@@ -16,16 +16,34 @@
 #include <cstring>
 #include <cstdlib>
 #include <ctime>
+#include <cmath>
 
 using AudioGrapher::nframes_t;
 
 struct TestUtils
 {
 	template<typename T>
+	static bool fuzzy_compare (T a, T b, T tolerance)
+	{
+		return (a - tolerance < b && b < a + tolerance);
+	}
+	
+	template<typename T>
 	static bool array_equals (T const * a, T const * b, nframes_t frames)
 	{
 		for (nframes_t i = 0; i < frames; ++i) {
 			if (a[i] != b[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	template<typename T>
+	static bool array_equals_fuzzy (T const * a, T const * b, nframes_t frames, T tolerance)
+	{
+		for (int i = 0; i < frames; ++i) {
+			if (!fuzzy_compare(a[i], b[i], tolerance)) {
 				return false;
 			}
 		}
@@ -43,7 +61,7 @@ struct TestUtils
 		return true;
 	}
 
-	/// Generate random data, all samples guaranteed not to be 0.0, 1.0 or -1.0
+	/// Generate random data, all samples guaranteed not to be 0.0, 1.0 nor -1.0
 	static float * init_random_data (nframes_t frames, float range = 1.0)
 	{
 		unsigned int const granularity = 4096;
@@ -56,6 +74,22 @@ struct TestUtils
 				data[i] = (range * biased_int) / granularity;
 			} while (data[i] == 0.0 || data[i] == 1.0 || data[i] == -1.0);
 		}
+		return data;
+	}
+	
+	/// Generate a sine wave, frequency in radians per sample
+	static float * init_sine_data (nframes_t frames, nframes_t cycle_length, int channels = 1, float range = 1.0)
+	{
+		assert (frames % channels == 0);
+		float * data = new float[frames];
+		
+		for (nframes_t i = 0; i * channels < frames; ++i) {
+			float val = range * std::sin(2 * M_PI / cycle_length * i);
+			for (int c = 0; c < channels; c++) {
+				data[i * channels + c] = val;
+			}
+		}
+		
 		return data;
 	}
 };
