@@ -113,7 +113,7 @@ SampleRateConverter::process (ProcessContext<float> const & c)
 
 				/* first time, append new data from data_in into the leftover_data buffer */
 
-				TypeUtils<float>::copy (in, &leftover_data [leftover_frames * channels], in, frames);
+				TypeUtils<float>::copy (in, &leftover_data[leftover_frames * channels], frames);
 				src_data.input_frames = frames / channels + leftover_frames;
 			} else {
 
@@ -168,13 +168,13 @@ SampleRateConverter::process (ProcessContext<float> const & c)
 				", leftover_frames: " << leftover_frames << std::endl;
 		}
 
-		if (throw_level (ThrowProcess) && src_data.output_frames_gen == 0 && leftover_frames) {
+		if (throw_level (ThrowProcess) && src_data.output_frames_gen == 0 && leftover_frames > frames) {
 			throw Exception (*this, boost::str (boost::format 
 				("No output frames genereated with %1% leftover frames")
 				% leftover_frames));
 		}
 		
-	} while (leftover_frames > frames);
+	} while (leftover_frames > frames && src_data.output_frames_gen > 0);
 	
 	// src_data.end_of_input has to be checked to prevent infinite recursion
 	if (!src_data.end_of_input && c.has_flag(ProcessContext<float>::EndOfInput)) {
@@ -189,11 +189,14 @@ void SampleRateConverter::set_end_of_input (ProcessContext<float> const & c)
 	float f;
 	ProcessContext<float> const dummy (c, &f, 0, channels);
 	
-	/* No idea why this has to be done twice for all data to be written,
+	/* No idea why the do-while below is needed for all data to be written,
 	 * but that just seems to be the way it is...
 	 */
 	dummy.remove_flag (ProcessContext<float>::EndOfInput);
-	process (dummy);
+	do {
+		process (dummy);
+	} while (src_data.output_frames_gen > 0);
+	
 	dummy.set_flag (ProcessContext<float>::EndOfInput);
 	process (dummy);
 }
@@ -207,12 +210,14 @@ void SampleRateConverter::reset ()
 	
 	if (src_state) {
 		src_delete (src_state);
+		src_state = 0;
 	}
 	
 	leftover_frames = 0;
 	max_leftover_frames = 0;
 	if (leftover_data) {
 		free (leftover_data);
+		leftover_data = 0;
 	}
 	
 	data_out_size = 0;
